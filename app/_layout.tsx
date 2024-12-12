@@ -1,5 +1,6 @@
 import { Stack } from "expo-router";
 import { useEffect } from "react";
+import { StatusBar } from 'react-native';
 import { lockLandscapeOrientation, preventOrientationChange } from "./config/orientation";
 
 export default function RootLayout() {
@@ -10,12 +11,15 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <Stack 
-      screenOptions={{ 
-        headerShown: false,
-        animation: 'none',
-        gestureEnabled: false
-      }} 
-    />
+    <>
+      <StatusBar barStyle="light-content" />
+      <Stack 
+        screenOptions={{ 
+          headerShown: false,
+          animation: 'none',
+          gestureEnabled: false
+        }} 
+      />
+    </>
   );
 }
