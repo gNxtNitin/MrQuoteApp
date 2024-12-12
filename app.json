@@ -1,17 +1,17 @@
 {
   "expo": {
-    "name": "my-app",
-    "slug": "my-app",
+    "name": "Mr. Quote",
+    "slug": "mr-quote",
     "version": "1.0.0",
     "orientation": "landscape",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "mrquote",
     "userInterfaceStyle": "automatic",
     "platforms": ["ios", "android"],
     "ios": {
       "supportsTablet": true,
       "requireFullScreen": true,
-      "bundleIdentifier": "com.yourcompany.myapp",
+      "bundleIdentifier": "com.mrquote.app",
       "infoPlist": {
         "UISupportedInterfaceOrientations": [
           "UIInterfaceOrientationLandscapeRight",
@@ -28,7 +28,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.yourcompany.myapp",
+      "package": "com.mrquote.app",
       "screenOrientation": "landscape"
     },
     "plugins": [
