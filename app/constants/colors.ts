@@ -5,4 +5,5 @@ export const Colors = {
   primary: '#0F5695',
   white: '#FFFFFF',
   black: '#000000',
+  error: '#ff3b30',
 };
