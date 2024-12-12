@@ -1,9 +1,28 @@
-import { View, Text, Image, StyleSheet, Platform, StatusBar } from 'react-native';
+import { useState } from 'react';
+import { View, Text, Image, StyleSheet, Platform, StatusBar, Pressable } from 'react-native';
 import { Colors } from '@/app/constants/colors';
+import { CompanySwitcher } from '../company/CompanySwitcher';
+import { router } from 'expo-router';
 
 export function Header() {
-  const companyName = "MR. GUTTER";
-  const initials = "MG";
+  const [showSwitcher, setShowSwitcher] = useState(false);
+  const [selectedCompany, setSelectedCompany] = useState('gutter');
+
+  const companies = [
+    { id: 'gutter', initial: 'MG', name: 'Mr. Gutter', color: '#4A90E2' },
+    { id: 'roofing', initial: 'MR', name: 'Mr. Roofing', color: '#50C878' },
+  ];
+
+  const handleSelectCompany = (companyId: string) => {
+    setSelectedCompany(companyId);
+    setShowSwitcher(false);
+  };
+
+  const handleLogout = () => {
+    router.replace('/login');
+  };
+
+  const currentCompany = companies.find(company => company.id === selectedCompany);
 
   return (
     <View style={styles.header}>
@@ -17,9 +36,31 @@ export function Header() {
         </View>
 
         <View style={styles.rightSection}>
-          <Text style={styles.companyName}>{companyName}</Text>
-          <View style={styles.initialsCircle}>
-            <Text style={styles.initials}>{initials}</Text>
+          <Text style={styles.companyName}>{currentCompany?.name.toUpperCase()}</Text>
+          <View>
+            <Pressable 
+              onPress={() => setShowSwitcher(!showSwitcher)}
+              style={styles.companyButton}
+            >
+              <View style={[
+                styles.initialCircle,
+                { backgroundColor: currentCompany?.color }
+              ]}>
+                <Text style={styles.initial}>
+                  {currentCompany?.initial}
+                </Text>
+              </View>
+            </Pressable>
+            {showSwitcher && (
+              <View style={styles.switcherContainer}>
+                <CompanySwitcher
+                  companies={companies}
+                  selectedCompany={selectedCompany}
+                  onSelectCompany={handleSelectCompany}
+                  onLogout={handleLogout}
+                />
+              </View>
+            )}
           </View>
         </View>
       </View>
@@ -36,8 +77,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingLeft: 24,
-    paddingRight:24,
+    paddingHorizontal: 24,
     paddingBottom: 20
   },
   leftSection: {
@@ -59,17 +99,34 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: Colors.white,
   },
-  initialsCircle: {
+  companyButton: {
+    padding: 4,
+  },
+  initialCircle: {
     width: 60,
     height: 60,
-    borderRadius: 35,
-    backgroundColor: Colors.white,
+    borderRadius: 40,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  initials: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: Colors.primary,
+  initial: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: Colors.white,
   },
-}); 
+  switcherContainer: {
+    position: 'absolute',
+    top: '100%',
+    right: 0,
+    zIndex: 1000,
+    width: 300,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  }
+});

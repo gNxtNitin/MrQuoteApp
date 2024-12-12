@@ -1,4 +1,4 @@
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Colors } from '@/app/constants/colors';
 
@@ -15,10 +15,11 @@ export function ActionButtons({ onSync, onCreate }: ActionButtonsProps) {
         <Text style={styles.createButtonText}>Create</Text>
       </Pressable>
       
-      <Pressable style={styles.syncButton} onPress={onSync}>
+      {/* <TouchableOpacity style={styles.syncButton} onPress={onSync}> */}
+      <TouchableOpacity style={styles.syncButton} onPress={() => {}}>
         <MaterialIcons name="sync" size={24} color={Colors.white} />
         <Text style={styles.syncButtonText}>Sync</Text>
-      </Pressable>
+      </TouchableOpacity>
     </View>
   );
 }

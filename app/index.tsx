@@ -1,41 +1,21 @@
 import { useState, useEffect } from 'react';
 import { SplashScreen } from './components/features/splashScreen/SplashScreen';
-import { CanvasDrawing } from './components/features/canvas/CanvasDrawing';
 import { LoginScreen } from './components/features/login/LoginScreen';
-import { lockLandscapeOrientation, preventOrientationChange } from './config/orientation';
-import { SwitchAndCanvas } from './components/features/home/SwitchAndCanvas';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { HomeScreen } from './components/features/home/HomeScreen';
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [showCanvas, setShowCanvas] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    lockLandscapeOrientation();
-    const cleanup = preventOrientationChange();
-
     setTimeout(() => {
       setIsLoading(false);
     }, 2000);
-
-    return cleanup;
   }, []);
 
   const handleLogin = () => {
     setIsLoggedIn(true);
-  };
-
-  const handleOpenCanvas = () => {
-    setShowCanvas(true);
-  };
-
-  const handleCloseCanvas = () => {
-    setShowCanvas(false);
-  };
-
-  const handleToggleTheme = () => {
-    setIsDarkMode(prev => !prev);
   };
 
   if (isLoading) {
@@ -43,19 +23,8 @@ export default function App() {
   }
 
   if (!isLoggedIn) {
-    return <LoginScreen onLogin={handleLogin} isDarkMode={isDarkMode} />;
+    return <LoginScreen onLogin={handleLogin} isDarkMode={false} />;
   }
 
-  if (showCanvas) {
-    return <CanvasDrawing onClose={handleCloseCanvas} isDarkMode={isDarkMode} />;
-  }
-
-  return (
-    <SwitchAndCanvas 
-      onOpenCanvas={handleOpenCanvas}
-      onToggleTheme={handleToggleTheme}
-      isDarkMode={isDarkMode}
-    />
-  );
+  return <HomeScreen />;
 } 
-
