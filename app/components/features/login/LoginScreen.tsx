@@ -3,6 +3,7 @@ import { View, Text, TextInput, Pressable, StyleSheet, SafeAreaView, Image } fro
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '@/app/constants/colors';
+import { useRouter } from 'expo-router';
 
 interface LoginScreenProps {
   onLogin: () => void;
@@ -15,6 +16,7 @@ interface ValidationErrors {
 }
 
 export function LoginScreen({ onLogin, isDarkMode }: LoginScreenProps) {
+  const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -40,9 +42,27 @@ export function LoginScreen({ onLogin, isDarkMode }: LoginScreenProps) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (validateForm()) {
-      onLogin();
+      try {
+        const isAuthenticated = true;
+        
+        if (isAuthenticated) {
+          onLogin();
+          router.replace('/home');
+          // router.replace('/switch-and-canvas');
+        } else {
+          setErrors({
+            username: 'Invalid credentials',
+            password: 'Invalid credentials'
+          });
+        }
+      } catch (error) {
+        setErrors({
+          username: 'Login failed. Please try again.',
+          password: 'Login failed. Please try again.'
+        });
+      }
     }
   };
 

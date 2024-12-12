@@ -1,13 +1,13 @@
 import { View, StyleSheet, Pressable, Text, SafeAreaView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
-interface HomePageProps {
+interface SwitchAndCanvasProps {
   onOpenCanvas: () => void;
   onToggleTheme: () => void;
   isDarkMode: boolean;
 }
 
-export function HomePage({ onOpenCanvas, onToggleTheme, isDarkMode }: HomePageProps) {
+export function SwitchAndCanvas({ onOpenCanvas, onToggleTheme, isDarkMode }: SwitchAndCanvasProps) {
   return (
     <SafeAreaView style={[
       styles.safeArea,

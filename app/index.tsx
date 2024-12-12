@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { SplashScreen } from './components/features/splashScreen/SplashScreen';
-import { HomePage } from './components/features/home/HomePage';
 import { CanvasDrawing } from './components/features/canvas/CanvasDrawing';
 import { LoginScreen } from './components/features/login/LoginScreen';
 import { lockLandscapeOrientation, preventOrientationChange } from './config/orientation';
+import { SwitchAndCanvas } from './components/features/home/SwitchAndCanvas';
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -51,7 +51,7 @@ export default function App() {
   }
 
   return (
-    <HomePage 
+    <SwitchAndCanvas 
       onOpenCanvas={handleOpenCanvas}
       onToggleTheme={handleToggleTheme}
       isDarkMode={isDarkMode}

@@ -4,9 +4,7 @@ import { lockLandscapeOrientation, preventOrientationChange } from "./config/ori
 
 export default function RootLayout() {
   useEffect(() => {
-    // Initial landscape lock
     lockLandscapeOrientation();
-    // Set up orientation change prevention and cleanup
     const cleanup = preventOrientationChange();
     return cleanup;
   }, []);
