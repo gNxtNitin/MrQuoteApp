@@ -1,51 +1,49 @@
-import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import { Colors } from '@/app/constants/colors';
-import { MaterialIcons } from '@expo/vector-icons';
 import { Estimate } from '@/app/types/estimate';
+import { Card } from '@/app/components/common/Card';
+import { ActionButton } from '@/app/components/common/ActionButton';
 import { getHouseImage } from '@/app/utils/houseImages';
 
 interface EstimateDetailsProps {
   estimate: Estimate;
+  onEdit?: () => void;
+  onView?: () => void;
+  onDuplicate?: () => void;
+  onDelete?: () => void;
 }
 
-export function EstimateDetails({ estimate }: EstimateDetailsProps) {
+export function EstimateDetails({ 
+  estimate,
+  onEdit,
+  onView,
+  onDuplicate,
+  onDelete 
+}: EstimateDetailsProps) {
   const houseImage = getHouseImage(estimate.id);
 
   return (
     <View style={styles.container}>
-      <View style={styles.card}>
+      <Card>
         <Image 
           source={houseImage}
           style={styles.coverImage}
           resizeMode="cover"
+          accessibilityRole="image"
+          accessibilityLabel={`House image for ${estimate.customerName}'s estimate`}
         />
         
         <View style={styles.contentContainer}>
           <Text style={styles.estimateName}>{estimate.customerName}'s Estimate</Text>
           
           <View style={styles.buttonGrid}>
-            <Pressable style={[styles.button, styles.primaryButton]}>
-              <MaterialIcons name="edit" size={14} color={Colors.white} />
-              <Text style={styles.buttonText}>Edit</Text>
-            </Pressable>
-
-            <Pressable style={[styles.button, styles.primaryButton]}>
-              <MaterialIcons name="visibility" size={14} color={Colors.white} />
-              <Text style={styles.buttonText}>View Estimate</Text>
-            </Pressable>
-
-            <Pressable style={[styles.button, styles.primaryButton]}>
-              <MaterialIcons name="content-copy" size={14} color={Colors.white} />
-              <Text style={styles.buttonText}>Duplicate</Text>
-            </Pressable>
-
-            <Pressable style={[styles.button, styles.deleteButton]}>
-              <MaterialIcons name="delete" size={14} color={Colors.white} />
-              <Text style={styles.buttonText}>Delete</Text>
-            </Pressable>
+            <ActionButton icon="edit" label="Edit" onPress={onEdit} />
+            <ActionButton icon="visibility" label="View Estimate" onPress={onView} />
+            <ActionButton icon="content-copy" label="Duplicate" onPress={onDuplicate} />
+            <ActionButton icon="delete" label="Delete" onPress={onDelete} variant="delete" />
           </View>
         </View>
-      </View>
+      </Card>
     </View>
   );
 }
@@ -54,16 +52,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-  },
-  card: {
-    backgroundColor: Colors.white,
-    shadowColor: Colors.black,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
-    minWidth: '100%',
-    borderRadius: 16,
   },
   coverImage: {
     width: '100%',
@@ -85,27 +73,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: 16,
-  },
-  button: {
-    flex: 1,
-    minWidth: '20%',
-    paddingVertical: 10,
-    paddingHorizontal: 6,
-    borderRadius: 6,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 4,
-  },
-  primaryButton: {
-    backgroundColor: Colors.primary,
-  },
-  deleteButton: {
-    backgroundColor: '#DC2626',
-  },
-  buttonText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: Colors.white,
   },
 });
