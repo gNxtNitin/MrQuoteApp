@@ -1,16 +1,26 @@
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { Colors } from '@/app/constants/colors';
 
-export function EmptyState() {
+interface EmptyStateProps {
+  isSyncing?: boolean;
+}
+
+export function EmptyState({ isSyncing }: EmptyStateProps) {
   return (
     <View style={styles.container}>
       <Image 
-        source={require('@/assets/images/empty-state.png')}
+        source={isSyncing 
+          ? require('@/assets/images/sync-animation.gif')
+          : require('@/assets/images/empty-state.png')
+        }
         style={styles.image}
         resizeMode="contain"
       />
       <Text style={styles.text}>
-        It appears there are no estimations for you to work on currently. Kindly come online and click the Sync button above to check for any pending estimations.
+        {isSyncing 
+          ? 'Syncing data from Service Fusion... \nUpdating your information now—this will only take a moment.'
+          : 'It appears there are no estimations for you to work on currently. Kindly come online and click the Sync button above to check for any pending estimations.'
+        }
       </Text>
     </View>
   );
@@ -31,7 +41,7 @@ const styles = StyleSheet.create({
   text: {
     textAlign: 'center',
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: 'bold',
     color: '#666',
     maxWidth: 500,
   },

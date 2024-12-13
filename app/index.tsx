@@ -3,6 +3,8 @@ import { SplashScreen } from './components/features/splashScreen/SplashScreen';
 import { LoginScreen } from './components/features/login/LoginScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { HomeScreen } from './components/features/home/HomeScreen';
+import { EstimateDetails } from './components/features/estimate/EstimateDetails';
+import { EstimateScreen } from './components/features/estimate/EstimateScreen';
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -23,6 +25,7 @@ export default function App() {
   }
 
   if (!isLoggedIn) {
+    // return <EstimateScreen />;
     return <LoginScreen onLogin={handleLogin} isDarkMode={false} />;
   }
 

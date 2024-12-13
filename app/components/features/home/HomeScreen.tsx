@@ -4,17 +4,16 @@ import { Colors } from '@/app/constants/colors';
 import { Header } from './Header';
 import { SubHeader } from './SubHeader';
 import { EmptyState } from './EmptyState';
-import { SyncDialog } from '../sync/SyncDialog';
 import { EstimatesList } from './EstimatesList';
 
 export function HomeScreen() {
-  const [showSyncDialog, setShowSyncDialog] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
   const [hasData, setHasData] = useState(false);
 
   const handleSync = () => {
-    setShowSyncDialog(true);
+    setIsSyncing(true);
     setTimeout(() => {
-      setShowSyncDialog(false);
+      setIsSyncing(false);
       setHasData(true);
     }, 2000);
   };
@@ -28,9 +27,8 @@ export function HomeScreen() {
       <Header />
       <SubHeader onSync={handleSync} onCreate={handleCreate} />
       <View style={styles.content}>
-        {hasData ? <EstimatesList /> : <EmptyState />}
+        {hasData ? <EstimatesList /> : <EmptyState isSyncing={isSyncing} />}
       </View>
-      <SyncDialog visible={showSyncDialog} />
     </View>
   );
 }

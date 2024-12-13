@@ -15,10 +15,10 @@ export function ActionButtons({ onSync, onCreate }: ActionButtonsProps) {
         <Text style={styles.createButtonText}>Create</Text>
       </Pressable>
       
-      {/* <TouchableOpacity style={styles.syncButton} onPress={onSync}> */}
-      <TouchableOpacity style={styles.syncButton} onPress={() => {}}>
-        <MaterialIcons name="sync" size={24} color={Colors.white} />
-        <Text style={styles.syncButtonText}>Sync</Text>
+      <TouchableOpacity style={styles.syncButton} onPress={onSync}>
+      {/* <TouchableOpacity style={styles.syncButton} onPress={() => {}}> */}
+        <MaterialIcons name="download" size={24} color={Colors.white} />
+        <Text style={styles.syncButtonText}>RETRIEVE</Text>
       </TouchableOpacity>
     </View>
   );

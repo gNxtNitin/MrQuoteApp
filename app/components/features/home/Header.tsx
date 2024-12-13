@@ -22,17 +22,23 @@ export function Header() {
     router.replace('/login');
   };
 
+  const handleLogoPress = () => {
+    router.replace('/home');
+  };
+
   const currentCompany = companies.find(company => company.id === selectedCompany);
 
   return (
     <View style={styles.header}>
       <View style={styles.content}>
         <View style={styles.leftSection}>
-          <Image 
-            source={require('@/assets/images/header-logo.png')}
-            style={styles.logo}
-            resizeMode="contain"
-          />
+          <Pressable onPress={handleLogoPress}>
+            <Image 
+              source={require('@/assets/images/header-logo.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+          </Pressable>
         </View>
 
         <View style={styles.rightSection}>
@@ -44,9 +50,9 @@ export function Header() {
             >
               <View style={[
                 styles.initialCircle,
-                { backgroundColor: currentCompany?.color }
+                { backgroundColor: Colors.white }
               ]}>
-                <Text style={styles.initial}>
+                <Text style={[styles.initial, { color: currentCompany?.color }]}>
                   {currentCompany?.initial}
                 </Text>
               </View>
@@ -86,8 +92,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   logo: {
-    width: 140,
-    height: 50,
+    width: 180,
   },
   rightSection: {
     flexDirection: 'row',
