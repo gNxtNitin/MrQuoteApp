@@ -1,12 +1,30 @@
-import { useState } from 'react';
 import { View, Text, Image, StyleSheet, Platform, StatusBar, Pressable } from 'react-native';
 import { Colors } from '@/app/constants/colors';
 import { CompanySwitcher } from '../company/CompanySwitcher';
 import { router } from 'expo-router';
+import { create } from 'zustand';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useTheme } from '@/app/components/providers/ThemeProvider';
+import { useThemeStore } from '@/app/stores/themeStore';
+
+interface HeaderState {
+  showSwitcher: boolean;
+  selectedCompany: string;
+  setShowSwitcher: (show: boolean) => void;
+  setSelectedCompany: (companyId: string) => void;
+}
+
+const useHeaderStore = create<HeaderState>((set) => ({
+  showSwitcher: false,
+  selectedCompany: 'gutter',
+  setShowSwitcher: (show) => set({ showSwitcher: show }),
+  setSelectedCompany: (companyId) => set({ selectedCompany: companyId }),
+}));
 
 export function Header() {
-  const [showSwitcher, setShowSwitcher] = useState(false);
-  const [selectedCompany, setSelectedCompany] = useState('gutter');
+  const { showSwitcher, selectedCompany, setShowSwitcher, setSelectedCompany } = useHeaderStore();
+  const theme = useTheme();
+  const { isDarkMode, toggleTheme } = useThemeStore();
 
   const companies = [
     { id: 'gutter', initial: 'MG', name: 'Mr. Gutter', color: '#4A90E2' },
@@ -42,6 +60,13 @@ export function Header() {
         </View>
 
         <View style={styles.rightSection}>
+          <Pressable onPress={toggleTheme} style={styles.themeButton}>
+            <MaterialIcons 
+              name={isDarkMode ? "light-mode" : "dark-mode"} 
+              size={24} 
+              color={Colors.white} 
+            />
+          </Pressable>
           <Text style={styles.companyName}>{currentCompany?.name.toUpperCase()}</Text>
           <View>
             <Pressable 
@@ -98,6 +123,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
+  },
+  themeButton: {
+    padding: 8,
   },
   companyName: {
     fontSize: 18,

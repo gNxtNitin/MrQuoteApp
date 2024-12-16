@@ -2,6 +2,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Colors } from '@/app/constants/colors';
 import { SearchBar } from './SearchBar';
 import { ActionButtons } from './ActionButtons';
+import { useTheme } from '@/app/components/providers/ThemeProvider';
 
 interface SubHeaderProps {
   onSync: () => void;
@@ -9,11 +10,13 @@ interface SubHeaderProps {
 }
 
 export function SubHeader({ onSync, onCreate }: SubHeaderProps) {
+  const theme = useTheme();
+  
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.content}>
         <View style={styles.contentWrapper}>
-          <Text style={styles.title}>Estimate</Text>
+          <Text style={[styles.title, { color: theme.primary }]}>Estimate</Text>
           <View style={styles.rightSection}>
             <View style={styles.searchContainer}>
               <SearchBar />
@@ -24,7 +27,6 @@ export function SubHeader({ onSync, onCreate }: SubHeaderProps) {
           </View>
         </View>
       </View>
-      <View style={styles.divider} />
     </View>
   );
 }

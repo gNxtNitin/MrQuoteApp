@@ -1,16 +1,18 @@
 import { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Colors } from '@/app/constants/colors';
-import { Header } from './Header';
 import { SubHeader } from './SubHeader';
 import { EmptyState } from './EmptyState';
 import { EstimatesList } from './EstimatesList';
 import { CreateEstimateDialog } from '../estimate/CreateEstimateDialog';
+import { ScreenLayout } from '@/app/components/common/ScreenLayout';
+import { useTheme } from '@/app/components/providers/ThemeProvider';
 
 export function HomeScreen() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [hasData, setHasData] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const theme = useTheme();
 
   const handleSync = () => {
     setIsSyncing(true);
@@ -31,11 +33,15 @@ export function HomeScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Header />
-      <SubHeader onSync={handleSync} onCreate={handleCreate} />
-      <View style={styles.content}>
-        {hasData ? <EstimatesList /> : <EmptyState isSyncing={isSyncing} />}
+    <ScreenLayout
+      subHeader={<SubHeader onSync={handleSync} onCreate={handleCreate} />}
+    >
+      <View style={[styles.contentContainer, { backgroundColor: theme.background }]}>
+        {hasData ? (
+          <EstimatesList />
+        ) : (
+          <EmptyState isSyncing={isSyncing} />
+        )}
       </View>
 
       <CreateEstimateDialog
@@ -43,16 +49,12 @@ export function HomeScreen() {
         onClose={() => setShowCreateDialog(false)}
         onSave={handleSaveEstimate}
       />
-    </View>
+    </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-  },
-  content: {
+  contentContainer: {
     flex: 1,
   },
 }); 
