@@ -17,7 +17,7 @@ export function ActionButton({ icon, label, onPress, variant = 'primary' }: Acti
       accessibilityRole="button"
       accessibilityLabel={label}
     >
-      <MaterialIcons name={icon} size={14} color={Colors.white} />
+      <MaterialIcons name={icon} size={18} color={Colors.white} />
       <Text style={styles.buttonText}>{label}</Text>
     </Pressable>
   );
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#DC2626',
   },
   buttonText: {
-    fontSize: 11,
+    fontSize: 16,
     fontWeight: '600',
     color: Colors.white,
   },
