@@ -1,11 +1,14 @@
 import { View, Text, Image, StyleSheet, Platform, StatusBar, Pressable } from 'react-native';
 import { Colors } from '@/app/constants/colors';
+import { useState } from 'react';
 import { CompanySwitcher } from '../company/CompanySwitcher';
 import { router } from 'expo-router';
 import { create } from 'zustand';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '@/app/components/providers/ThemeProvider';
 import { useThemeStore } from '@/app/stores/themeStore';
+import { usePathname } from 'expo-router';
+import { useSidebarStore } from '@/app/stores/sidebarStore';
 
 interface HeaderState {
   showSwitcher: boolean;
@@ -25,6 +28,9 @@ export function Header() {
   const { showSwitcher, selectedCompany, setShowSwitcher, setSelectedCompany } = useHeaderStore();
   const theme = useTheme();
   const { isDarkMode, toggleTheme } = useThemeStore();
+  const pathname = usePathname();
+  const showSidebarButton = pathname === '/editCreateEstimate';
+  const { open: openSidebar } = useSidebarStore();
 
   const companies = [
     { id: 'gutter', initial: 'MG', name: 'Mr. Gutter', color: '#4A90E2' },
@@ -46,10 +52,24 @@ export function Header() {
 
   const currentCompany = companies.find(company => company.id === selectedCompany);
 
+  const handleToggleSidebar = () => {
+    openSidebar();
+  };
+
   return (
     <View style={styles.header}>
       <View style={styles.content}>
         <View style={styles.leftSection}>
+          {showSidebarButton && (
+            <Pressable 
+              style={styles.sidebarButton} 
+              onPress={handleToggleSidebar}
+            >
+              <View style={styles.sidebarIconContainer}>
+                <MaterialIcons name="menu" size={24} color={Colors.white} />
+              </View>
+            </Pressable>
+          )}
           <Pressable onPress={handleLogoPress}>
             <Image 
               source={require('@/assets/images/header-logo.png')}
@@ -161,5 +181,16 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-  }
+  },
+  sidebarButton: {
+    padding: 4,
+  },
+  sidebarIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });

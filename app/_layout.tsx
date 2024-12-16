@@ -3,8 +3,12 @@ import { useEffect } from "react";
 import { StatusBar, StyleSheet, View } from 'react-native';
 import { lockLandscapeOrientation, preventOrientationChange } from "./config/orientation";
 import { ThemeProvider } from '@/app/components/providers/ThemeProvider';
+import { Sidebar } from '@/app/components/features/sidebar/Sidebar';
+import { useSidebarStore } from '@/app/stores/sidebarStore';
 
 export default function RootLayout() {
+  const { isOpen, close } = useSidebarStore();
+
   useEffect(() => {
     lockLandscapeOrientation();
     const cleanup = preventOrientationChange();
@@ -23,6 +27,7 @@ export default function RootLayout() {
             contentStyle: styles.stackContent
           }} 
         />
+        <Sidebar isOpen={isOpen} onClose={close} />
       </View>
     </ThemeProvider>
   );

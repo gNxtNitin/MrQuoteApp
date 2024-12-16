@@ -15,6 +15,7 @@ export function EstimateSubHeader({
   date 
 }: EstimateSubHeaderProps) {
   const handleBack = () => router.back();
+  const handleNewEstimate = () => router.push('/editCreateEstimate');
 
   return (
     <View style={styles.container}>
@@ -68,7 +69,10 @@ export function EstimateSubHeader({
               </Pressable> */}
             </View>
             <View style={styles.buttonGroup}>
-            <Pressable style={[styles.actionButton, styles.primaryButton]}>
+              <Pressable 
+                style={[styles.actionButton, styles.primaryButton]}
+                onPress={handleNewEstimate}
+              >
                 <MaterialIcons name="add" size={16} color={Colors.white} />
                 <Text style={[styles.actionButtonText, styles.primaryButtonText]}>New Estimate</Text>
               </Pressable>
