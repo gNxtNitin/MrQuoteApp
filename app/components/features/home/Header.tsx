@@ -29,7 +29,7 @@ export function Header() {
   const theme = useTheme();
   const { isDarkMode, toggleTheme } = useThemeStore();
   const pathname = usePathname();
-  const showSidebarButton = pathname === '/editCreateEstimate';
+  const showSidebarButton = pathname === '/editEstimate';
   const { open: openSidebar } = useSidebarStore();
 
   const companies = [

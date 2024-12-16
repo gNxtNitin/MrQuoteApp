@@ -1,6 +1,6 @@
 import { View } from 'react-native';
 import { ScreenLayout } from '@/app/components/common/ScreenLayout';
-import { SubHeader } from '@/app/components/features/editNewEstimate/SubHeader';
+import { SubHeader } from '@/app/components/features/editEstimate/SubHeader';
 import { TitlePage } from './pages/TitlePage';
 import { IntroductionPage } from './pages/IntroductionPage';
 import { InspectionPage } from './pages/InspectionPage';
@@ -12,7 +12,7 @@ import { WarrantyPage } from './pages/WarrantyPage';
 import { CustomPage } from './pages/CustomPage';
 import { useEstimatePageStore } from '@/app/stores/estimatePageStore';
 
-export default function EditCreateEstimateScreen() {
+export default function EditEstimateScreen() {
   const { currentPage } = useEstimatePageStore();
 
   const renderPage = () => {

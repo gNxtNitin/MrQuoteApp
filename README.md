@@ -48,13 +48,3 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
-
-
-Zoom 
-Connecting Edges  -- Done
-Middle Label on line   -- Done
-Eraser -- Done
-shift draw line 
-Line free form -- Done
-Line straight -- Done
-Add Label

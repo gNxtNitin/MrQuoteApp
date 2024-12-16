@@ -3,6 +3,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Colors } from '@/app/constants/colors';
 import { router } from 'expo-router';
 import { Estimate } from '@/app/types/estimate';
+import { CreateEstimateDialog } from './CreateEstimateDialog';
+import { useState } from 'react';
 
 type EstimateSubHeaderProps = Estimate;
 
@@ -14,8 +16,23 @@ export function EstimateSubHeader({
   status, 
   date 
 }: EstimateSubHeaderProps) {
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+
   const handleBack = () => router.back();
-  const handleNewEstimate = () => router.push('/editCreateEstimate');
+  
+  const handleNewEstimate = () => {
+    setShowCreateDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setShowCreateDialog(false);
+  };
+
+  const handleSaveEstimate = (data: any) => {
+    // Handle the save action
+    console.log('Saving estimate:', data);
+    handleCloseDialog();
+  };
 
   return (
     <View style={styles.container}>
@@ -64,9 +81,6 @@ export function EstimateSubHeader({
               <Pressable style={styles.iconButton}>
                 <MaterialIcons name="settings" size={18} color={Colors.primary} />
               </Pressable>
-              {/* <Pressable style={styles.iconButton}>
-                <MaterialIcons name="view-agenda" size={18} color={Colors.primary} />
-              </Pressable> */}
             </View>
             <View style={styles.buttonGroup}>
               <Pressable 
@@ -89,6 +103,12 @@ export function EstimateSubHeader({
         </View>
       </View>
       <View style={styles.divider} />
+
+      <CreateEstimateDialog
+        visible={showCreateDialog}
+        onClose={handleCloseDialog}
+        onSave={handleSaveEstimate}
+      />
     </View>
   );
 }

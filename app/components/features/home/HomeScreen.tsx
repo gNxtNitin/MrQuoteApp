@@ -30,6 +30,7 @@ export function HomeScreen() {
     // Handle saving the new estimate
     console.log('Saving estimate:', data);
     setHasData(true);
+    setShowCreateDialog(false);
   };
 
   return (

@@ -4,19 +4,23 @@ import { EstimateSubHeader } from './EstimateSubHeader';
 import { EstimateDetails } from './EstimateDetails';
 import { Estimate } from '@/app/types/estimate';
 import { ScreenLayout } from '@/app/components/common/ScreenLayout';
+import { router } from 'expo-router';
 
 interface EstimateScreenProps {
   estimateData: Estimate;
 }
 
 export function EstimateScreen({ estimateData }: EstimateScreenProps) {
+  const handleEditEstimate = () => {
+    router.push('/editEstimate');
+  };
   return (
     <ScreenLayout
       subHeader={<EstimateSubHeader {...estimateData} />}
     >
       <ScrollView style={styles.content}>
         <View style={styles.contentWrapper}>
-          <EstimateDetails estimate={estimateData} />
+          <EstimateDetails estimate={estimateData} onEdit={handleEditEstimate} />
         </View>
       </ScrollView>
     </ScreenLayout>

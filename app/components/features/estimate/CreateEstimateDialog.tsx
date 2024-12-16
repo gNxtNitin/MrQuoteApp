@@ -1,18 +1,52 @@
 import { View, Text, TextInput, StyleSheet, Modal, Pressable } from 'react-native';
 import { Colors } from '@/app/constants/colors';
 import { Card } from '@/app/components/common/Card';
+import { useState } from 'react';
 
 interface CreateEstimateDialogProps {
   visible: boolean;
   onClose: () => void;
-  onSave: (data: any) => void;
+  onSave: (data: EstimateFormData) => void;
+}
+
+interface EstimateFormData {
+  projectName: string;
+  firstName: string;
+  lastName: string;
+  companyName: string;
+  phoneNumber: string;
+  email: string;
+  addressLine1: string;
+  addressLine2: string;
+  city: string;
+  state: string;
+  zipCode: string;
 }
 
 export function CreateEstimateDialog({ visible, onClose, onSave }: CreateEstimateDialogProps) {
+  const [formData, setFormData] = useState<EstimateFormData>({
+    projectName: '',
+    firstName: '',
+    lastName: '',
+    companyName: '',
+    phoneNumber: '',
+    email: '',
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    state: '',
+    zipCode: '',
+  });
+
+  const handleChange = (field: keyof EstimateFormData, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
   const handleSave = () => {
-    // Add validation and data collection logic here
-    onSave({});
-    onClose();
+    onSave(formData);
   };
 
   return (
@@ -36,40 +70,68 @@ export function CreateEstimateDialog({ visible, onClose, onSave }: CreateEstimat
             <View style={styles.form}>
               <View style={styles.row}>
                 <View style={styles.field}>
-                  <Text style={styles.label}>Project No.</Text>
-                  <TextInput style={styles.input} placeholder="Enter project number" placeholderTextColor="#999" />
+                  <Text style={styles.label}>Project Name</Text>
+                  <TextInput 
+                    style={styles.input} 
+                    placeholder="Enter project name" 
+                    placeholderTextColor="#999"
+                    value={formData.projectName}
+                    onChangeText={(value) => handleChange('projectName', value)}
+                  />
                 </View>
                 <View style={styles.field}>
                   <Text style={styles.label}>First name</Text>
-                  <TextInput style={styles.input} placeholder="Enter first name" placeholderTextColor="#999" />
+                  <TextInput 
+                    style={styles.input} 
+                    placeholder="Enter first name" 
+                    placeholderTextColor="#999"
+                    value={formData.firstName}
+                    onChangeText={(value) => handleChange('firstName', value)}
+                  />
                 </View>
                 <View style={styles.field}>
                   <Text style={styles.label}>Last name</Text>
-                  <TextInput style={styles.input} placeholder="Enter last name" placeholderTextColor="#999" />
+                  <TextInput 
+                    style={styles.input} 
+                    placeholder="Enter last name" 
+                    placeholderTextColor="#999"
+                    value={formData.lastName}
+                    onChangeText={(value) => handleChange('lastName', value)}
+                  />
                 </View>
               </View>
 
               <View style={styles.row}>
                 <View style={styles.field}>
                   <Text style={styles.label}>Company name</Text>
-                  <TextInput style={styles.input} placeholder="Enter company name" placeholderTextColor="#999" />
+                  <TextInput 
+                    style={styles.input} 
+                    placeholder="Enter company name" 
+                    placeholderTextColor="#999"
+                    value={formData.companyName}
+                    onChangeText={(value) => handleChange('companyName', value)}
+                  />
                 </View>
                 <View style={styles.field}>
                   <Text style={styles.label}>Phone number</Text>
                   <TextInput 
                     style={styles.input} 
-                    placeholder="Enter phone number"
+                    placeholder="Enter phone number" 
                     placeholderTextColor="#999"
                     keyboardType="phone-pad"
+                    value={formData.phoneNumber}
+                    onChangeText={(value) => handleChange('phoneNumber', value)}
                   />
                 </View>
                 <View style={styles.field}>
                   <Text style={styles.label}>Email</Text>
                   <TextInput 
                     style={styles.input} 
-                    placeholder="Enter email"
+                    placeholder="Enter email" 
                     placeholderTextColor="#999"
                     keyboardType="email-address"
+                    value={formData.email}
+                    onChangeText={(value) => handleChange('email', value)}
                   />
                 </View>
               </View>
@@ -77,30 +139,56 @@ export function CreateEstimateDialog({ visible, onClose, onSave }: CreateEstimat
               <View style={styles.row}>
                 <View style={styles.field}>
                   <Text style={styles.label}>Address line 1</Text>
-                  <TextInput style={styles.input} placeholder="Enter address" placeholderTextColor="#999" />
+                  <TextInput 
+                    style={styles.input} 
+                    placeholder="Enter address" 
+                    placeholderTextColor="#999"
+                    value={formData.addressLine1}
+                    onChangeText={(value) => handleChange('addressLine1', value)}
+                  />
                 </View>
                 <View style={styles.field}>
                   <Text style={styles.label}>Address line 2</Text>
-                  <TextInput style={styles.input} placeholder="Enter address" placeholderTextColor="#999" />
+                  <TextInput 
+                    style={styles.input} 
+                    placeholder="Enter address" 
+                    placeholderTextColor="#999"
+                    value={formData.addressLine2}
+                    onChangeText={(value) => handleChange('addressLine2', value)}
+                  />
                 </View>
                 <View style={styles.field}>
                   <Text style={styles.label}>City</Text>
-                  <TextInput style={styles.input} placeholder="Enter city" placeholderTextColor="#999" />
+                  <TextInput 
+                    style={styles.input} 
+                    placeholder="Enter city" 
+                    placeholderTextColor="#999"
+                    value={formData.city}
+                    onChangeText={(value) => handleChange('city', value)}
+                  />
                 </View>
               </View>
 
               <View style={[styles.row, styles.lastRow]}>
                 <View style={styles.field}>
                   <Text style={styles.label}>State/Province</Text>
-                  <TextInput style={styles.input} placeholder="Enter state" placeholderTextColor="#999" />
+                  <TextInput 
+                    style={styles.input} 
+                    placeholder="Enter state" 
+                    placeholderTextColor="#999"
+                    value={formData.state}
+                    onChangeText={(value) => handleChange('state', value)}
+                  />
                 </View>
                 <View style={styles.field}>
                   <Text style={styles.label}>Zip code/Postal code</Text>
                   <TextInput 
                     style={styles.input} 
-                    placeholder="Enter zip code"
+                    placeholder="Enter zip code" 
                     placeholderTextColor="#999"
                     keyboardType="numeric"
+                    value={formData.zipCode}
+                    onChangeText={(value) => handleChange('zipCode', value)}
                   />
                 </View>
                 <View style={styles.field} />
