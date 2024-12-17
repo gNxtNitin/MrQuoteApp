@@ -55,33 +55,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     onClose();
   };
 
-//   const handleMenuItemLongPress = (id: number, isCustom: boolean) => {
-//     if (!isCustom) return;
-    
-//     Alert.alert(
-//       "Delete Custom Page",
-//       "Are you sure you want to delete this custom page?",
-//       [
-//         {
-//           text: "Cancel",
-//           style: "cancel"
-//         },
-//         {
-//           text: "Delete",
-//           style: "destructive",
-//           onPress: () => {
-//             const updatedItems = menuItems.filter(item => item.id !== id);
-//             setMenuItems(updatedItems);
-//             if (selectedItem === id) {
-//               setSelectedItem(1);
-//               setCurrentPage('Title');
-//             }
-//           }
-//         }
-//       ]
-//     );
-//   };
-
   const handleCheckboxToggle = (id: number, event: any) => {
     event.stopPropagation();
     setCheckedItems(prev =>
@@ -92,12 +65,13 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   };
 
   const handleAddCustomPage = () => {
-    const newId = Math.max(...menuItems.map(item => item.id)) + 1;
-    const customPageCount = customPages.length + 1;
-    const newTitle = `Custom Page ${customPageCount}`;
-    addCustomPage({ id: newId, title: newTitle });
-    setSelectedItem(newId);
-    setCurrentPage(newTitle);
+    // TODO: Add custom page logic
+    // const newId = Math.max(...menuItems.map(item => item.id)) + 1;
+    // const customPageCount = customPages.length + 1;
+    // const newTitle = `Custom Page ${customPageCount}`;
+    // addCustomPage({ id: newId, title: newTitle });
+    // setSelectedItem(newId);
+    // setCurrentPage(newTitle);
   };
 
   return (
@@ -134,7 +108,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                     >
                       <View style={styles.menuItemContent}>
                         <Pressable 
-                          onPress={(event) => handleCheckboxToggle(item.id, event)}
+                          // onPress={(event) => handleCheckboxToggle(item.id, event)} // TODO: Add this back in when we have a checkbox
                           style={styles.checkboxContainer}
                         >
                           <Feather
