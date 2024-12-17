@@ -65,13 +65,12 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   };
 
   const handleAddCustomPage = () => {
-    // TODO: Add custom page logic
-    // const newId = Math.max(...menuItems.map(item => item.id)) + 1;
-    // const customPageCount = customPages.length + 1;
-    // const newTitle = `Custom Page ${customPageCount}`;
-    // addCustomPage({ id: newId, title: newTitle });
-    // setSelectedItem(newId);
-    // setCurrentPage(newTitle);
+    const newId = Math.max(...menuItems.map(item => item.id)) + 1;
+    const customPageCount = customPages.length + 1;
+    const newTitle = `Custom Page ${customPageCount}`;
+    addCustomPage({ id: newId, title: newTitle });
+    setSelectedItem(newId);
+    setCurrentPage(newTitle);
   };
 
   return (
@@ -108,7 +107,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                     >
                       <View style={styles.menuItemContent}>
                         <Pressable 
-                          // onPress={(event) => handleCheckboxToggle(item.id, event)} // TODO: Add this back in when we have a checkbox
+                          onPress={(event) => handleCheckboxToggle(item.id, event)}
                           style={styles.checkboxContainer}
                         >
                           <Feather
