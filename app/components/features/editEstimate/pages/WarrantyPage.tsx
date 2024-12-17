@@ -60,6 +60,11 @@ export function WarrantyPage() {
     }
   };
 
+  const handleLayoutPress = () => {
+    // Handle layout navigation/action here
+    console.log('Navigate to layouts');
+  };
+
   return (
     <View style={styles.container}>
       <Card style={styles.mainCard}>
@@ -84,10 +89,14 @@ export function WarrantyPage() {
               </>
             )}
           </View>
-          <Text style={styles.subtitle}>
-            Warranty content can be edited in your{' '}
-            <Text style={styles.link}>Layouts</Text>
-          </Text>
+          <View style={styles.subtitleRow}>
+            <Text style={styles.subtitle}>
+              Warranty content can be edited in your
+            </Text>
+            <TouchableOpacity onPress={handleLayoutPress}>
+              <Text style={styles.link}>Layouts</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View style={styles.content}>
@@ -157,6 +166,11 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 8,
   },
+  subtitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -167,8 +181,8 @@ const styles = StyleSheet.create({
     color: Colors.black,
   },
   link: {
+    fontSize: 14,
     color: Colors.primary,
-    textDecorationLine: 'underline',
   },
   content: {
     flex: 1,
