@@ -70,13 +70,16 @@ export function IntroductionPage() {
         <RichToolbar
           editor={editorRef}
           actions={[
-            'bold',
-            'italic',
-            'underline',
-            'bullet',
+            actions.setBold,
+            actions.setItalic,
+            actions.setUnderline,
+            actions.insertBulletsList,
+            actions.insertOrderedList,
+            actions.setStrikethrough, 
           ]}
           selectedIconTint={Colors.primary}
-          disabledIconTint={Colors.black}
+          disabledTextTint={Colors.black}
+          iconTint={Colors.black}
           style={styles.toolbar}
           iconContainerStyle={styles.toolbarIcon}
         />
