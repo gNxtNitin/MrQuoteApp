@@ -5,6 +5,7 @@ import { lockLandscapeOrientation, preventOrientationChange } from "./config/ori
 import { ThemeProvider } from '@/app/components/providers/ThemeProvider';
 import { Sidebar } from '@/app/components/features/sidebar/Sidebar';
 import { useSidebarStore } from '@/app/stores/sidebarStore';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function RootLayout() {
   const { isOpen, close } = useSidebarStore();
@@ -16,20 +17,22 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <ThemeProvider>
-      <View style={styles.container}>
-        <StatusBar barStyle="light-content" />
-        <Stack 
-          screenOptions={{ 
-            headerShown: false,
-            animation: 'none',
-            gestureEnabled: false,
-            contentStyle: styles.stackContent
-          }} 
-        />
-        <Sidebar isOpen={isOpen} onClose={close} />
-      </View>
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ThemeProvider>
+        <View style={styles.container}>
+          <StatusBar barStyle="light-content" />
+          <Stack 
+            screenOptions={{ 
+              headerShown: false,
+              animation: 'none',
+              gestureEnabled: false,
+              contentStyle: styles.stackContent
+            }} 
+          />
+          <Sidebar isOpen={isOpen} onClose={close} />
+        </View>
+      </ThemeProvider>
+    </GestureHandlerRootView>
   );
 }
 
