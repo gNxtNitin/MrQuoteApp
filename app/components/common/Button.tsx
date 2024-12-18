@@ -1,4 +1,4 @@
-import { Pressable, Text, StyleSheet, View } from 'react-native';
+import { Pressable, Text, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Colors } from '@/app/constants/colors';
 
@@ -25,7 +25,7 @@ export function Button({
   fullWidth = false,
 }: ButtonProps) {
   return (
-    <Pressable 
+    <TouchableOpacity 
       style={[
         styles.button,
         styles[variant],
@@ -53,7 +53,7 @@ export function Button({
       ]}>
         {label}
       </Text>
-    </Pressable>
+    </TouchableOpacity>
   );
 }
 
