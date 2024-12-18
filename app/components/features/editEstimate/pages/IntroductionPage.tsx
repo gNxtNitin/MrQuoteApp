@@ -1,10 +1,11 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { actions, RichEditor, RichToolbar } from 'react-native-pell-rich-editor';
 import { Feather, MaterialIcons } from '@expo/vector-icons';
 import { Colors } from '@/app/constants/colors';
 import { Input } from '../../../common/Input';
 import { Button } from '@/app/components/common/Button';
+import { Card } from '../../../common/Card';
 
 interface Template {
   id: string;
@@ -52,121 +53,129 @@ export function IntroductionPage() {
   };
 
   return (
-    <Pressable style={styles.container} onPress={() => setShowTokens(false)}>
-      <View style={styles.header}>
-        <View style={styles.titleRow}>
-          {isEditingTitle ? (
-            <Input
-              value={introTitle}
-              onChangeText={setIntroTitle}
-              onBlur={() => setIsEditingTitle(false)}
-              autoFocus
-              style={styles.titleInput}
-            />
-          ) : (
-            <>
-              <Text style={styles.title}>{introTitle}</Text>
-              <TouchableOpacity onPress={() => setIsEditingTitle(true)}>
-                <Feather name="edit-2" size={16} color={Colors.primary} />
-              </TouchableOpacity>
-            </>
-          )}
-        </View>
-      </View>
-
-      <View style={styles.templatesRow}>
-        <Text style={styles.savedTemplatesText}>You have saved templates.</Text>
-        <TouchableOpacity onPress={handleViewTemplates}>
-          <Text style={styles.link}>View templates</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.editorContainer}>
-        <View style={styles.toolbarContainer}>
-          <View style={styles.tokenContainer} ref={tokenButtonRef}>
-            <Pressable 
-              style={styles.tokenButton}
-              onPress={(e) => {
-                e.stopPropagation();
-                setShowTokens(!showTokens);
-              }}
-            >
-              <MaterialIcons 
-                name={showTokens ? "expand-less" : "expand-more"} 
-                size={24} 
-                color={Colors.black} 
-              />
-              <Text style={styles.tokenButtonText}>Insert Token</Text>
-            </Pressable>
-            {showTokens && (
-              <View style={styles.tokenDropdown}>
-                {TOKENS.map((token, index) => (
-                  <Pressable
-                    key={index}
-                    style={styles.tokenItem}
-                    onPress={(e) => {
-                      e.stopPropagation();
-                      insertToken(token.value);
-                    }}
-                  >
-                    <Text style={styles.tokenText}>{token.label}</Text>
-                  </Pressable>
-                ))}
-              </View>
-            )}
+    <View style={styles.container}>
+      <Card style={styles.mainCard}>
+        <ScrollView
+          style={styles.scrollView}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.header}>
+            <View style={styles.titleRow}>
+              {isEditingTitle ? (
+                <Input
+                  value={introTitle}
+                  onChangeText={setIntroTitle}
+                  onBlur={() => setIsEditingTitle(false)}
+                  autoFocus
+                  style={styles.titleInput}
+                />
+              ) : (
+                <>
+                  <Text style={styles.titleText}>{introTitle}</Text>
+                  <TouchableOpacity onPress={() => setIsEditingTitle(true)}>
+                    <Feather name="edit-2" size={16} color={Colors.primary} />
+                  </TouchableOpacity>
+                </>
+              )}
+            </View>
           </View>
-          <RichToolbar
-            editor={editorRef}
-            actions={[
-              actions.setBold,
-              actions.setItalic,
-              actions.setUnderline,
-              actions.insertBulletsList,
-              actions.insertOrderedList,
-              actions.setStrikethrough,
-              actions.blockquote
-            ]}
-            selectedIconTint={Colors.primary}
-            disabledTextTint={Colors.black}
-            iconTint={Colors.black}
-            style={styles.toolbar}
-            iconContainerStyle={styles.toolbarIcon}
-          />
-        </View>
-        
-        <RichEditor
-          ref={editorRef}
-          onChange={setEditorContent}
-          placeholder="Start typing your introduction..."
-          style={styles.editor}
-          initialFocus={false}
-          useContainer={true}
-          initialHeight={400}
-          editorStyle={{
-            backgroundColor: '#fff',
-            contentCSSText: 'font-size: 16px; min-height: 200px;'
-          }}
-          disabled={false}
-        />
-      </View>
 
-      <View style={styles.buttonContainer}>
-        <Button 
-          label="Save as template"
-          onPress={handleSaveTemplate}
-          variant="primary"
-          size="small"
-        />
-      </View>
-    </Pressable>
+          <View style={styles.templatesRow}>
+            <Text style={styles.savedTemplatesText}>You have saved templates.</Text>
+            <TouchableOpacity onPress={handleViewTemplates}>
+              <Text style={styles.link}>View templates</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.editorContainer}>
+            <View style={styles.toolbarContainer}>
+              <View style={styles.tokenContainer} ref={tokenButtonRef}>
+                <TouchableOpacity 
+                  style={styles.tokenButton}
+                  onPress={() => setShowTokens(!showTokens)}
+                >
+                  <MaterialIcons 
+                    name={showTokens ? "expand-less" : "expand-more"} 
+                    size={24} 
+                    color={Colors.black} 
+                  />
+                  <Text style={styles.tokenButtonText}>Insert Token</Text>
+                </TouchableOpacity>
+                {showTokens && (
+                  <View style={styles.tokenDropdown}>
+                    {TOKENS.map((token, index) => (
+                      <TouchableOpacity
+                        key={index}
+                        style={styles.tokenItem}
+                        onPress={() => insertToken(token.value)}
+                      >
+                        <Text style={styles.tokenText}>{token.label}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                )}
+              </View>
+              <RichToolbar
+                editor={editorRef}
+                actions={[
+                  actions.setBold,
+                  actions.setItalic,
+                  actions.setUnderline,
+                  actions.insertBulletsList,
+                  actions.insertOrderedList,
+                  actions.setStrikethrough,
+                  actions.blockquote
+                ]}
+                selectedIconTint={Colors.primary}
+                disabledTextTint={Colors.black}
+                iconTint={Colors.black}
+                style={styles.toolbar}
+                iconContainerStyle={styles.toolbarIcon}
+              />
+            </View>
+            
+            <RichEditor
+              ref={editorRef}
+              onChange={setEditorContent}
+              placeholder="Start typing your introduction..."
+              style={styles.editor}
+              initialFocus={false}
+              useContainer={true}
+              initialHeight={400}
+              editorStyle={{
+                backgroundColor: '#fff',
+                contentCSSText: 'font-size: 16px; min-height: 200px;'
+              }}
+              disabled={false}
+            />
+          </View>
+
+          <View style={styles.buttonContainer}>
+            <Button 
+              label="Save as template"
+              onPress={handleSaveTemplate}
+              variant="primary"
+              size="small"
+            />
+          </View>
+        </ScrollView>
+      </Card>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#f5f5f5',
     padding: 24,
-    backgroundColor: '#fff',
+  },
+  mainCard: {
+    padding: 24,
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
   },
   header: {
     flexDirection: 'row',
@@ -179,14 +188,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+  titleText: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: Colors.black,
   },
   titleInput: {
     flex: 1,
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 20,
+    fontWeight: '600',
   },
   templatesRow: {
     flexDirection: 'row',
@@ -198,7 +208,7 @@ const styles = StyleSheet.create({
     color: Colors.black,
   },
   link: {
-    color: '#6366f1',
+    color: Colors.primary,
   },
   editorContainer: {
     flex: 1,
