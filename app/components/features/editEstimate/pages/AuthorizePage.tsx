@@ -7,6 +7,10 @@
 // import { useState } from 'react';
 // import { Button } from '../../../common/Button';
 // import Slider from '@react-native-community/slider';
+// import DraggableFlatList, { 
+//   ScaleDecorator,
+//   RenderItemParams,
+// } from 'react-native-draggable-flatlist';
 
 // interface LineItem {
 //   id: string;
@@ -104,6 +108,60 @@
 //     console.log('Saving changes...');
 //   };
 
+//   const renderItem = ({ item, drag, isActive }: RenderItemParams<LineItem>) => {
+//     return (
+//       <ScaleDecorator>
+//         <TouchableOpacity
+//           onLongPress={drag}
+//           disabled={isActive}
+//           style={[
+//             styles.tableRow,
+//             isActive && styles.draggingRow
+//           ]}
+//         >
+//           <TouchableOpacity 
+//             onPressIn={drag} 
+//             style={styles.dragHandle}
+//           >
+//             <Feather name="menu" size={16} color={Colors.gray[400]} />
+//           </TouchableOpacity>
+          
+//           <TextInput
+//             style={[styles.cell, styles.itemCell]}
+//             value={item.item}
+//             onChangeText={(value) => updateLineItem(item.id, 'item', value)}
+//             placeholder="Enter item"
+//           />
+//           <TextInput
+//             style={[styles.cell, styles.numberCell]}
+//             value={item.quantity}
+//             onChangeText={(value) => updateLineItem(item.id, 'quantity', value)}
+//             keyboardType="numeric"
+//             placeholder="0"
+//           />
+//           <TextInput
+//             style={[styles.cell, styles.numberCell]}
+//             value={item.price}
+//             onChangeText={(value) => updateLineItem(item.id, 'price', value)}
+//             keyboardType="numeric"
+//             placeholder="0.00"
+//           />
+//           <View style={[styles.cell, styles.numberCell, styles.lineTotalCell]}>
+//             <Text style={styles.lineTotalText}>
+//               ${calculateLineTotal(item.quantity, item.price)}
+//             </Text>
+//           </View>
+//           <TouchableOpacity
+//             style={styles.deleteCell}
+//             onPress={() => handleDeleteItem(item.id)}
+//           >
+//             <Feather name="trash-2" size={16} color={Colors.red[500]} />
+//           </TouchableOpacity>
+//         </TouchableOpacity>
+//       </ScaleDecorator>
+//     );
+//   };
+
 //   return (
 //     <View style={styles.container}>
 //       <Card style={styles.mainCard}>
@@ -165,49 +223,23 @@
 //               onChangeText={setSectionTitle}
 //             />
 
-//             <View style={styles.tableHeader}>
-//               <Text style={[styles.headerCell, styles.itemCell]}>Item</Text>
-//               <Text style={[styles.headerCell, styles.numberCell]}>Quantity</Text>
-//               <Text style={[styles.headerCell, styles.numberCell]}>Price</Text>
-//               <Text style={[styles.headerCell, styles.numberCell]}>Line Total</Text>
-//               <View style={styles.deleteCell} />
-//             </View>
-
-//             {lineItems.map((item) => (
-//               <View key={item.id} style={styles.tableRow}>
-//                 <TextInput
-//                   style={[styles.cell, styles.itemCell]}
-//                   value={item.item}
-//                   onChangeText={(value) => updateLineItem(item.id, 'item', value)}
-//                   placeholder="Enter item"
-//                 />
-//                 <TextInput
-//                   style={[styles.cell, styles.numberCell]}
-//                   value={item.quantity}
-//                   onChangeText={(value) => updateLineItem(item.id, 'quantity', value)}
-//                   keyboardType="numeric"
-//                   placeholder="0"
-//                 />
-//                 <TextInput
-//                   style={[styles.cell, styles.numberCell]}
-//                   value={item.price}
-//                   onChangeText={(value) => updateLineItem(item.id, 'price', value)}
-//                   keyboardType="numeric"
-//                   placeholder="0.00"
-//                 />
-//                 <View style={[styles.cell, styles.numberCell, styles.lineTotalCell]}>
-//                   <Text style={styles.lineTotalText}>
-//                     ${calculateLineTotal(item.quantity, item.price)}
-//                   </Text>
-//                 </View>
-//                 <TouchableOpacity
-//                   style={styles.deleteCell}
-//                   onPress={() => handleDeleteItem(item.id)}
-//                 >
-//                   <Feather name="trash-2" size={16} color={Colors.red[500]} />
-//                 </TouchableOpacity>
+//             <View style={styles.tableContainer}>
+//               <View style={styles.tableHeader}>
+//                 <View style={styles.dragHandle} />
+//                 <Text style={[styles.headerCell, styles.itemCell]}>Item</Text>
+//                 <Text style={[styles.headerCell, styles.numberCell]}>Quantity</Text>
+//                 <Text style={[styles.headerCell, styles.numberCell]}>Price</Text>
+//                 <Text style={[styles.headerCell, styles.numberCell]}>Line Total</Text>
+//                 <View style={styles.deleteCell} />
 //               </View>
-//             ))}
+
+//               <DraggableFlatList
+//                 data={lineItems}
+//                 onDragEnd={({ data }) => setLineItems(data)}
+//                 keyExtractor={(item) => item.id}
+//                 renderItem={renderItem}
+//               />
+//             </View>
 
 //             <View style={styles.addButtonContainer}>
 //               <Button
@@ -799,6 +831,26 @@
 //     alignItems: 'flex-end',
 //     marginTop: 24,
 //     marginBottom: 24,
+//   },
+//   tableContainer: {
+//     marginBottom: 16,
+//   },
+//   dragHandle: {
+//     width: 40,
+//     height: 20,
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//   },
+//   draggingRow: {
+//     backgroundColor: Colors.gray[50],
+//     shadowColor: '#000',
+//     shadowOffset: {
+//       width: 0,
+//       height: 2,
+//     },
+//     shadowOpacity: 0.25,
+//     shadowRadius: 3.84,
+//     elevation: 5,
 //   },
 // }); 
 
