@@ -5,6 +5,7 @@ import { Card } from '../../../common/Card';
 import { Button } from '../../../common/Button';
 import { Colors } from '@/app/constants/colors';
 import { Feather, MaterialIcons } from '@expo/vector-icons';
+import { FileUploader } from '@/app/components/common/FileUploader';
 
 export function TitlePage() {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -59,24 +60,16 @@ export function TitlePage() {
 
             {/* Image Upload Row */}
             <View style={styles.row}>
-              <View style={styles.column}>
-                <Text style={styles.label}>Primary Image</Text>
-                <View style={styles.uploadContainer}>
-                  <Card variant="outlined" style={styles.uploadCard}>
-                    <MaterialIcons name="cloud-upload" size={24} color={Colors.primary} />
-                    <Text style={styles.uploadText}>Upload image</Text>
-                  </Card>
-                </View>
-              </View>
-              <View style={styles.column}>
-                <Text style={styles.label}>Certification/Secondary Logo</Text>
-                <View style={styles.uploadContainer}>
-                  <Card variant="outlined" style={styles.uploadCard}>
-                    <MaterialIcons name="cloud-upload" size={24} color={Colors.primary} />
-                    <Text style={styles.uploadText}>Upload image</Text>
-                  </Card>
-                </View>
-              </View>
+              <FileUploader
+                label="Primary Image"
+                accept="image"
+                onUpload={() => console.log('Upload primary image')}
+              />
+              <FileUploader
+                label="Certification/Secondary Logo"
+                accept="image"
+                onUpload={() => console.log('Upload secondary image')}
+              />
             </View>
 
             {/* Name Row */}

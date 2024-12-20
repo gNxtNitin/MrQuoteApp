@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   mainCard: {
-    padding: 16,
+    padding: 24,
     flex: 1,
   },
   header: {
