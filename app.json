@@ -9,6 +9,7 @@
     "userInterfaceStyle": "automatic",
     "platforms": ["ios", "android"],
     "ios": {
+      "jsEngine": "hermes",
       "supportsTablet": true,
       "requireFullScreen": true,
       "bundleIdentifier": "com.mrquote.app",
@@ -24,6 +25,7 @@
       }
     },
     "android": {
+      "jsEngine": "hermes",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
