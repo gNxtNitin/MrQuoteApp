@@ -68,7 +68,14 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     const newId = Math.max(...menuItems.map(item => item.id)) + 1;
     const customPageCount = customPages.length + 1;
     const newTitle = `Custom Page ${customPageCount}`;
-    addCustomPage({ id: newId, title: newTitle });
+    
+    addCustomPage({
+      id: newId,
+      title: newTitle,
+      type: 'myPDFs',
+      requireAcknowledge: false,
+    });
+    
     setSelectedItem(newId);
     setCurrentPage(newTitle);
   };

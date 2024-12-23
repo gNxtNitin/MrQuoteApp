@@ -35,7 +35,7 @@ export default function EditEstimateScreen() {
         return <WarrantyPage />;
       default:
         if (currentPage.startsWith('Custom Page')) {
-          return <CustomPage title={currentPage} />;
+          return <CustomPage /*title={currentPage}*/ />;
         }
         return <TitlePage />;
     }

@@ -1,32 +1,15 @@
-import { View, Text, StyleSheet } from 'react-native';
-
-export function CustomPage() {
-  return (
-    <View style={styles.container}>
-      <Text>Custom Page Content</Text>
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-  },
-}); 
-
-// TODO: Add this back in
 // import { View, Text, StyleSheet, Switch, TouchableOpacity, TextInput } from 'react-native';
 // import { Card } from '../../../common/Card';
 // import { Colors } from '@/app/constants/colors';
 // import { Feather } from '@expo/vector-icons';
-// import { useState } from 'react';
+// import { useState, useEffect } from 'react';
 // import { Input } from '../../../common/Input';
 // import { RichEditor, RichToolbar, actions } from 'react-native-pell-rich-editor';
 // import React from 'react';
 // import { MaterialIcons } from '@expo/vector-icons';
 // import { Button } from '../../../common/Button';
 // import { FileUploader } from '@/app/components/common/FileUploader';
+// import { useEstimatePageStore } from '@/app/stores/estimatePageStore';
 
 // interface CustomPageProps {
 //   title: string;
@@ -40,7 +23,69 @@ const styles = StyleSheet.create({
 //   { label: 'Total Amount', value: '{{TOTAL_AMOUNT}}' },
 // ];
 
-// const PDFContent = ({ title }: { title: string }) => {
+// const PDFContent = ({ title, pageId }: { title: string; pageId: number }) => {
+//   const { customPages, updateCustomPage } = useEstimatePageStore();
+//   const pageData = customPages.find(page => page.id === pageId);
+//   const [searchQuery, setSearchQuery] = useState('');
+
+//   // Handle PDF specific content updates
+//   const handleFileSelection = (files: string[]) => {
+//     if (pageData) {
+//       updateCustomPage(pageId, {
+//         content: {
+//           ...pageData.content,
+//           myPDFs: {
+//             ...pageData.content?.myPDFs,
+//             selectedFiles: files
+//           }
+//         }
+//       });
+//     }
+//   };
+
+//   return (
+//     <View style={styles.pdfContent}>
+//       <Text style={styles.sectionTitle}>{title}</Text>
+      
+//       {/* Combined Search and Files Area */}
+//       <View style={styles.searchArea}>
+//         {/* Search Input */}
+//         <View style={styles.searchInputContainer}>
+//           <Feather name="search" size={20} color={Colors.gray[400]} />
+//           <TextInput
+//             style={styles.searchInput}
+//             value={searchQuery}
+//             onChangeText={setSearchQuery}
+//             placeholder="Search files and folders"
+//             placeholderTextColor={Colors.gray[400]}
+//           />
+//         </View>
+
+//         {/* Files Section */}
+//         <View style={styles.filesSection}>
+//           <Text style={styles.filesSectionTitle}>Files /</Text>
+//           <View style={styles.foldersContainer}>
+//             <TouchableOpacity style={styles.folderCard}>
+//               <View style={styles.folderIcon}>
+//                 <Feather name="folder" size={24} color={Colors.primary} />
+//               </View>
+//               <Text style={styles.folderName}>New Folder (0)</Text>
+//             </TouchableOpacity>
+
+//             <TouchableOpacity style={styles.folderCard}>
+//               <View style={styles.folderIcon}>
+//                 <Feather name="folder" size={24} color={Colors.primary} />
+//               </View>
+//               <Text style={styles.folderName}>New Folder (3)</Text>
+//             </TouchableOpacity>
+//           </View>
+//         </View>
+//       </View>
+//     </View>
+//   );
+// };
+
+// const SharedPDFsContent = ({ title, pageId }: { title: string; pageId: number }) => {
 //   const [searchQuery, setSearchQuery] = useState('');
 
 //   return (
@@ -85,52 +130,7 @@ const styles = StyleSheet.create({
 //   );
 // };
 
-// const SharedPDFsContent = ({ title }: { title: string }) => {
-//   const [searchQuery, setSearchQuery] = useState('');
-
-//   return (
-//     <View style={styles.pdfContent}>
-//       <Text style={styles.sectionTitle}>{title}</Text>
-      
-//       {/* Combined Search and Files Area */}
-//       <View style={styles.searchArea}>
-//         {/* Search Input */}
-//         <View style={styles.searchInputContainer}>
-//           <Feather name="search" size={20} color={Colors.gray[400]} />
-//           <TextInput
-//             style={styles.searchInput}
-//             value={searchQuery}
-//             onChangeText={setSearchQuery}
-//             placeholder="Search files and folders"
-//             placeholderTextColor={Colors.gray[400]}
-//           />
-//         </View>
-
-//         {/* Files Section */}
-//         <View style={styles.filesSection}>
-//           <Text style={styles.filesSectionTitle}>Files /</Text>
-//           <View style={styles.foldersContainer}>
-//             <TouchableOpacity style={styles.folderCard}>
-//               <View style={styles.folderIcon}>
-//                 <Feather name="folder" size={24} color={Colors.primary} />
-//               </View>
-//               <Text style={styles.folderName}>New Folder (0)</Text>
-//             </TouchableOpacity>
-
-//             <TouchableOpacity style={styles.folderCard}>
-//               <View style={styles.folderIcon}>
-//                 <Feather name="folder" size={24} color={Colors.primary} />
-//               </View>
-//               <Text style={styles.folderName}>New Folder (3)</Text>
-//             </TouchableOpacity>
-//           </View>
-//         </View>
-//       </View>
-//     </View>
-//   );
-// };
-
-// const SingleUsePDFContent = ({ title }: { title: string }) => {
+// const SingleUsePDFContent = ({ title, pageId }: { title: string; pageId: number }) => {
 //   return (
 //     <View style={styles.pdfContent}>
 //       <Text style={styles.sectionTitle}>{title}</Text>
@@ -145,11 +145,43 @@ const styles = StyleSheet.create({
 //   );
 // };
 
-// const TextPageContent = ({ title }: { title: string }) => {
+// const TextPageContent = ({ title, pageId }: { title: string; pageId: number }) => {
+//   const { customPages, updateCustomPage } = useEstimatePageStore();
+//   const pageData = customPages.find(page => page.id === pageId);
+  
 //   const [editorContent, setEditorContent] = useState('');
 //   const [showTokens, setShowTokens] = useState(false);
 //   const editorRef = React.useRef<RichEditor>(null);
 //   const tokenButtonRef = React.useRef<View>(null);
+//   const contentRef = React.useRef(editorContent);
+
+//   // Initialize editor content when page changes
+//   useEffect(() => {
+//     const content = pageData?.content?.textPage || '';
+//     setEditorContent(content);
+//     contentRef.current = content;
+//   }, [pageId]);
+
+//   // Debounced update to store
+//   useEffect(() => {
+//     const timeoutId = setTimeout(() => {
+//       if (pageData && contentRef.current !== editorContent) {
+//         contentRef.current = editorContent;
+//         updateCustomPage(pageId, {
+//           content: {
+//             ...pageData.content,
+//             textPage: editorContent
+//           }
+//         });
+//       }
+//     }, 500); // 500ms debounce
+
+//     return () => clearTimeout(timeoutId);
+//   }, [editorContent, pageId, pageData]);
+
+//   const handleEditorChange = (content: string) => {
+//     setEditorContent(content);
+//   };
 
 //   const insertToken = (token: string) => {
 //     editorRef.current?.insertHTML(token);
@@ -207,11 +239,13 @@ const styles = StyleSheet.create({
 //         </View>
 //         <View style={styles.editorContent}>
 //           <RichEditor
+//             key={`editor-${pageId}`}
 //             ref={editorRef}
-//             onChange={setEditorContent}
+//             onChange={handleEditorChange}
 //             placeholder="Start typing..."
 //             style={styles.editor}
 //             initialHeight={400}
+//             initialContentHTML={editorContent}
 //           />
 //         </View>
 //       </View>
@@ -220,28 +254,59 @@ const styles = StyleSheet.create({
 // };
 
 // export function CustomPage({ title }: CustomPageProps) {
+//   const { customPages, updateCustomPage } = useEstimatePageStore();
+//   const pageData = customPages.find(page => page.title === title);
 //   const [requireAcknowledge, setRequireAcknowledge] = useState(false);
 //   const [selectedType, setSelectedType] = useState<'myPDFs' | 'sharedPDFs' | 'singleUsePDFs' | 'textPage'>('myPDFs');
 //   const [isEditingTitle, setIsEditingTitle] = useState(false);
-//   const [pageTitle, setPageTitle] = useState('Custom Page');
+//   const [pageTitle, setPageTitle] = useState(title);
+
+//   // Initialize state from store data
+//   useEffect(() => {
+//     if (pageData) {
+//       setRequireAcknowledge(pageData.requireAcknowledge);
+//       setSelectedType(pageData.type);
+//       setPageTitle(pageData.title);
+//     }
+//   }, [title, customPages]);
+
+//   // Update store when values change
+//   useEffect(() => {
+//     if (pageData) {
+//       updateCustomPage(pageData.id, {
+//         requireAcknowledge,
+//         type: selectedType,
+//         title: pageTitle,
+//       });
+//     }
+//   }, [requireAcknowledge, selectedType, pageTitle]);
+
+//   const handleSave = () => {
+//     if (pageData) {
+//       updateCustomPage(pageData.id, {
+//         requireAcknowledge,
+//         type: selectedType,
+//         title: pageTitle,
+//       });
+//     }
+//     console.log('Saving changes...');
+//   };
 
 //   const renderPDFContent = () => {
+//     if (!pageData) return null;
+    
 //     switch (selectedType) {
 //       case 'myPDFs':
-//         return <PDFContent title="My PDFs" />;
+//         return <PDFContent key={`pdf-${pageData.id}`} title="My PDFs" pageId={pageData.id} />;
 //       case 'sharedPDFs':
-//         return <SharedPDFsContent title="Shared PDFs" />;
+//         return <SharedPDFsContent key={`shared-${pageData.id}`} title="Shared PDFs" pageId={pageData.id} />;
 //       case 'singleUsePDFs':
-//         return <SingleUsePDFContent title="Single Use PDFs" />;
+//         return <SingleUsePDFContent key={`single-${pageData.id}`} title="Single Use PDFs" pageId={pageData.id} />;
 //       case 'textPage':
-//         return <TextPageContent title="Text Page" />;
+//         return <TextPageContent key={`text-${pageData.id}`} title="Text Page" pageId={pageData.id} />;
 //       default:
 //         return null;
 //     }
-//   };
-
-//   const handleSave = () => {
-//     console.log('Saving changes...');
 //   };
 
 //   return (
@@ -653,3 +718,21 @@ const styles = StyleSheet.create({
 //     justifyContent: 'flex-end',
 //   },
 // }); 
+
+
+import { View, Text, StyleSheet } from 'react-native';
+
+export function CustomPage() {
+  return (
+    <View style={styles.container}>
+      <Text>Custom Page Content</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 24,
+  },
+}); 
