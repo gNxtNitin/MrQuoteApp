@@ -18,7 +18,7 @@ interface MenuItem {
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const [checkedItems, setCheckedItems] = useState<number[]>([]);
-  const [selectedItem, setSelectedItem] = useState<number>(1);
+  const { setCurrentPage, customPages, addCustomPage, currentPage } = useEstimatePageStore();
   const [menuItems, setMenuItems] = useState<MenuItem[]>([
     { id: 1, title: 'Title' },
     { id: 2, title: 'Introduction' },
@@ -30,7 +30,14 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     { id: 8, title: 'Warranty' },
   ]);
 
-  const { setCurrentPage, customPages, addCustomPage } = useEstimatePageStore();
+  const [selectedItem, setSelectedItem] = useState<number>(1);
+  
+  useEffect(() => {
+    const currentMenuItem = menuItems.find(item => item.title === currentPage);
+    if (currentMenuItem) {
+      setSelectedItem(currentMenuItem.id);
+    }
+  }, [currentPage, menuItems]);
 
   useEffect(() => {
     const updatedMenuItems = [

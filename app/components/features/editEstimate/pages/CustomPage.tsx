@@ -11,9 +11,9 @@
 // import { FileUploader } from '@/app/components/common/FileUploader';
 // import { useEstimatePageStore } from '@/app/stores/estimatePageStore';
 
-// interface CustomPageProps {
-//   title: string;
-// }
+interface CustomPageProps {
+  title: string;
+}
 
 // const TOKENS = [
 //   { label: 'Customer Name', value: '{{CUSTOMER_NAME}}' },
@@ -722,7 +722,7 @@
 
 import { View, Text, StyleSheet } from 'react-native';
 
-export function CustomPage() {
+export function CustomPage({ title }: CustomPageProps) {
   return (
     <View style={styles.container}>
       <Text>Custom Page Content</Text>
