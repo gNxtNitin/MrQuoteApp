@@ -11,6 +11,7 @@
 //   ScaleDecorator,
 //   RenderItemParams,
 // } from 'react-native-draggable-flatlist';
+// import { ViewTemplatesDialog } from './ViewTemplatesDialog';
 
 // interface LineItem {
 //   id: string;
@@ -57,6 +58,7 @@
 //   const [isEditingFooterTitle, setIsEditingFooterTitle] = useState(false);
 //   const [footerTitle, setFooterTitle] = useState('Footer notes');
 //   const [footerNote, setFooterNote] = useState('');
+//   const [showTemplatesDialog, setShowTemplatesDialog] = useState(false);
 
 //   const handleAddItem = () => {
 //     setLineItems([
@@ -88,10 +90,18 @@
 //     return (numQuantity * numPrice).toFixed(2);
 //   };
 
-//   function handleViewTemplates(event: GestureResponderEvent): void {
-//     // throw new Error('Function not implemented.');
-//     console.log('Viewing templates...');
-//   }
+//   const handleViewTemplates = () => {
+//     setShowTemplatesDialog(true);
+//   };
+
+//   const handleCloseTemplatesDialog = () => {
+//     setShowTemplatesDialog(false);
+//   };
+
+//   const handleSelectTemplate = (template: string) => {
+//     console.log('Selected template:', template);
+//     setShowTemplatesDialog(false);
+//   };
 
 //   const handleAddSigner = () => {
 //     setSigners([
@@ -509,6 +519,12 @@
 //           stickySectionHeadersEnabled={false}
 //         />
 //       </Card>
+
+//       <ViewTemplatesDialog
+//         visible={showTemplatesDialog}
+//         onClose={handleCloseTemplatesDialog}
+//         onSelect={handleSelectTemplate}
+//       />
 //     </View>
 //   );
 // }
@@ -550,9 +566,11 @@
 //   },
 //   savedTemplatesText: {
 //     color: Colors.black,
+//     fontSize: 14,
 //   },
 //   link: {
 //     color: Colors.primary,
+//     fontSize: 14,
 //   },
 //   disclaimerContainer: {
 //     marginTop: 0,

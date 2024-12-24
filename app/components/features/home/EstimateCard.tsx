@@ -101,7 +101,15 @@ export function EstimateCard({ estimate, index, onStatusChange }: EstimateCardPr
             style={[styles.statusButton, styles[`status_${currentStatus}`]]}
             onPress={() => setShowStatusDropdown(!showStatusDropdown)}
           >
-            <Text style={[styles.statusText, { color: getStatusTextColor(currentStatus) }]}>
+            <Text 
+              style={[
+                styles.statusText, 
+                { color: getStatusTextColor(currentStatus) },
+                styles.statusTextAdjust
+              ]}
+              adjustsFontSizeToFit
+              numberOfLines={1}
+            >
               {currentStatus.replace('_', ' ').toUpperCase()}
             </Text>
             <MaterialIcons name="edit" size={16} color={getStatusTextColor(currentStatus)} />
@@ -188,13 +196,15 @@ const styles = StyleSheet.create({
   },
   statusButton: {
     flex: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 12,
+    minHeight: 40,
+    maxHeight: 48,
+    paddingVertical: 8,
+    paddingHorizontal: 8,
     borderRadius: 12,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
+    gap: 4,
     borderWidth: 1,
     borderColor: Colors.primary,
   },
@@ -226,6 +236,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     textAlign: 'center',
+    flex: 1,
+  },
+  statusTextAdjust: {
+    minWidth: 0,
+    flexShrink: 1,
   },
   editButton: {
     padding: 8,

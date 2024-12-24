@@ -46,7 +46,7 @@ export function LayoutPage() {
         </View>
 
         <ScrollView style={styles.scrollContainer}>
-          <View style={styles.diagramsContainer}>
+          {/* <View style={styles.diagramsContainer}>
             <View style={styles.diagramRow}>
               <View style={[styles.diagramCard, { flex: 1 }]}>
                 <View style={styles.diagramHeader}>
@@ -86,7 +86,7 @@ export function LayoutPage() {
                 </View>
               </View>
             </View>
-          </View>
+          </View> */}
 
           <View style={styles.drawingSection}>
             <Text style={styles.drawingSectionTitle}>Draw here</Text>

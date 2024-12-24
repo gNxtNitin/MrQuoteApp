@@ -19,11 +19,12 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
+    alignSelf: 'flex-end',
     backgroundColor: Colors.white,
     borderRadius: 30,
     paddingHorizontal: 16,
     height: 48,
-    width: 380,
+    width: 300,
     borderWidth: 1,
     borderColor: Colors.primary,
   },

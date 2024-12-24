@@ -5,6 +5,7 @@ import { router } from 'expo-router';
 import { Estimate } from '@/app/types/estimate';
 import { CreateEstimateDialog } from './CreateEstimateDialog';
 import { useState } from 'react';
+import { ChangeLayoutDialog } from './ChangeLayoutDialog';
 
 type EstimateSubHeaderProps = Estimate;
 
@@ -17,6 +18,7 @@ export function EstimateSubHeader({
   date 
 }: EstimateSubHeaderProps) {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showLayoutDialog, setShowLayoutDialog] = useState(false);
 
   const handleBack = () => router.back();
   
@@ -32,6 +34,20 @@ export function EstimateSubHeader({
     // Handle the save action
     console.log('Saving estimate:', data);
     handleCloseDialog();
+  };
+
+  const handleChangeLayout = () => {
+    setShowLayoutDialog(true);
+  };
+
+  const handleCloseLayoutDialog = () => {
+    setShowLayoutDialog(false);
+  };
+
+  const handleSaveLayout = () => {
+    // Handle saving layout changes
+    console.log('Saving layout changes...');
+    setShowLayoutDialog(false);
   };
 
   return (
@@ -94,7 +110,10 @@ export function EstimateSubHeader({
                 <MaterialIcons name="upload" size={16} color={Colors.primary} />
                 <Text style={styles.actionButtonText}>Upload Changes</Text>
               </Pressable>
-              <Pressable style={styles.actionButton}>
+              <Pressable 
+                style={styles.actionButton}
+                onPress={handleChangeLayout}
+              >
                 <MaterialIcons name="view-agenda" size={16} color={Colors.primary} />
                 <Text style={styles.actionButtonText}>Change Layout</Text>
               </Pressable>
@@ -108,6 +127,12 @@ export function EstimateSubHeader({
         visible={showCreateDialog}
         onClose={handleCloseDialog}
         onSave={handleSaveEstimate}
+      />
+
+      <ChangeLayoutDialog
+        visible={showLayoutDialog}
+        onClose={handleCloseLayoutDialog}
+        onSave={handleSaveLayout}
       />
     </View>
   );

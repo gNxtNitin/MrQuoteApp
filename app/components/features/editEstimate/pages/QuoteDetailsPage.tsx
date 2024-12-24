@@ -7,6 +7,7 @@ import { Feather } from '@expo/vector-icons';
 import { useState } from 'react';
 import Slider from '@react-native-community/slider';
 import DraggableFlatList, { ScaleDecorator, RenderItemParams } from 'react-native-draggable-flatlist';
+import { ViewTemplatesDialog } from './ViewTemplatesDialog';
 
 interface LineItem {
   id: string;
@@ -65,6 +66,7 @@ export function QuoteDetailsPage() {
       notes: ''
     }
   ]);
+  const [showTemplatesDialog, setShowTemplatesDialog] = useState(false);
 
   const calculateLineTotal = (quantity: string, price: string) => {
     const numQuantity = parseFloat(quantity) || 0;
@@ -287,6 +289,19 @@ export function QuoteDetailsPage() {
     ));
   };
 
+  const handleViewTemplates = () => {
+    setShowTemplatesDialog(true);
+  };
+
+  const handleCloseTemplatesDialog = () => {
+    setShowTemplatesDialog(false);
+  };
+
+  const handleSelectTemplate = (template: string) => {
+    console.log('Selected template:', template);
+    setShowTemplatesDialog(false);
+  };
+
   const renderQuoteContent = ({ item: quote }: { item: Quote }) => {
     if (quote.id !== activeQuoteId) return null;
     
@@ -438,7 +453,17 @@ export function QuoteDetailsPage() {
                 </>
               )}
             </View>
-            <Text style={styles.subtitle}>You have saved templates. <Text style={styles.link}>view templates</Text></Text>
+            <View style={styles.subtitleRow}>
+              <Text style={styles.subtitle}>
+                You have saved templates.{' '}
+                <Text 
+                  style={styles.link}
+                  onPress={handleViewTemplates}
+                >
+                  view templates
+                </Text>
+              </Text>
+            </View>
           </View>
 
           {/* Quote Tabs */}
@@ -525,6 +550,12 @@ export function QuoteDetailsPage() {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.contentContainer}
           />
+
+          <ViewTemplatesDialog
+            visible={showTemplatesDialog}
+            onClose={handleCloseTemplatesDialog}
+            onSelect={handleSelectTemplate}
+          />
         </View>
       </Card>
     </View>
@@ -564,11 +595,17 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   subtitle: {
-    color: Colors.gray[500],
+    color: Colors.black,
+    fontSize: 14,
   },
   link: {
     color: Colors.primary,
-    textDecorationLine: 'underline',
+    fontSize: 14,
+  },
+  subtitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
   },
   section: {
     backgroundColor: Colors.gray[50],
