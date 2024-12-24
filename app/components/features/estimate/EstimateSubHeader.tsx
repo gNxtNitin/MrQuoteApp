@@ -6,6 +6,7 @@ import { Estimate } from '@/app/types/estimate';
 import { CreateEstimateDialog } from './CreateEstimateDialog';
 import { useState } from 'react';
 import { ChangeLayoutDialog } from './ChangeLayoutDialog';
+import { useTheme } from '@/app/components/providers/ThemeProvider';
 
 type EstimateSubHeaderProps = Estimate;
 
@@ -19,6 +20,7 @@ export function EstimateSubHeader({
 }: EstimateSubHeaderProps) {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showLayoutDialog, setShowLayoutDialog] = useState(false);
+  const theme = useTheme();
 
   const handleBack = () => router.back();
   
@@ -51,16 +53,18 @@ export function EstimateSubHeader({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.content}>
         <View style={styles.leftSection}>
           <Pressable style={styles.backButton} onPress={handleBack}>
-            <MaterialIcons name="arrow-back" size={20} color={Colors.primary} />
-            <Text style={styles.backText}>Back</Text>
+            <MaterialIcons name="arrow-back" size={20} color={theme.primary} />
+            <Text style={[styles.backText, { color: theme.primary }]}>Back</Text>
           </Pressable>
           <View style={styles.infoSection}>
             <View style={styles.customerHeader}>
-              <Text style={styles.customerName}>{customerName}</Text>
+              <Text style={[styles.customerName, { color: theme.primary }]}>
+                {customerName}
+              </Text>
               <View style={[styles.badge, styles[`status_${status}`]]}>
                 <Text style={[styles.badgeText, styles[`statusText_${status}`]]}>
                   {status.toUpperCase()}
@@ -70,22 +74,30 @@ export function EstimateSubHeader({
             <View style={styles.detailsContainer}>
               <View style={styles.detailsColumn}>
                 <View style={styles.detailsRow}>
-                  <MaterialIcons name="location-on" size={14} color={Colors.primary} />
-                  <Text style={styles.detailText}>{address}</Text>
+                  <MaterialIcons name="location-on" size={14} color={theme.primary} />
+                  <Text style={[styles.detailText, { color: theme.textSecondary }]}>
+                    {address}
+                  </Text>
                 </View>
                 <View style={styles.detailsRow}>
-                  <MaterialIcons name="phone" size={14} color={Colors.primary} />
-                  <Text style={styles.detailText}>{phone}</Text>
+                  <MaterialIcons name="phone" size={14} color={theme.primary} />
+                  <Text style={[styles.detailText, { color: theme.textSecondary }]}>
+                    {phone}
+                  </Text>
                 </View>
               </View>
               <View style={styles.detailsColumn}>
                 <View style={styles.detailsRow}>
-                  <MaterialIcons name="email" size={14} color={Colors.primary} />
-                  <Text style={styles.detailText}>{email}</Text>
+                  <MaterialIcons name="email" size={14} color={theme.primary} />
+                  <Text style={[styles.detailText, { color: theme.textSecondary }]}>
+                    {email}
+                  </Text>
                 </View>
                 <View style={styles.detailsRow}>
-                  <MaterialIcons name="event" size={14} color={Colors.primary} />
-                  <Text style={styles.detailText}>{date}</Text>
+                  <MaterialIcons name="event" size={14} color={theme.primary} />
+                  <Text style={[styles.detailText, { color: theme.textSecondary }]}>
+                    {date}
+                  </Text>
                 </View>
               </View>
             </View>
@@ -94,8 +106,14 @@ export function EstimateSubHeader({
         <View style={styles.rightSection}>
           <View style={styles.actionRows}>
             <View style={styles.iconGroup}>
-              <Pressable style={styles.iconButton}>
-                <MaterialIcons name="settings" size={18} color={Colors.primary} />
+              <Pressable 
+                style={[styles.iconButton, { backgroundColor: theme.background }]}
+                onPress={handleChangeLayout}
+              >
+                <MaterialIcons name="view-agenda" size={18} color={theme.primary} />
+              </Pressable>
+              <Pressable style={[styles.iconButton, { backgroundColor: theme.background }]}>
+                <MaterialIcons name="settings" size={18} color={theme.primary} />
               </Pressable>
             </View>
             <View style={styles.buttonGroup}>
@@ -104,24 +122,26 @@ export function EstimateSubHeader({
                 onPress={handleNewEstimate}
               >
                 <MaterialIcons name="add" size={16} color={Colors.white} />
-                <Text style={[styles.actionButtonText, styles.primaryButtonText]}>New Estimate</Text>
-              </Pressable>
-              <Pressable style={styles.actionButton}>
-                <MaterialIcons name="upload" size={16} color={Colors.primary} />
-                <Text style={styles.actionButtonText}>Upload Changes</Text>
+                <Text style={[styles.actionButtonText, styles.primaryButtonText]}>
+                  New Estimate
+                </Text>
               </Pressable>
               <Pressable 
-                style={styles.actionButton}
-                onPress={handleChangeLayout}
+                style={[styles.actionButton, { 
+                  borderColor: theme.primary,
+                  backgroundColor: theme.background 
+                }]}
               >
-                <MaterialIcons name="view-agenda" size={16} color={Colors.primary} />
-                <Text style={styles.actionButtonText}>Change Layout</Text>
+                <MaterialIcons name="upload" size={16} color={theme.primary} />
+                <Text style={[styles.actionButtonText, { color: theme.primary }]}>
+                  Upload Changes
+                </Text>
               </Pressable>
             </View>
           </View>
         </View>
       </View>
-      <View style={styles.divider} />
+      <View style={[styles.divider, { backgroundColor: theme.border }]} />
 
       <CreateEstimateDialog
         visible={showCreateDialog}

@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, Modal, Pressable, TouchableOpacity } from 'reac
 import { Colors } from '@/app/constants/colors';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useState } from 'react';
+import { useTheme } from '@react-navigation/native';
 
 interface ChangeLayoutDialogProps {
   visible: boolean;
@@ -26,6 +27,7 @@ const SHARED_LAYOUTS = [
 ];
 
 export function ChangeLayoutDialog({ visible, onClose, onSave }: ChangeLayoutDialogProps) {
+  const theme = useTheme();
   const [activeTab, setActiveTab] = useState<TabType>('my');
   const [selectedLayout, setSelectedLayout] = useState<string>('Default Layout');
 
@@ -39,11 +41,16 @@ export function ChangeLayoutDialog({ visible, onClose, onSave }: ChangeLayoutDia
       onRequestClose={onClose}
     >
       <View style={styles.overlay}>
-        <View style={styles.container}>
+        <View style={[styles.container, { 
+          backgroundColor: theme.colors.background,
+          borderColor: theme.colors.border
+        }]}>
           <View style={styles.header}>
             <View>
-              <Text style={styles.title}>Change Layout</Text>
-              <Text style={styles.subtitle}>Configure layout for this report</Text>
+              <Text style={[styles.title, { color: theme.colors.text }]}>Change Layout</Text>
+              <Text style={[styles.subtitle, { color: theme.colors.text }]}>
+                Configure layout for this report
+              </Text>
             </View>
             <Pressable onPress={onClose} style={styles.closeButton}>
               <MaterialIcons name="close" size={24} color="#666" />

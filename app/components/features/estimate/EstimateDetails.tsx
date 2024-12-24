@@ -5,6 +5,7 @@ import { Card } from '@/app/components/common/Card';
 import { ActionButton } from '@/app/components/common/ActionButton';
 import { getHouseImage } from '@/app/utils/houseImages';
 import { Dimensions } from 'react-native';
+import { useTheme } from '../../providers/ThemeProvider';
 
 interface EstimateDetailsProps {
   estimate: Estimate;
@@ -21,11 +22,12 @@ export function EstimateDetails({
   onDuplicate,
   onDelete 
 }: EstimateDetailsProps) {
+  const theme = useTheme();
   const houseImage = getHouseImage(estimate.id);
 
   return (
     <View style={styles.container}>
-      <Card>
+      <Card style={{ backgroundColor: theme.background }}>
         <Image 
           source={houseImage}
           style={styles.coverImage}
@@ -34,8 +36,10 @@ export function EstimateDetails({
           accessibilityLabel={`House image for ${estimate.customerName}'s estimate`}
         />
         
-        <View style={styles.contentContainer}>
-          <Text style={styles.estimateName}>{estimate.customerName}'s Estimate</Text>
+        <View style={[styles.contentContainer, { backgroundColor: theme.card }]}>
+          <Text style={[styles.estimateName, { color: theme.textPrimary }]}>
+            {estimate.customerName}'s Estimate
+          </Text>
           
           <View style={styles.buttonGrid}>
             <ActionButton icon="edit" label="Edit" onPress={onEdit} />
@@ -56,7 +60,7 @@ const styles = StyleSheet.create({
   },
   coverImage: {
     width: '100%',
-    height: Dimensions.get('window').height * 0.28,
+    height: Dimensions.get('window').height * 0.35,
     minHeight: 300,
     maxHeight: 450,
     borderTopLeftRadius: 16,
@@ -65,6 +69,8 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     padding: 32,
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
   },
   estimateName: {
     fontSize: 32,

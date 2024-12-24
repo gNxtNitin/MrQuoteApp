@@ -5,12 +5,15 @@ import { EstimateDetails } from './EstimateDetails';
 import { Estimate } from '@/app/types/estimate';
 import { ScreenLayout } from '@/app/components/common/ScreenLayout';
 import { router } from 'expo-router';
+import { useTheme } from '../../providers/ThemeProvider';
 
 interface EstimateScreenProps {
   estimateData: Estimate;
 }
 
 export function EstimateScreen({ estimateData }: EstimateScreenProps) {
+  const theme = useTheme();
+  
   const handleEditEstimate = () => {
     router.push('/editEstimate');
   };
@@ -18,7 +21,7 @@ export function EstimateScreen({ estimateData }: EstimateScreenProps) {
     <ScreenLayout
       subHeader={<EstimateSubHeader {...estimateData} />}
     >
-      <ScrollView style={styles.content}>
+      <ScrollView style={[styles.content, { backgroundColor: theme.background }]}>
         <View style={styles.contentWrapper}>
           <EstimateDetails estimate={estimateData} onEdit={handleEditEstimate} />
         </View>

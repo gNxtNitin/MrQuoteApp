@@ -1,13 +1,16 @@
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { Colors } from '@/app/constants/colors';
+import { useTheme } from '@/app/components/providers/ThemeProvider';
 
 interface EmptyStateProps {
   isSyncing?: boolean;
 }
 
 export function EmptyState({ isSyncing }: EmptyStateProps) {
+  const theme = useTheme();
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Image 
         source={isSyncing 
           ? require('@/assets/images/sync-animation.gif')
@@ -16,7 +19,7 @@ export function EmptyState({ isSyncing }: EmptyStateProps) {
         style={styles.image}
         resizeMode="contain"
       />
-      <Text style={styles.text}>
+      <Text style={[styles.text, { color: theme.textSecondary }]}>
         {isSyncing 
           ? 'Syncing data from Service Fusion... \nUpdating your information now—this will only take a moment.'
           : 'It appears there are no estimations for you to work on currently. Kindly come online and click the Sync button above to check for any pending estimations.'

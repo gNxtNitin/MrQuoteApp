@@ -1,15 +1,24 @@
 import { View, TextInput, StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Colors } from '@/app/constants/colors';
+import { useTheme } from '@/app/components/providers/ThemeProvider';
 
 export function SearchBar() {
+  const theme = useTheme();
+
   return (
-    <View style={styles.container}>
-      <MaterialIcons name="search" size={24} color="#888" />
+    <View style={[
+      styles.container, 
+      { 
+        backgroundColor: theme.background,
+        borderColor: theme.primary 
+      }
+    ]}>
+      <MaterialIcons name="search" size={24} color={theme.secondary} />
       <TextInput 
-        style={styles.input}
+        style={[styles.input, { color: theme.textPrimary }]}
         placeholder="Search"
-        placeholderTextColor="#888"
+        placeholderTextColor={theme.secondary}
       />
     </View>
   );
@@ -20,18 +29,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-end',
-    backgroundColor: Colors.white,
     borderRadius: 30,
     paddingHorizontal: 16,
     height: 48,
     width: 300,
     borderWidth: 1,
-    borderColor: Colors.primary,
   },
   input: {
     flex: 1,
     marginLeft: 8,
     fontSize: 16,
-    color: Colors.black,
   },
 }); 
