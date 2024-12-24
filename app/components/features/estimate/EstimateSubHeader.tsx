@@ -110,10 +110,10 @@ export function EstimateSubHeader({
                 style={[styles.iconButton, { backgroundColor: theme.background }]}
                 onPress={handleChangeLayout}
               >
-                <MaterialIcons name="view-agenda" size={18} color={theme.primary} />
+                <MaterialIcons name="view-agenda" size={18} color={theme.textPrimary} />
               </Pressable>
               <Pressable style={[styles.iconButton, { backgroundColor: theme.background }]}>
-                <MaterialIcons name="settings" size={18} color={theme.primary} />
+                <MaterialIcons name="settings" size={18} color={theme.textPrimary} />
               </Pressable>
             </View>
             <View style={styles.buttonGroup}>
@@ -128,12 +128,12 @@ export function EstimateSubHeader({
               </Pressable>
               <Pressable 
                 style={[styles.actionButton, { 
-                  borderColor: theme.primary,
+                  borderColor: theme.textPrimary,
                   backgroundColor: theme.background 
                 }]}
               >
-                <MaterialIcons name="upload" size={16} color={theme.primary} />
-                <Text style={[styles.actionButtonText, { color: theme.primary }]}>
+                <MaterialIcons name="upload" size={16} color={theme.textPrimary} />
+                <Text style={[styles.actionButtonText, { color: theme.textPrimary }]}>
                   Upload Changes
                 </Text>
               </Pressable>
