@@ -4,6 +4,7 @@ import { MaterialIcons, Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState, useEffect } from 'react';
 import { useEstimatePageStore } from '@/app/stores/estimatePageStore';
+import { useTheme } from '../../providers/ThemeProvider';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -30,6 +31,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     { id: 8, title: 'Warranty' },
   ]);
 
+  const theme = useTheme();
   const [selectedItem, setSelectedItem] = useState<number>(1);
   
   useEffect(() => {
@@ -92,7 +94,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       {isOpen && (
         <View style={styles.container}>
           <Pressable style={styles.overlay} onPress={onClose}>
-            <View style={styles.sidebar}>
+            <View style={[styles.sidebar, { backgroundColor: theme.background }]}>
               <View style={styles.header}>
                 <View style={styles.titleContainer}>
                   <Pressable onPress={handleHomePress} style={styles.homeButton}>
@@ -127,11 +129,11 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                           <Feather
                             name={checkedItems.includes(item.id) ? "check-square" : "square"}
                             size={20}
-                            color={isSelected ? Colors.white : Colors.black}
+                            color={isSelected ? Colors.white : theme.textPrimary}
                           />
                         </Pressable>
                         <Text style={[
-                          styles.menuItemText,
+                          [styles.menuItemText, { color: theme.textPrimary }],
                           isSelected && styles.menuItemTextSelected
                         ]}>
                           {item.title}
