@@ -49,7 +49,7 @@ export function LoginScreen({ onLogin, isDarkMode }: LoginScreenProps) {
         
         if (isAuthenticated) {
           onLogin();
-          router.replace('/home');
+          router.replace('/pin');
           // router.replace('/switch-and-canvas');
         } else {
           setErrors({

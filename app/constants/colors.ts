@@ -6,6 +6,7 @@ export const Colors = {
   white: '#FFFFFF',
   black: '#000000',
   error: '#ff3b30',
+  placeholderTextColor:'#BBCBD8',
   gray: {
     50: '#f9fafb',    // Very light gray (upload section background)
     100: '#f3f4f6',

@@ -1,5 +1,7 @@
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { Colors } from '@/app/constants/colors';
+import { Image } from "expo-image";
+
 
 interface EmptyStateProps {
   isSyncing?: boolean;
