@@ -8,6 +8,7 @@ import { useState } from 'react';
 import Slider from '@react-native-community/slider';
 import DraggableFlatList, { ScaleDecorator, RenderItemParams } from 'react-native-draggable-flatlist';
 import { ViewTemplatesDialog } from './ViewTemplatesDialog';
+import { useTheme } from '@/app/components/providers/ThemeProvider';
 
 interface LineItem {
   id: string;
@@ -67,6 +68,7 @@ export function QuoteDetailsPage() {
     }
   ]);
   const [showTemplatesDialog, setShowTemplatesDialog] = useState(false);
+  const theme = useTheme();
 
   const calculateLineTotal = (quantity: string, price: string) => {
     const numQuantity = parseFloat(quantity) || 0;
@@ -431,7 +433,7 @@ export function QuoteDetailsPage() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Card style={styles.mainCard}>
         <View style={styles.scrollContainer}>
           <View style={styles.titleContainer}>

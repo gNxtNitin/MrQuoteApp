@@ -5,6 +5,7 @@ import { Pressable } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Button } from '../../common/Button';
 import { useEstimatePageStore } from '@/app/stores/estimatePageStore';
+import { useTheme } from '../../providers/ThemeProvider';
 
 const DEFAULT_PAGES = [
   'Title',
@@ -20,6 +21,7 @@ const DEFAULT_PAGES = [
 export function SubHeader() {
   const { currentPage, removeCustomPage, customPages, setCurrentPage } = useEstimatePageStore();
   const handleBack = () => router.back();
+  const theme = useTheme();
   const handleViewPage = () => {
     // Handle view page action
   };
@@ -66,15 +68,15 @@ export function SubHeader() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.leftSection}>
         <Pressable style={styles.backButton} onPress={handleBack}>
-          <MaterialIcons name="arrow-back" size={20} color={Colors.primary} />
-          <Text style={styles.backText}>Back</Text>
+          <MaterialIcons name="arrow-back" size={20} color={theme.primary} />
+          <Text style={[styles.backText, { color: theme.primary }]}>Back</Text>
         </Pressable>
         <View style={styles.estimateInfo}>
-          <Text style={styles.estimateName}>Estimate #1234</Text>
-          <Text style={styles.layoutText}>Layout: Default Layout</Text>
+          <Text style={[styles.estimateName, { color: theme.primary }]}>Estimate #1234</Text>
+          <Text style={[styles.layoutText, { color: theme.textSecondary }]}>Layout: Default Layout</Text>
         </View>
       </View>
       <View style={styles.buttonContainer}>

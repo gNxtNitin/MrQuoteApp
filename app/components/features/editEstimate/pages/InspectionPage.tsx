@@ -6,6 +6,7 @@ import { Colors } from '@/app/constants/colors';
 import { Feather, MaterialIcons } from '@expo/vector-icons';
 import { Button } from '../../../common/Button';
 import { actions, RichEditor, RichToolbar } from 'react-native-pell-rich-editor';
+import { useTheme } from '@/app/components/providers/ThemeProvider';
 
 export function InspectionPage() {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -18,6 +19,7 @@ export function InspectionPage() {
       items: [{ id: '1', description: '', images: [] }]
     }
   ]);
+  const theme = useTheme();
 
   const editorRefs = useRef<{[key: string]: React.RefObject<RichEditor>}>({});
   const [editorContents, setEditorContents] = useState<{[key: string]: string}>({});
@@ -104,7 +106,7 @@ export function InspectionPage() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Card style={styles.mainCard}>
         <ScrollView style={styles.scrollView}>
           <View style={styles.header}>

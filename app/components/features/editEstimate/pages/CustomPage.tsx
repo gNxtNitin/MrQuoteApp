@@ -10,6 +10,7 @@
 // import { Button } from '../../../common/Button';
 // import { FileUploader } from '@/app/components/common/FileUploader';
 // import { useEstimatePageStore } from '@/app/stores/estimatePageStore';
+// import { useTheme } from '@/app/components/providers/ThemeProvider';
 
 interface CustomPageProps {
   title: string;
@@ -260,6 +261,7 @@ interface CustomPageProps {
 //   const [selectedType, setSelectedType] = useState<'myPDFs' | 'sharedPDFs' | 'singleUsePDFs' | 'textPage'>('myPDFs');
 //   const [isEditingTitle, setIsEditingTitle] = useState(false);
 //   const [pageTitle, setPageTitle] = useState(title);
+// const theme = useTheme();
 
 //   // Initialize state from store data
 //   useEffect(() => {
@@ -310,7 +312,7 @@ interface CustomPageProps {
 //   };
 
 //   return (
-//     <View style={styles.container}>
+//     <View style={[styles.container, { backgroundColor: theme.background }]}>
 //       <Card style={styles.card}>
 //         {/* Header */}
 //         <View style={styles.header}>

@@ -6,10 +6,12 @@ import { Button } from '../../../common/Button';
 import { Colors } from '@/app/constants/colors';
 import { Feather, MaterialIcons } from '@expo/vector-icons';
 import { FileUploader } from '@/app/components/common/FileUploader';
+import { useTheme } from '@/app/components/providers/ThemeProvider';
 
 export function TitlePage() {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [title, setTitle] = useState('Title');
+  const theme = useTheme();
 
   const handleSave = () => {
     // TODO: Implement save functionality
@@ -17,7 +19,7 @@ export function TitlePage() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Card style={styles.mainCard}>
         <ScrollView 
           style={styles.scrollView}

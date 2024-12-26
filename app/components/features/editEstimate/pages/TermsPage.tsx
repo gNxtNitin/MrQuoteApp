@@ -6,6 +6,7 @@ import { Input } from '../../../common/Input';
 import { RichEditor, RichToolbar, actions } from 'react-native-pell-rich-editor';
 import { Card } from '../../../common/Card';
 import { Button } from '../../../common/Button';
+import { useTheme } from '@/app/components/providers/ThemeProvider';
 
 export function TermsPage() {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -14,7 +15,7 @@ export function TermsPage() {
   const [editorContent, setEditorContent] = useState('');
   const editorRef = React.useRef<RichEditor>(null);
   const [activeTab, setActiveTab] = useState('summary');
-
+  const theme = useTheme();
   const handleLayoutsPress = () => {
     // TODO: Implement navigation to Layouts
     console.log('Navigate to Layouts');
@@ -26,7 +27,7 @@ export function TermsPage() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Card style={styles.mainCard}>
         <ScrollView 
           style={styles.scrollView}
