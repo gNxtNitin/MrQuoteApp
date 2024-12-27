@@ -6,6 +6,7 @@ import { Feather, MaterialIcons } from '@expo/vector-icons';
 import { Button } from '../../../common/Button';
 import { Input } from '@/app/components/common/Input';
 import { useRouter } from 'expo-router';
+import { useTheme } from '@/app/components/providers/ThemeProvider';
 
 const DotPattern = () => (
   <View style={styles.dotPattern}>
@@ -20,9 +21,10 @@ export function LayoutPage() {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [title, setTitle] = useState('Layout');
   const [description, setDescription] = useState('');
+  const theme = useTheme();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Card style={styles.mainCard}>
         <View style={styles.header}>
           <View style={styles.titleRow}>
@@ -46,7 +48,7 @@ export function LayoutPage() {
         </View>
 
         <ScrollView style={styles.scrollContainer}>
-          <View style={styles.diagramsContainer}>
+          {/* <View style={styles.diagramsContainer}>
             <View style={styles.diagramRow}>
               <View style={[styles.diagramCard, { flex: 1 }]}>
                 <View style={styles.diagramHeader}>
@@ -86,7 +88,7 @@ export function LayoutPage() {
                 </View>
               </View>
             </View>
-          </View>
+          </View> */}
 
           <View style={styles.drawingSection}>
             <Text style={styles.drawingSectionTitle}>Draw here</Text>

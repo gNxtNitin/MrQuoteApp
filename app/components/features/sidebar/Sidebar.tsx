@@ -4,6 +4,7 @@ import { MaterialIcons, Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState, useEffect } from 'react';
 import { useEstimatePageStore } from '@/app/stores/estimatePageStore';
+import { useTheme } from '../../providers/ThemeProvider';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -18,7 +19,7 @@ interface MenuItem {
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const [checkedItems, setCheckedItems] = useState<number[]>([]);
-  const [selectedItem, setSelectedItem] = useState<number>(1);
+  const { setCurrentPage, customPages, addCustomPage, currentPage } = useEstimatePageStore();
   const [menuItems, setMenuItems] = useState<MenuItem[]>([
     { id: 1, title: 'Title' },
     { id: 2, title: 'Introduction' },
@@ -30,7 +31,15 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     { id: 8, title: 'Warranty' },
   ]);
 
-  const { setCurrentPage, customPages, addCustomPage } = useEstimatePageStore();
+  const theme = useTheme();
+  const [selectedItem, setSelectedItem] = useState<number>(1);
+  
+  useEffect(() => {
+    const currentMenuItem = menuItems.find(item => item.title === currentPage);
+    if (currentMenuItem) {
+      setSelectedItem(currentMenuItem.id);
+    }
+  }, [currentPage, menuItems]);
 
   useEffect(() => {
     const updatedMenuItems = [
@@ -68,7 +77,14 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     const newId = Math.max(...menuItems.map(item => item.id)) + 1;
     const customPageCount = customPages.length + 1;
     const newTitle = `Custom Page ${customPageCount}`;
-    addCustomPage({ id: newId, title: newTitle });
+    
+    addCustomPage({
+      id: newId,
+      title: newTitle,
+      type: 'myPDFs',
+      requireAcknowledge: false,
+    });
+    
     setSelectedItem(newId);
     setCurrentPage(newTitle);
   };
@@ -78,7 +94,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       {isOpen && (
         <View style={styles.container}>
           <Pressable style={styles.overlay} onPress={onClose}>
-            <View style={styles.sidebar}>
+            <View style={[styles.sidebar, { backgroundColor: theme.background }]}>
               <View style={styles.header}>
                 <View style={styles.titleContainer}>
                   <Pressable onPress={handleHomePress} style={styles.homeButton}>
@@ -113,11 +129,11 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                           <Feather
                             name={checkedItems.includes(item.id) ? "check-square" : "square"}
                             size={20}
-                            color={isSelected ? Colors.white : Colors.black}
+                            color={isSelected ? Colors.white : theme.textPrimary}
                           />
                         </Pressable>
                         <Text style={[
-                          styles.menuItemText,
+                          [styles.menuItemText, { color: theme.textPrimary }],
                           isSelected && styles.menuItemTextSelected
                         ]}>
                           {item.title}

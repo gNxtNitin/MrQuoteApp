@@ -6,6 +6,8 @@ import { Colors } from '@/app/constants/colors';
 import { Input } from '../../../common/Input';
 import { Button } from '@/app/components/common/Button';
 import { Card } from '../../../common/Card';
+import { ViewTemplatesDialog } from './ViewTemplatesDialog';
+import { useTheme } from '@/app/components/providers/ThemeProvider';
 
 interface Template {
   id: string;
@@ -28,7 +30,8 @@ export function IntroductionPage() {
   const [showTokens, setShowTokens] = useState(false);
   const editorRef = useRef<RichEditor>(null);
   const tokenButtonRef = useRef<View>(null);
-  
+  const [showTemplatesDialog, setShowTemplatesDialog] = useState(false);
+  const theme = useTheme();
   const handleSaveTemplate = () => {
     // Implement save template logic
     if (editorContent) {
@@ -43,8 +46,17 @@ export function IntroductionPage() {
   };
 
   const handleViewTemplates = () => {
-    // Implement view templates logic
-    console.log('Viewing templates');
+    setShowTemplatesDialog(true);
+  };
+
+  const handleCloseTemplatesDialog = () => {
+    setShowTemplatesDialog(false);
+  };
+
+  const handleSelectTemplate = (template: string) => {
+    // Handle template selection
+    console.log('Selected template:', template);
+    setShowTemplatesDialog(false);
   };
 
   const insertToken = (token: string) => {
@@ -53,7 +65,7 @@ export function IntroductionPage() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Card style={styles.mainCard}>
         <ScrollView
           style={styles.scrollView}
@@ -160,6 +172,12 @@ export function IntroductionPage() {
           </View>
         </ScrollView>
       </Card>
+
+      <ViewTemplatesDialog
+        visible={showTemplatesDialog}
+        onClose={handleCloseTemplatesDialog}
+        onSelect={handleSelectTemplate}
+      />
     </View>
   );
 }

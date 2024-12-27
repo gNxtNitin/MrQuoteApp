@@ -1,6 +1,7 @@
 import { Pressable, Text, StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Colors } from '@/app/constants/colors';
+import { useTheme } from '@/app/components/providers/ThemeProvider';
 
 interface ActionButtonProps {
   icon: keyof typeof MaterialIcons.glyphMap;
@@ -10,15 +11,18 @@ interface ActionButtonProps {
 }
 
 export function ActionButton({ icon, label, onPress, variant = 'primary' }: ActionButtonProps) {
+  const theme = useTheme();
+  
   return (
     <Pressable 
-      style={[styles.button, variant === 'delete' ? styles.deleteButton : styles.primaryButton]}
+      style={[
+        styles.button, 
+        variant === 'delete' ? styles.deleteButton : { backgroundColor: theme.primary }
+      ]}
       onPress={onPress}
-      accessibilityRole="button"
-      accessibilityLabel={label}
     >
       <MaterialIcons name={icon} size={18} color={Colors.white} />
-      <Text style={styles.buttonText}>{label}</Text>
+      <Text style={[styles.buttonText, { color: Colors.white }]}>{label}</Text>
     </Pressable>
   );
 }

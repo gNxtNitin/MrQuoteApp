@@ -2,7 +2,8 @@ import { Colors } from './colors';
 
 export const lightTheme = {
   background: Colors.white,
-  text: Colors.black,
+  textPrimary: Colors.primary,
+  textSecondary: Colors.black,
   primary: Colors.primary,
   secondary: Colors.gradientSecondary,
   card: Colors.white,
@@ -11,13 +12,14 @@ export const lightTheme = {
 };
 
 export const darkTheme = {
-  background: '#1a1a1a',
-  text: Colors.white,
-  primary: '#2176FF',
-  secondary: '#164B99',
-  card: '#2D2D2D',
-  border: '#404040',
-  error: '#FF6B6B',
+  background: '#121212', // Darker background for better contrast
+  textPrimary: Colors.white,
+  textSecondary: Colors.white,
+  primary: Colors.primary,
+  secondary: Colors.white, // Material Design dark theme secondary color
+  card: '#1E1E1E', // Slightly lighter than background for depth
+  border: '#333333', // Subtle border color
+  error: '#CF6679', // Material Design dark theme error color
 };
 
 export type Theme = typeof lightTheme; 

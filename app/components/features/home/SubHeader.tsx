@@ -13,7 +13,11 @@ export function SubHeader({ onSync, onCreate }: SubHeaderProps) {
   const theme = useTheme();
   
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
+    <View style={[styles.container, { 
+      backgroundColor: theme.background,
+      borderBottomColor: theme.border,
+      borderBottomWidth: 1,
+    }]}>
       <View style={styles.content}>
         <View style={styles.contentWrapper}>
           <Text style={[styles.title, { color: theme.primary }]}>Estimate</Text>

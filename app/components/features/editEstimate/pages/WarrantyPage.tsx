@@ -6,6 +6,7 @@ import { Input } from '../../../common/Input';
 import { Button } from '../../../common/Button';
 import { MaterialIcons, Feather } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useTheme } from '@/app/components/providers/ThemeProvider';
 
 export function WarrantyPage() {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -21,6 +22,7 @@ export function WarrantyPage() {
     customerName: 'Insurance Sample', // This would come from props/state in real app
     address: '123 Sample Ave NW, Calgary, AB, T2T 2T2', // This would come from props/state
   });
+  const theme = useTheme();
 
   const handleInputChange = (field: string, value: string) => {
     if (isFormSaved) return; // Prevent changes if form is saved
@@ -138,7 +140,7 @@ export function WarrantyPage() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Card style={styles.mainCard}>
         <View style={styles.header}>
           <View style={styles.titleRow}>

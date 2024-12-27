@@ -2,6 +2,7 @@ import { View, Text, TextInput, StyleSheet, Modal, Pressable } from 'react-nativ
 import { Colors } from '@/app/constants/colors';
 import { Card } from '@/app/components/common/Card';
 import { useState } from 'react';
+import { useTheme } from '../../providers/ThemeProvider';
 
 interface CreateEstimateDialogProps {
   visible: boolean;
@@ -24,6 +25,7 @@ interface EstimateFormData {
 }
 
 export function CreateEstimateDialog({ visible, onClose, onSave }: CreateEstimateDialogProps) {
+  const theme = useTheme();
   const [formData, setFormData] = useState<EstimateFormData>({
     projectName: '',
     firstName: '',
@@ -57,24 +59,28 @@ export function CreateEstimateDialog({ visible, onClose, onSave }: CreateEstimat
       onRequestClose={onClose}
     >
       <View style={styles.overlay}>
-        <Card>
+        <Card style={{ backgroundColor: theme.background }}>
           <View style={styles.container}>
             <View style={styles.header}>
-              <Text style={styles.title}>Create New Estimate</Text>
+              <Text style={[styles.title, { color: theme.primary }]}>Create New Estimate</Text>
               <Pressable onPress={onClose} style={styles.closeButton}>
                 <Text style={styles.closeButtonText}>✕</Text>
               </Pressable>
             </View>
-            <View style={styles.divider} />
+            <View style={[styles.divider, { backgroundColor: theme.border }]} />
 
             <View style={styles.form}>
               <View style={styles.row}>
                 <View style={styles.field}>
                   <Text style={styles.label}>Project Name</Text>
                   <TextInput 
-                    style={styles.input} 
+                    style={[styles.input, { 
+                      borderColor: theme.border,
+                      backgroundColor: theme.background,
+                      color: theme.textSecondary
+                    }]}
                     placeholder="Enter project name" 
-                    placeholderTextColor="#999"
+                    placeholderTextColor={theme.secondary}
                     value={formData.projectName}
                     onChangeText={(value) => handleChange('projectName', value)}
                   />
@@ -82,9 +88,13 @@ export function CreateEstimateDialog({ visible, onClose, onSave }: CreateEstimat
                 <View style={styles.field}>
                   <Text style={styles.label}>First name</Text>
                   <TextInput 
-                    style={styles.input} 
+                    style={[styles.input, { 
+                      borderColor: theme.border,
+                      backgroundColor: theme.background,
+                      color: theme.textSecondary  
+                    }]}
                     placeholder="Enter first name" 
-                    placeholderTextColor="#999"
+                    placeholderTextColor={theme.secondary}
                     value={formData.firstName}
                     onChangeText={(value) => handleChange('firstName', value)}
                   />
@@ -92,9 +102,13 @@ export function CreateEstimateDialog({ visible, onClose, onSave }: CreateEstimat
                 <View style={styles.field}>
                   <Text style={styles.label}>Last name</Text>
                   <TextInput 
-                    style={styles.input} 
+                    style={[styles.input, { 
+                      borderColor: theme.border,
+                      backgroundColor: theme.background,
+                      color: theme.textSecondary    
+                    }]}
                     placeholder="Enter last name" 
-                    placeholderTextColor="#999"
+                    placeholderTextColor={theme.secondary}
                     value={formData.lastName}
                     onChangeText={(value) => handleChange('lastName', value)}
                   />
@@ -105,9 +119,13 @@ export function CreateEstimateDialog({ visible, onClose, onSave }: CreateEstimat
                 <View style={styles.field}>
                   <Text style={styles.label}>Company name</Text>
                   <TextInput 
-                    style={styles.input} 
+                    style={[styles.input, { 
+                      borderColor: theme.border,
+                      backgroundColor: theme.background,
+                      color: theme.textSecondary  
+                    }]}
                     placeholder="Enter company name" 
-                    placeholderTextColor="#999"
+                    placeholderTextColor={theme.secondary}
                     value={formData.companyName}
                     onChangeText={(value) => handleChange('companyName', value)}
                   />
@@ -115,9 +133,13 @@ export function CreateEstimateDialog({ visible, onClose, onSave }: CreateEstimat
                 <View style={styles.field}>
                   <Text style={styles.label}>Phone number</Text>
                   <TextInput 
-                    style={styles.input} 
+                    style={[styles.input, { 
+                      borderColor: theme.border,
+                      backgroundColor: theme.background,
+                      color: theme.textSecondary  
+                    }]}
                     placeholder="Enter phone number" 
-                    placeholderTextColor="#999"
+                    placeholderTextColor={theme.secondary}
                     keyboardType="phone-pad"
                     value={formData.phoneNumber}
                     onChangeText={(value) => handleChange('phoneNumber', value)}
@@ -126,9 +148,13 @@ export function CreateEstimateDialog({ visible, onClose, onSave }: CreateEstimat
                 <View style={styles.field}>
                   <Text style={styles.label}>Email</Text>
                   <TextInput 
-                    style={styles.input} 
+                    style={[styles.input, { 
+                      borderColor: theme.border,
+                      backgroundColor: theme.background,
+                      color: theme.textSecondary
+                    }]}
                     placeholder="Enter email" 
-                    placeholderTextColor="#999"
+                    placeholderTextColor={theme.secondary}
                     keyboardType="email-address"
                     value={formData.email}
                     onChangeText={(value) => handleChange('email', value)}
@@ -140,9 +166,13 @@ export function CreateEstimateDialog({ visible, onClose, onSave }: CreateEstimat
                 <View style={styles.field}>
                   <Text style={styles.label}>Address line 1</Text>
                   <TextInput 
-                    style={styles.input} 
+                    style={[styles.input, { 
+                      borderColor: theme.border,
+                      backgroundColor: theme.background,
+                      color: theme.textSecondary
+                    }]}
                     placeholder="Enter address" 
-                    placeholderTextColor="#999"
+                    placeholderTextColor={theme.secondary}
                     value={formData.addressLine1}
                     onChangeText={(value) => handleChange('addressLine1', value)}
                   />
@@ -150,9 +180,13 @@ export function CreateEstimateDialog({ visible, onClose, onSave }: CreateEstimat
                 <View style={styles.field}>
                   <Text style={styles.label}>Address line 2</Text>
                   <TextInput 
-                    style={styles.input} 
+                    style={[styles.input, { 
+                      borderColor: theme.border,
+                      backgroundColor: theme.background,
+                      color: theme.textSecondary
+                    }]}
                     placeholder="Enter address" 
-                    placeholderTextColor="#999"
+                    placeholderTextColor={theme.secondary}
                     value={formData.addressLine2}
                     onChangeText={(value) => handleChange('addressLine2', value)}
                   />
@@ -160,9 +194,13 @@ export function CreateEstimateDialog({ visible, onClose, onSave }: CreateEstimat
                 <View style={styles.field}>
                   <Text style={styles.label}>City</Text>
                   <TextInput 
-                    style={styles.input} 
+                    style={[styles.input, { 
+                      borderColor: theme.border,
+                      backgroundColor: theme.background,
+                      color: theme.textSecondary
+                    }]}
                     placeholder="Enter city" 
-                    placeholderTextColor="#999"
+                    placeholderTextColor={theme.secondary}
                     value={formData.city}
                     onChangeText={(value) => handleChange('city', value)}
                   />
@@ -173,9 +211,13 @@ export function CreateEstimateDialog({ visible, onClose, onSave }: CreateEstimat
                 <View style={styles.field}>
                   <Text style={styles.label}>State/Province</Text>
                   <TextInput 
-                    style={styles.input} 
+                    style={[styles.input, { 
+                      borderColor: theme.border,
+                      backgroundColor: theme.background,
+                      color: theme.textSecondary
+                    }]}
                     placeholder="Enter state" 
-                    placeholderTextColor="#999"
+                    placeholderTextColor={theme.secondary}
                     value={formData.state}
                     onChangeText={(value) => handleChange('state', value)}
                   />
@@ -183,9 +225,13 @@ export function CreateEstimateDialog({ visible, onClose, onSave }: CreateEstimat
                 <View style={styles.field}>
                   <Text style={styles.label}>Zip code/Postal code</Text>
                   <TextInput 
-                    style={styles.input} 
+                    style={[styles.input, { 
+                      borderColor: theme.border,
+                      backgroundColor: theme.background,
+                      color: theme.textSecondary
+                    }]}
                     placeholder="Enter zip code" 
-                    placeholderTextColor="#999"
+                    placeholderTextColor={theme.secondary}
                     keyboardType="numeric"
                     value={formData.zipCode}
                     onChangeText={(value) => handleChange('zipCode', value)}

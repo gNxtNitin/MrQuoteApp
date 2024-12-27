@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { router, useRouter } from 'expo-router';
 import { Estimate } from '@/app/types/estimate';
 import { getHouseImage } from '@/app/utils/houseImages';
+import { useTheme } from '@/app/components/providers/ThemeProvider';
 
 interface EstimateCardProps {
   estimate: Estimate;
@@ -17,6 +18,7 @@ export function EstimateCard({ estimate, index, onStatusChange }: EstimateCardPr
   const [isSyncing, setIsSyncing] = useState(false);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [currentStatus, setCurrentStatus] = useState<Estimate['status']>(estimate.status);
+  const theme = useTheme();
 
   const houseImage = getHouseImage(estimate.id);
 
@@ -71,7 +73,13 @@ export function EstimateCard({ estimate, index, onStatusChange }: EstimateCardPr
   };
 
   return (
-    <Pressable style={styles.card} onPress={handleCardPress}>
+    <Pressable 
+      style={[styles.card, { 
+        backgroundColor: theme.card,
+        borderColor: theme.border 
+      }]} 
+      onPress={handleCardPress}
+    >
       <View style={styles.imageContainer}>
         <Image 
           source={houseImage}
@@ -80,19 +88,25 @@ export function EstimateCard({ estimate, index, onStatusChange }: EstimateCardPr
         />
       </View>
       
-      <View style={styles.contentContainer}>
+      <View style={[styles.contentContainer, { backgroundColor: theme.card }]}>
         <View style={styles.header}>
-          <Text style={styles.customerName} numberOfLines={1}>{estimate.customerName}</Text>
+          <Text style={[styles.customerName, { color: theme.primary }]} numberOfLines={1}>
+            {estimate.customerName}
+          </Text>
         </View>
 
         <View style={styles.content}>
           <View style={styles.infoRow}>
-            <MaterialIcons name="location-on" size={18} color={Colors.primary} />
-            <Text style={styles.infoText} numberOfLines={2}>{estimate.address}</Text>
+            <MaterialIcons name="location-on" size={18} color={theme.primary} />
+            <Text style={[styles.infoText, { color: theme.textSecondary }]} numberOfLines={2}>
+              {estimate.address}
+            </Text>
           </View>
           <View style={styles.infoRow}>
-            <MaterialIcons name="event" size={18} color={Colors.primary} />
-            <Text style={styles.infoText}>{estimate.date}</Text>
+            <MaterialIcons name="event" size={18} color={theme.primary} />
+            <Text style={[styles.infoText, { color: theme.textSecondary }]}>
+              {estimate.date}
+            </Text>
           </View>
         </View>
 
@@ -101,7 +115,15 @@ export function EstimateCard({ estimate, index, onStatusChange }: EstimateCardPr
             style={[styles.statusButton, styles[`status_${currentStatus}`]]}
             onPress={() => setShowStatusDropdown(!showStatusDropdown)}
           >
-            <Text style={[styles.statusText, { color: getStatusTextColor(currentStatus) }]}>
+            <Text 
+              style={[
+                styles.statusText, 
+                { color: getStatusTextColor(currentStatus) },
+                styles.statusTextAdjust
+              ]}
+              adjustsFontSizeToFit
+              numberOfLines={1}
+            >
               {currentStatus.replace('_', ' ').toUpperCase()}
             </Text>
             <MaterialIcons name="edit" size={16} color={getStatusTextColor(currentStatus)} />
@@ -181,20 +203,22 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   customerName: {
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: 'bold',
     color: Colors.primary,
     flex: 1,
   },
   statusButton: {
     flex: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 12,
+    minHeight: 40,
+    maxHeight: 48,
+    paddingVertical: 8,
+    paddingHorizontal: 8,
     borderRadius: 12,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
+    gap: 4,
     borderWidth: 1,
     borderColor: Colors.primary,
   },
@@ -226,6 +250,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     textAlign: 'center',
+    flex: 1,
+  },
+  statusTextAdjust: {
+    minWidth: 0,
+    flexShrink: 1,
   },
   editButton: {
     padding: 8,
