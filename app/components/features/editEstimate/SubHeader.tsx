@@ -1,34 +1,39 @@
-import { View, Text, StyleSheet, Alert } from 'react-native';
-import { Colors } from '@/app/constants/colors';
-import { router } from 'expo-router';
-import { Pressable } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
-import { Button } from '../../common/Button';
-import { useEstimatePageStore } from '@/app/stores/estimatePageStore';
-import { useTheme } from '../../providers/ThemeProvider';
+import { View, Text, StyleSheet, Alert } from "react-native";
+import { Colors } from "@/app/constants/colors";
+import { router } from "expo-router";
+import { Pressable } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
+import { Button } from "../../common/Button";
+import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
+import { useTheme } from "../../providers/ThemeProvider";
+import { useRouter } from 'expo-router';
 
 const DEFAULT_PAGES = [
-  'Title',
-  'Introduction',
-  'Inspection',
-  'Layout',
-  'Quote Details',
-  'Authorize Page',
-  'Terms and Conditions',
-  'Warranty'
+  "Title",
+  "Introduction",
+  "Inspection",
+  "Layout",
+  "Quote Details",
+  "Authorize Page",
+  "Terms and Conditions",
+  "Warranty",
 ];
 
 export function SubHeader() {
-  const { currentPage, removeCustomPage, customPages, setCurrentPage } = useEstimatePageStore();
+    const router = useRouter();
+  
+  const { currentPage, removeCustomPage, customPages, setCurrentPage } =
+    useEstimatePageStore();
   const handleBack = () => router.back();
   const theme = useTheme();
   const handleViewPage = () => {
     // Handle view page action
   };
 
-  const isCustomPage = currentPage.startsWith('Custom Page');
-  const currentCustomPage = isCustomPage ? 
-    customPages.find(page => page.title === currentPage) : null;
+  const isCustomPage = currentPage.startsWith("Custom Page");
+  const currentCustomPage = isCustomPage
+    ? customPages.find((page) => page.title === currentPage)
+    : null;
 
   const handleDeletePage = () => {
     if (currentCustomPage) {
@@ -38,7 +43,7 @@ export function SubHeader() {
         [
           {
             text: "Cancel",
-            style: "cancel"
+            style: "cancel",
           },
           {
             text: "Delete",
@@ -46,21 +51,24 @@ export function SubHeader() {
               // Get all pages in order
               const allPages = [
                 ...DEFAULT_PAGES,
-                ...customPages.map(cp => cp.title)
+                ...customPages.map((cp) => cp.title),
               ];
-              
+
               // Find current page index
               const currentIndex = allPages.indexOf(currentPage);
-              
+
               // Remove the page
               removeCustomPage(currentCustomPage.id);
-              
+
               // Navigate to next page or previous if it's the last page
-              const nextPage = allPages[currentIndex + 1] || allPages[currentIndex - 1] || 'Title';
+              const nextPage =
+                allPages[currentIndex + 1] ||
+                allPages[currentIndex - 1] ||
+                "Title";
               setCurrentPage(nextPage);
             },
-            style: "destructive"
-          }
+            style: "destructive",
+          },
         ],
         { cancelable: true }
       );
@@ -75,27 +83,50 @@ export function SubHeader() {
           <Text style={[styles.backText, { color: theme.primary }]}>Back</Text>
         </Pressable>
         <View style={styles.estimateInfo}>
-          <Text style={[styles.estimateName, { color: theme.primary }]}>Estimate #1234</Text>
-          <Text style={[styles.layoutText, { color: theme.textSecondary }]}>Layout: Default Layout</Text>
+          <Text style={[styles.estimateName, { color: theme.primary }]}>
+            Estimate #1234
+          </Text>
+          <Text style={[styles.layoutText, { color: theme.textSecondary }]}>
+            Layout: Default Layout
+          </Text>
         </View>
       </View>
       <View style={styles.buttonContainer}>
         {isCustomPage && (
           <View style={{ marginRight: 16 }}>
-          <Button 
-            label="Delete Page"
-            onPress={handleDeletePage}
-            variant="delete"
-            size="medium"
-          />
+            <Button
+              label="Delete Page"
+              onPress={handleDeletePage}
+              variant="delete"
+              size="medium"
+            />
           </View>
         )}
-        <Button 
+        <Button
           label="View Page"
           onPress={handleViewPage}
           variant="primary"
           size="medium"
         />
+        <Pressable
+          style={[
+            styles.actionButton,
+            {
+              borderColor: theme.textPrimary,
+              backgroundColor: theme.background,
+            },
+          ]}
+          onPress={
+            ()=>router.push('/reviewandshare')
+          
+          }
+            
+        >
+          <MaterialIcons name="ios-share" size={16} color={theme.textPrimary} />
+          <Text style={[styles.actionButtonText, { color: theme.textPrimary }]}>
+            Review & Share
+          </Text>
+        </Pressable>
       </View>
     </View>
   );
@@ -106,10 +137,10 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: Colors.white,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    borderBottomColor: "#eee",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   leftSection: {
     flex: 1,
@@ -120,7 +151,7 @@ const styles = StyleSheet.create({
   },
   estimateName: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: Colors.primary,
   },
   layoutText: {
@@ -128,18 +159,33 @@ const styles = StyleSheet.create({
     color: Colors.black,
     opacity: 0.7,
   },
-  backButton: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    gap: 6 
+  backButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
   },
-  backText: { 
-    fontSize: 16, 
-    color: Colors.primary, 
-    fontWeight: '600' 
+  backText: {
+    fontSize: 16,
+    color: Colors.primary,
+    fontWeight: "600",
   },
   buttonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
   },
-}); 
+
+  actionButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 6,
+    gap: 6,
+    borderWidth: 1,
+    borderColor: Colors.primary,
+    backgroundColor: Colors.white,
+  },
+
+  actionButtonText: { fontSize: 14, fontWeight: "600", color: Colors.primary },
+});

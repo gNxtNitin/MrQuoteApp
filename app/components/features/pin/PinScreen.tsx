@@ -192,15 +192,16 @@ const styles = StyleSheet.create({
   },
   container: {
     backgroundColor: Colors.white,
-    width: "85%",
-    height: "60%",
+    width: "90%",
+    maxWidth: 1000,
     flexDirection: "row",
     borderRadius: 12,
+    height: 500,
   },
   pinGradientWrapper: {
     flex: 1,
     borderTopRightRadius: 12,
-    borderBottomEndRadius:12,
+    borderBottomEndRadius: 12,
     overflow: "hidden",
   },
   pinGradient: {
