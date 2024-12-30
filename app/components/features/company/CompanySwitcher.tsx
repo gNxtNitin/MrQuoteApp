@@ -35,7 +35,7 @@ export function CompanySwitcher({
   onLogout,
 }: CompanySwitcherProps) {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { zIndex: 9999 }]}>
       <View style={styles.userInfo}>
         <View style={styles.userIcon}>
           <Text style={styles.userInitials}>
@@ -116,6 +116,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
+    zIndex: 9999,
   },
   userInfo: {
     flexDirection: "row",

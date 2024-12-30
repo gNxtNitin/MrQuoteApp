@@ -83,7 +83,7 @@ export function Header() {
   const logoToShow = selectedCompany === "gutter" ? gutter : roofing;
 
   return (
-    <View style={styles.header}>
+    <View style={[styles.header, { zIndex: 9999 }]}>
       <View style={styles.content}>
         <View style={styles.leftSection}>
           {showSidebarButton && (
@@ -105,7 +105,7 @@ export function Header() {
           </Pressable>
         </View>
 
-        <View style={styles.rightSection}>
+        <View style={[styles.rightSection, { zIndex: 9999 }]}>
           <Pressable onPress={toggleTheme} style={styles.themeButton}>
             <MaterialIcons
               name={isDarkMode ? "light-mode" : "dark-mode"}
@@ -198,11 +198,15 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: Colors.white,
   },
+  switcherWrapper: {
+    position: 'relative',
+    zIndex: 9999,
+  },
   switcherContainer: {
     position: "absolute",
     top: "100%",
     right: 0,
-    zIndex: 1000,
+    zIndex: 9999,
     width: 300,
     elevation: 5,
     shadowColor: "#000",
