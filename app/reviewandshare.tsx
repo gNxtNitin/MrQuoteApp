@@ -1,4 +1,4 @@
-import { ReviewAndShareScreen } from "./components/features/reviewansshare/ReviewAndShareScreen";
+import { ReviewAndShareScreen } from "./components/features/reviewandshare/ReviewAndShareScreen";
 
 export default function ReviewAndSharePage(){
     return<ReviewAndShareScreen onReviewAndShare={()=>{}} isDarkMode={false}/>;
