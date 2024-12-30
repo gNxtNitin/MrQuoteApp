@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, SafeAreaView, Image } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, SafeAreaView, Image, Keyboard } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '@/app/constants/colors';
@@ -43,6 +43,7 @@ export function LoginScreen({ onLogin, isDarkMode }: LoginScreenProps) {
   };
 
   const handleLogin = async () => {
+    Keyboard.dismiss();
     if (validateForm()) {
       try {
         const isAuthenticated = true;
