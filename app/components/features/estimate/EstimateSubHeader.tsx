@@ -24,8 +24,8 @@ export function EstimateSubHeader({
 
   const handleBack = () => router.back();
   
-  const handleNewEstimate = () => {
-    setShowCreateDialog(true);
+  const handleNewQuote = () => {
+    router.push('/editEstimate');
   };
 
   const handleCloseDialog = () => {
@@ -119,11 +119,11 @@ export function EstimateSubHeader({
             <View style={styles.buttonGroup}>
               <Pressable 
                 style={[styles.actionButton, styles.primaryButton]}
-                onPress={handleNewEstimate}
+                onPress={handleNewQuote}
               >
                 <MaterialIcons name="add" size={16} color={Colors.white} />
                 <Text style={[styles.actionButtonText, styles.primaryButtonText]}>
-                  New Estimate
+                  New Quote
                 </Text>
               </Pressable>
               <Pressable 
