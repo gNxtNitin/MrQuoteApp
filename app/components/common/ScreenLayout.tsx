@@ -15,12 +15,16 @@ export function ScreenLayout({ children, subHeader }: ScreenLayoutProps) {
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={[styles.headerSection, { 
         backgroundColor: theme.background,
-        borderBottomColor: theme.border 
+        borderBottomColor: theme.border,
+        zIndex: 9999,
       }]}>
         <Header />
         {subHeader}
       </View>
-      <View style={[styles.content, { backgroundColor: theme.background }]}>
+      <View style={[styles.content, { 
+        backgroundColor: theme.background,
+        zIndex: 1
+      }]}>
         {children}
       </View>
     </View>
@@ -30,11 +34,14 @@ export function ScreenLayout({ children, subHeader }: ScreenLayoutProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    position: 'relative',
   },
   headerSection: {
     borderBottomWidth: 1,
+    position: 'relative',
   },
   content: {
     flex: 1,
+    position: 'relative',
   },
 }); 

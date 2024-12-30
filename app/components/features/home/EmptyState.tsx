@@ -19,7 +19,7 @@ export function EmptyState({ isSyncing }: EmptyStateProps) {
           : require('@/assets/images/empty-state.png')
         }
         style={styles.image}
-        resizeMode="contain"
+        contentFit="contain"
       />
       <Text style={[styles.text, { color: theme.textSecondary }]}>
         {isSyncing 
