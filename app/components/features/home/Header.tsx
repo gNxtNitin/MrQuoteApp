@@ -97,8 +97,8 @@ export function Header() {
                 styles.initialCircle,
                 { backgroundColor: Colors.white }
               ]}>
-                <Text style={[styles.initial, { color: currentCompany?.color }]}>
-                  {currentCompany?.initial}
+                <Text style={[styles.initial, { color: Colors.primary }]}>
+                  {'AS'}
                 </Text>
               </View>
             </Pressable>

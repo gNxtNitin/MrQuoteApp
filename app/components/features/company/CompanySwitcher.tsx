@@ -17,6 +17,10 @@ interface CompanySwitcherProps {
   onLogout: () => void;
 }
 
+function initialsName(name: string) {
+  return name.split(' ').map(word => word[0]).join('');
+}
+
 export function CompanySwitcher({ 
   companies, 
   selectedCompany, 
@@ -25,19 +29,33 @@ export function CompanySwitcher({
 }: CompanySwitcherProps) {
   return (
     <View style={styles.container}>
+      <View style={styles.userInfo}>
+        <View style={styles.userIcon}>
+          <Text style={styles.userInitials}>{initialsName("Ankush Singh")}</Text>
+        </View>
+        <View>
+          <Text style={styles.userName}>Ankush Singh</Text>
+          <Text style={styles.userStatus}>Active</Text>
+        </View>
+      </View>
+
+      <View style={styles.divider} />
+
       <Text style={styles.title}>Switch Company</Text>
       
+      <View style={styles.divider} />
+
       {companies.map((company) => (
         <Pressable
           key={company.id}
           style={styles.companyRow}
           onPress={() => onSelectCompany(company.id)}
         >
-          <View style={[styles.initialCircle, { backgroundColor: company.color }]}>
+          <View style={[styles.companyIcon, { backgroundColor: company.color, marginStart: 14 }]}>
             <Text style={styles.initial}>{company.initial}</Text>
           </View>
           
-          <Text style={styles.companyName}>{company.name}</Text>
+          <Text style={[styles.companyName, { marginStart: 14 }]}>{company.name}</Text>
           
           {selectedCompany === company.id ? (
             <MaterialIcons name="check-circle" size={24} color={Colors.primary} />
@@ -47,7 +65,7 @@ export function CompanySwitcher({
         </Pressable>
       ))}
 
-      <Pressable style={[styles.logoutRow, { borderTopWidth: 0 }]} onPress={onLogout}>
+      <Pressable style={styles.logoutRow} onPress={onLogout}>
         <Text style={styles.logoutText}>Logout</Text>
         <MaterialIcons name="logout" size={24} color="#666" />
       </Pressable>
@@ -67,20 +85,56 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 3,
   },
+  userInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  userIcon: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#e0e0e0',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+    borderWidth: 2,
+    borderColor: Colors.primary,
+  },
+  userInitials: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: Colors.black,
+  },
+  userName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.black,
+  },
+  userStatus: {
+    fontSize: 14,
+    color: '#666',
+  },
   title: {
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 16,
+    marginTop: 16,
     color: Colors.black,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#f0f0f0',
   },
   companyRow: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 12,
+    paddingHorizontal: 14,
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
   },
-  initialCircle: {
+  companyIcon: {
     width: 40,
     height: 40,
     borderRadius: 20,
@@ -109,8 +163,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 4, // Reduced from 16 to 8
-    paddingTop: 6, // Reduced from 16 to 12
+    marginTop: 4,
+    paddingTop: 6,
     borderTopWidth: 1,
     borderTopColor: '#f0f0f0',
   },
