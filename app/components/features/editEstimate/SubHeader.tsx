@@ -116,11 +116,9 @@ export function SubHeader() {
               backgroundColor: theme.background,
             },
           ]}
-          onPress={
-            ()=>router.push('/reviewandshare')
-          
-          }
-            
+          onPress={() => {
+            router.push('/reviewandshare');
+          }}
         >
           <MaterialIcons name="ios-share" size={16} color={theme.textPrimary} />
           <Text style={[styles.actionButtonText, { color: theme.textPrimary }]}>

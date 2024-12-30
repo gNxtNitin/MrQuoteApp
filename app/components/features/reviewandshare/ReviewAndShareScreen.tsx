@@ -14,6 +14,8 @@ import { Input } from "../../common/Input";
 import { Button } from "../../common/Button";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from 'expo-router';
+import { Header } from "../home/Header";
+import { ScreenLayout } from "../../common/ScreenLayout";
 
 
 interface ReviewAndShareScreenProps {
@@ -99,113 +101,115 @@ export function ReviewAndShareScreen({
 
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
-        <Pressable style={styles.backButton} onPress={handleBack}>
-                <MaterialIcons name="arrow-back" size={20} color={theme.primary} />
-                <Text style={[styles.backText, { color: theme.primary }]}>Back</Text>
-              </Pressable>
-      <Card style={styles.detailCard}>
-        <View style={styles.logoContainer}>
-          <Text style={styles.mrQuote}>Mr Quote</Text>
-          <Text style={styles.desc}>
-            Residential & Commercial Gutter Experts
-          </Text>
-        </View>
-        <View style={styles.details}>
-          <View style={styles.row}>
-            <Text style={styles.key}>Customer Name:</Text>
-            <Text style={styles.name}>Robert Sled</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.key}>Address:</Text>
-            <Text style={styles.value}>75 South Street Granby, MA 01033</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.key}>Project No.:</Text>
-            <Text style={styles.value}>1045643019</Text>
-          </View>
-        </View>
-      </Card>
-
-      <Card style={styles.belowCard}>
-        <ScrollView showsVerticalScrollIndicator={false} style={styles.scroll}>
-          <View>
-            <Text style={styles.heading}>Select one of the options below</Text>
-            <OptionList data={DATA} />
-
-            <Text style={styles.heading}>
-              Choose from the following options upgrades
+    <ScreenLayout>
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
+          <Pressable style={styles.backButton} onPress={handleBack}>
+                  <MaterialIcons name="arrow-back" size={20} color={theme.primary} />
+                  <Text style={[styles.backText, { color: theme.primary }]}>Back</Text>
+                </Pressable>
+        <Card style={styles.detailCard}>
+          <View style={styles.logoContainer}>
+            <Text style={styles.mrQuote}>Mr Quote</Text>
+            <Text style={styles.desc}>
+              Residential & Commercial Gutter Experts
             </Text>
-            <View>
-              <Text style={styles.leaf}>Leaf Protection</Text>
-              <OptionList data={ProtectionData} />
+          </View>
+          <View style={styles.details}>
+            <View style={styles.row}>
+              <Text style={styles.key}>Customer Name:</Text>
+              <Text style={styles.name}>Robert Sled</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.key}>Address:</Text>
+              <Text style={styles.value}>75 South Street Granby, MA 01033</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.key}>Project No.:</Text>
+              <Text style={styles.value}>1045643019</Text>
             </View>
           </View>
+        </Card>
 
-          <View style={styles.addOns}>
-            <View style={styles.customAddOns}>
-              <Text style={styles.heading}>Details</Text>
-              <Text style={styles.leaf}>Gutter Color</Text>
-              <Input placeholder="Please Select a color" />
+        <Card style={styles.belowCard}>
+          <ScrollView showsVerticalScrollIndicator={false} style={styles.scroll}>
+            <View>
+              <Text style={styles.heading}>Select one of the options below</Text>
+              <OptionList data={DATA} />
 
-              <View style={styles.quoteSummary}>
-                <Text style={styles.subHeading}>Quote Summary</Text>
-                <View style={styles.row}>
-                  <Text style={styles.blackKey}>Quote subtotal</Text>
-                  <Text style={styles.valueBlack}>$0.00</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text style={styles.blackKey}>Options</Text>
-                  <Text style={styles.valueBlack}>$0.00</Text>
-                </View>
-                <View style={styles.line}></View>
-                <View style={styles.row}>
-                  <Text style={styles.blackKey}>Toatal</Text>
-                  <Text style={styles.valueBlack}>$0.00</Text>
-                </View>
-                <View style={styles.row}>
-                  <Button
-                    label="Save and Sign"
-                    variant="primary"
-                    size="medium"
-                  />
-
-                  <Button label="Save" variant="outline" />
-                </View>
-                <Pressable
-                  style={[
-                    styles.actionButton,
-                    {
-                      borderColor: theme.textPrimary,
-                      backgroundColor: theme.background,
-                    },
-                  ]}
-                >
-                  <MaterialIcons
-                    name="download-for-offline"
-                    size={16}
-                    color={theme.textPrimary}
-                  />
-                  <Text
-                    style={[
-                      styles.actionButtonText,
-                      { color: theme.textPrimary },
-                    ]}
-                  >
-                    Download Quote
-                  </Text>
-                </Pressable>
+              <Text style={styles.heading}>
+                Choose from the following options upgrades
+              </Text>
+              <View>
+                <Text style={styles.leaf}>Leaf Protection</Text>
+                <OptionList data={ProtectionData} />
               </View>
             </View>
 
-            <View style={styles.customAddOns}>
-              <Text style={styles.subHeading}>Notes</Text>
-              <Input placeholder="Notes..." />
+            <View style={styles.addOns}>
+              <View style={styles.customAddOns}>
+                <Text style={styles.heading}>Details</Text>
+                <Text style={styles.leaf}>Gutter Color</Text>
+                <Input placeholder="Please Select a color" />
+
+                <View style={styles.quoteSummary}>
+                  <Text style={styles.subHeading}>Quote Summary</Text>
+                  <View style={styles.row}>
+                    <Text style={styles.blackKey}>Quote subtotal</Text>
+                    <Text style={styles.valueBlack}>$0.00</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={styles.blackKey}>Options</Text>
+                    <Text style={styles.valueBlack}>$0.00</Text>
+                  </View>
+                  <View style={styles.line}></View>
+                  <View style={styles.row}>
+                    <Text style={styles.blackKey}>Toatal</Text>
+                    <Text style={styles.valueBlack}>$0.00</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Button
+                      label="Save and Sign"
+                      variant="primary"
+                      size="medium"
+                    />
+
+                    <Button label="Save" variant="outline" />
+                  </View>
+                  <Pressable
+                    style={[
+                      styles.actionButton,
+                      {
+                        borderColor: theme.textPrimary,
+                        backgroundColor: theme.background,
+                      },
+                    ]}
+                  >
+                    <MaterialIcons
+                      name="download-for-offline"
+                      size={16}
+                      color={theme.textPrimary}
+                    />
+                    <Text
+                      style={[
+                        styles.actionButtonText,
+                        { color: theme.textPrimary },
+                      ]}
+                    >
+                      Download Quote
+                    </Text>
+                  </Pressable>
+                </View>
+              </View>
+
+              <View style={styles.customAddOns}>
+                <Text style={styles.subHeading}>Notes</Text>
+                <Input placeholder="Notes..." />
+              </View>
             </View>
-          </View>
-        </ScrollView>
-      </Card>
-    </View>
+          </ScrollView>
+        </Card>
+      </View>
+      </ScreenLayout>
   );
 }
 
