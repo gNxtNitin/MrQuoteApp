@@ -3,13 +3,15 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Card } from './Card';
 import { MaterialIcons, Feather } from '@expo/vector-icons';
 import { Colors } from '@/app/constants/colors';
+import * as MediaLibrary from 'expo-media-library';
+import * as FileSystem from 'expo-file-system';
 
 interface FileUploaderProps {
   label?: string;
   subtitle?: string;
   accept?: 'image' | 'pdf' | 'both';
   height?: number;
-  onUpload?: () => void;
+  onUpload?: (file: any) => void;
   showBorder?: boolean;
   variant?: 'solid' | 'dashed';
 }
@@ -23,6 +25,45 @@ export function FileUploader({
   showBorder = true,
   variant = 'dashed'
 }: FileUploaderProps) {
+  
+  const pickFile = async () => {
+    try {
+      if (accept === 'image' || accept === 'both') {
+        const permission = await MediaLibrary.requestPermissionsAsync();
+        if (permission.granted) {
+          const result = await MediaLibrary.getAssetsAsync({
+            mediaType: MediaLibrary.MediaType.photo,
+            first: 1,
+          });
+
+          if (result.assets && result.assets.length > 0) {
+            const image = result.assets[0];
+            onUpload?.(image);
+          }
+        } else {
+          console.log('Permission to access media library was denied');
+        }
+      } else if (accept === 'pdf') {
+        const res = await pickDocument();
+        if (res.uri) {
+          onUpload?.(res);
+        }
+      }
+    } catch (err) {
+      console.error('Error while picking file: ', err);
+    }
+  };
+
+  const pickDocument = async () => {
+    try {
+      const file = await FileSystem.readAsStringAsync(FileSystem.documentDirectory + 'sample.pdf');
+      return { uri: file };
+    } catch (err) {
+      console.error('Error reading document: ', err);
+      return { uri: '' };
+    }
+  };
+
   const getIcon = () => {
     if (accept === 'image') {
       return <MaterialIcons name="image" size={24} color={Colors.primary} />;
@@ -41,13 +82,10 @@ export function FileUploader({
   return (
     <View style={styles.container}>
       {label && <Text style={styles.label}>{label}</Text>}
-      <TouchableOpacity onPress={onUpload} style={styles.touchable}>
-        <View style={[
-          styles.uploadContainer,
-          showBorder && styles.border,
-          variant === 'dashed' && styles.dashedBorder,
-          { height }
-        ]}>
+      <TouchableOpacity
+      //  onPress={pickFile}
+       style={styles.touchable}>
+        <View style={[styles.uploadContainer, showBorder && styles.border, variant === 'dashed' && styles.dashedBorder, { height }]}>
           <Card variant="outlined" style={[styles.uploadCard, variant === 'dashed' && styles.dashedCard]}>
             {getIcon()}
             <Text style={styles.uploadText}>{getUploadText()}</Text>
@@ -109,4 +147,4 @@ const styles = StyleSheet.create({
     marginTop: 4,
     textAlign: 'center',
   }
-}); 
+});

@@ -1,27 +1,60 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { Input } from '../../../common/Input';
-import { Card } from '../../../common/Card';
-import { Button } from '../../../common/Button';
-import { Colors } from '@/app/constants/colors';
-import { Feather, MaterialIcons } from '@expo/vector-icons';
-import { FileUploader } from '@/app/components/common/FileUploader';
-import { useTheme } from '@/app/components/providers/ThemeProvider';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
+import { Input } from "../../../common/Input";
+import { Card } from "../../../common/Card";
+import { Button } from "../../../common/Button";
+import { Colors } from "@/app/constants/colors";
+import { Feather, MaterialIcons } from "@expo/vector-icons";
+import { FileUploader } from "@/app/components/common/FileUploader";
+import { UploadSuccess } from "@/app/components/common/uploadsuccess";
 
 export function TitlePage() {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const [title, setTitle] = useState('Title');
-  const theme = useTheme();
+  const [title, setTitle] = useState("Title");
+  const [reportType, setReportType] = useState("");
+  const [date, setDate] = useState("");
+  const [primaryImage, setPrimaryImage] = useState<
+    { uri: string } | string | null
+  >(null);
+  const [certificateOrSecLogo, setCertificateOrSecLogo] = useState<
+    { uri: string } | string | null
+  >(null);
+  const [name, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [postalCode, setPostalCode] = useState("");
 
   const handleSave = () => {
-    // TODO: Implement save functionality
-    console.log('Saving changes...');
+    const formData = {
+      title: "Title",
+      name,
+      reportType,
+      date,
+      primaryImage,
+      certificateOrSecLogo,
+      lastName,
+      companyName,
+      address,
+      city,
+      state,
+      postalCode,
+    };
+    console.log("Saving changes...", formData);
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
+    <View style={styles.container}>
       <Card style={styles.mainCard}>
-        <ScrollView 
+        <ScrollView
           style={styles.scrollView}
           showsVerticalScrollIndicator={false}
         >
@@ -52,37 +85,73 @@ export function TitlePage() {
             <View style={styles.row}>
               <View style={styles.column}>
                 <Text style={styles.label}>Report type</Text>
-                <Input placeholder="Select report type" />
+                <Input
+                  placeholder="Select report type"
+                  onChangeText={setReportType}
+                />
               </View>
               <View style={styles.column}>
                 <Text style={styles.label}>Date</Text>
-                <Input placeholder="Select date" />
+                <Input placeholder="Select date" onChangeText={setDate} />
               </View>
             </View>
 
             {/* Image Upload Row */}
             <View style={styles.row}>
-              <FileUploader
-                label="Primary Image"
-                accept="image"
-                onUpload={() => console.log('Upload primary image')}
-              />
-              <FileUploader
-                label="Certification/Secondary Logo"
-                accept="image"
-                onUpload={() => console.log('Upload secondary image')}
-              />
+              {primaryImage === null ? (
+                <FileUploader
+                  label="Primary Image"
+                  accept="image"
+                  onUpload={(file) => {
+                    console.log("File uploaded for Primary Image:", file); 
+                    setPrimaryImage(file);
+                  }}
+                />
+              ) : (
+                <UploadSuccess
+                  selectedImage={
+                    typeof primaryImage === "string"
+                      ? primaryImage
+                      : primaryImage?.uri
+                  }
+                />
+              )}
+
+              {certificateOrSecLogo === null ? (
+                <FileUploader
+                  label="Certification/Secondary Logo"
+                  accept="image"
+                  onUpload={(file) => {
+                    console.log("File uploaded for Certification/Logo:", file); 
+                    setCertificateOrSecLogo(file);
+                  }}
+                />
+              ) : (
+                <UploadSuccess
+                  selectedImage={
+                    typeof certificateOrSecLogo === "string"
+                      ? certificateOrSecLogo
+                      : certificateOrSecLogo?.uri
+                  }
+                />
+              )}
             </View>
 
             {/* Name Row */}
             <View style={styles.row}>
               <View style={styles.column}>
                 <Text style={styles.label}>First name</Text>
-                <Input placeholder="Enter first name" />
+                <Input
+                  placeholder="Enter first name"
+                  onChangeText={setFirstName}
+                />
               </View>
               <View style={styles.column}>
                 <Text style={styles.label}>Last name</Text>
-                <Input placeholder="Enter last name" />
+                <Input
+                  placeholder="Enter last name"
+                  onChangeText={setLastName}
+                />
               </View>
             </View>
 
@@ -90,11 +159,14 @@ export function TitlePage() {
             <View style={styles.row}>
               <View style={styles.column}>
                 <Text style={styles.label}>Company name</Text>
-                <Input placeholder="Enter company name" />
+                <Input
+                  placeholder="Enter company name"
+                  onChangeText={setCompanyName}
+                />
               </View>
               <View style={styles.column}>
                 <Text style={styles.label}>Address</Text>
-                <Input placeholder="Enter address" />
+                <Input placeholder="Enter address" onChangeText={setAddress} />
               </View>
             </View>
 
@@ -102,17 +174,23 @@ export function TitlePage() {
             <View style={styles.row}>
               <View style={[styles.column, { flex: 0.5 }]}>
                 <Text style={styles.label}>City</Text>
-                <Input placeholder="Enter city" />
+                <Input placeholder="Enter city" onChangeText={setCity} />
               </View>
               <View style={[styles.column, { flex: 0.5 }]}>
                 <View style={styles.row}>
                   <View style={styles.column}>
                     <Text style={styles.label}>State/Province</Text>
-                    <Input placeholder="Enter state/province" />
+                    <Input
+                      placeholder="Enter state/province"
+                      onChangeText={setState}
+                    />
                   </View>
                   <View style={styles.column}>
                     <Text style={styles.label}>Zip code/Postal code</Text>
-                    <Input placeholder="Enter zip/postal code" />
+                    <Input
+                      placeholder="Enter zip/postal code"
+                      onChangeText={setPostalCode}
+                    />
                   </View>
                 </View>
               </View>
@@ -120,7 +198,7 @@ export function TitlePage() {
 
             {/* Save Button at the end */}
             <View style={styles.buttonContainer}>
-              <Button 
+              <Button
                 label="Save Changes"
                 onPress={handleSave}
                 variant="primary"
@@ -137,7 +215,7 @@ export function TitlePage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
     padding: 24,
   },
   mainCard: {
@@ -154,22 +232,22 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   titleText: {
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: "600",
     color: Colors.black,
   },
   titleInput: {
     flex: 1,
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   row: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 16,
     marginBottom: 16,
   },
@@ -178,34 +256,34 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
     marginBottom: 8,
-    color: '#333',
+    color: "#333",
   },
   uploadCard: {
     height: 180,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderStyle: 'dashed',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderStyle: "dashed",
     borderColor: Colors.primary,
   },
   uploadContainer: {
     padding: 16,
     borderWidth: 1,
-    borderColor: Colors.gradientPrimary + '40', // 20 is hex for 12% opacity
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    borderColor: Colors.gradientPrimary + "40", // 20 is hex for 12% opacity
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
     borderRadius: 14,
-    borderStyle: 'solid',
+    borderStyle: "solid",
   },
   uploadText: {
-    color: '#666',
+    color: "#666",
     fontSize: 14,
   },
   buttonContainer: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
     marginTop: 4,
   },
-}); 
+});
