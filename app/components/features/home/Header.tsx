@@ -1,14 +1,22 @@
-import { View, Text, Image, StyleSheet, Platform, StatusBar, Pressable } from 'react-native';
-import { Colors } from '@/app/constants/colors';
-import { useState } from 'react';
-import { CompanySwitcher } from '../company/CompanySwitcher';
-import { router } from 'expo-router';
-import { create } from 'zustand';
-import { MaterialIcons } from '@expo/vector-icons';
-import { useTheme } from '@/app/components/providers/ThemeProvider';
-import { useThemeStore } from '@/app/stores/themeStore';
-import { usePathname } from 'expo-router';
-import { useSidebarStore } from '@/app/stores/sidebarStore';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  Platform,
+  StatusBar,
+  Pressable,
+} from "react-native";
+import { Colors } from "@/app/constants/colors";
+import { useState } from "react";
+import { CompanySwitcher } from "../company/CompanySwitcher";
+import { router } from "expo-router";
+import { create } from "zustand";
+import { MaterialIcons } from "@expo/vector-icons";
+import { useTheme } from "@/app/components/providers/ThemeProvider";
+import { useThemeStore } from "@/app/stores/themeStore";
+import { usePathname } from "expo-router";
+import { useSidebarStore } from "@/app/stores/sidebarStore";
 
 interface HeaderState {
   showSwitcher: boolean;
@@ -19,22 +27,33 @@ interface HeaderState {
 
 const useHeaderStore = create<HeaderState>((set) => ({
   showSwitcher: false,
-  selectedCompany: 'gutter',
+  selectedCompany: "gutter",
   setShowSwitcher: (show) => set({ showSwitcher: show }),
   setSelectedCompany: (companyId) => set({ selectedCompany: companyId }),
 }));
 
 export function Header() {
-  const { showSwitcher, selectedCompany, setShowSwitcher, setSelectedCompany } = useHeaderStore();
+  const { showSwitcher, selectedCompany, setShowSwitcher, setSelectedCompany } =
+    useHeaderStore();
   const theme = useTheme();
   const { isDarkMode, toggleTheme } = useThemeStore();
   const pathname = usePathname();
-  const showSidebarButton = pathname === '/editEstimate';
+  const showSidebarButton = pathname === "/editEstimate";
   const { open: openSidebar } = useSidebarStore();
 
   const companies = [
-    { id: 'gutter', initial: 'MG', name: 'Mr. Gutter', color: '#4A90E2' },
-    { id: 'roofing', initial: 'MR', name: 'Mr. Roofing', color: '#50C878' },
+    {
+      id: "gutter",
+      borderColor: "#0F5695",
+      name: "Mr. Gutter",
+      color: "#f3f4f6",
+    },
+    {
+      id: "roofing",
+      borderColor: "#ef4444",
+      name: "Mr. Roofing",
+      color: "#f3f4f6",
+    },
   ];
 
   const handleSelectCompany = (companyId: string) => {
@@ -43,26 +62,33 @@ export function Header() {
   };
 
   const handleLogout = () => {
-    router.replace('/login');
+    router.replace("/login");
   };
 
   const handleLogoPress = () => {
-    router.replace('/home');
+    router.replace("/home");
   };
 
-  const currentCompany = companies.find(company => company.id === selectedCompany);
+  const currentCompany = companies.find(
+    (company) => company.id === selectedCompany
+  );
 
   const handleToggleSidebar = () => {
     openSidebar();
   };
+
+  const gutter = require("@/assets/images/gutter-logo.png");
+  const roofing = require("@/assets/images/roofing-logo.png");
+
+  const logoToShow = selectedCompany === "gutter" ? gutter : roofing;
 
   return (
     <View style={[styles.header, { zIndex: 9999 }]}>
       <View style={styles.content}>
         <View style={styles.leftSection}>
           {showSidebarButton && (
-            <Pressable 
-              style={styles.sidebarButton} 
+            <Pressable
+              style={styles.sidebarButton}
               onPress={handleToggleSidebar}
             >
               <View style={styles.sidebarIconContainer}>
@@ -71,8 +97,8 @@ export function Header() {
             </Pressable>
           )}
           <Pressable onPress={handleLogoPress}>
-            <Image 
-              source={require('@/assets/images/header-logo.png')}
+            <Image
+              source={require("@/assets/images/header-logo.png")}
               style={styles.logo}
               resizeMode="contain"
             />
@@ -81,24 +107,29 @@ export function Header() {
 
         <View style={[styles.rightSection, { zIndex: 9999 }]}>
           <Pressable onPress={toggleTheme} style={styles.themeButton}>
-            <MaterialIcons 
-              name={isDarkMode ? "light-mode" : "dark-mode"} 
-              size={24} 
-              color={Colors.white} 
+            <MaterialIcons
+              name={isDarkMode ? "light-mode" : "dark-mode"}
+              size={24}
+              color={Colors.white}
             />
           </Pressable>
-          <Text style={styles.companyName}>{currentCompany?.name.toUpperCase()}</Text>
-          <View style={styles.switcherWrapper}>
-            <Pressable 
+          <Image source={logoToShow} resizeMode="contain" style={styles.dynamicLogo} />
+          <Text style={styles.companyName}>
+            {currentCompany?.name.toUpperCase()}
+          </Text>
+          <View>
+            <Pressable
               onPress={() => setShowSwitcher(!showSwitcher)}
               style={styles.companyButton}
             >
-              <View style={[
-                styles.initialCircle,
-                { backgroundColor: Colors.white }
-              ]}>
+              <View
+                style={[
+                  styles.initialCircle,
+                  { backgroundColor: Colors.white },
+                ]}
+              >
                 <Text style={[styles.initial, { color: Colors.primary }]}>
-                  {'AS'}
+                  {"AS"}
                 </Text>
               </View>
             </Pressable>
@@ -122,27 +153,26 @@ export function Header() {
 const styles = StyleSheet.create({
   header: {
     backgroundColor: Colors.primary,
-    paddingTop: Platform.OS === 'ios' ? 50 : StatusBar.currentHeight ?? 10 + 10,
-    position: 'relative',
+    paddingTop: Platform.OS === "ios" ? 50 : StatusBar.currentHeight ?? 10 + 10,
   },
   content: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: 24,
-    paddingBottom: 20
+    paddingBottom: 20,
   },
   leftSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 12,
   },
   logo: {
     width: 180,
   },
   rightSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 12,
   },
   themeButton: {
@@ -150,7 +180,7 @@ const styles = StyleSheet.create({
   },
   companyName: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: Colors.white,
   },
   companyButton: {
@@ -160,12 +190,12 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   initial: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
     color: Colors.white,
   },
   switcherWrapper: {
@@ -173,13 +203,13 @@ const styles = StyleSheet.create({
     zIndex: 9999,
   },
   switcherContainer: {
-    position: 'absolute',
-    top: '100%',
+    position: "absolute",
+    top: "100%",
     right: 0,
     zIndex: 9999,
     width: 300,
     elevation: 5,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -194,8 +224,12 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    justifyContent: "center",
+    alignItems: "center",
   },
+  dynamicLogo:{
+    height:30,
+    width:50
+  }
 });
