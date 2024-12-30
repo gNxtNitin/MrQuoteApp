@@ -257,47 +257,65 @@ const TextPageContent = ({ title, pageId }: { title: string; pageId: number }) =
 export function CustomPage({ title }: CustomPageProps) {
   const { customPages, updateCustomPage } = useEstimatePageStore();
   const pageData = customPages.find(page => page.title === title);
-  const [requireAcknowledge, setRequireAcknowledge] = useState(false);
-  const [selectedType, setSelectedType] = useState<'myPDFs' | 'sharedPDFs' | 'singleUsePDFs' | 'textPage'>('myPDFs');
-  const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const [pageTitle, setPageTitle] = useState(title);
-const theme = useTheme();
+  const theme = useTheme();
 
-  // Initialize state from store data
+  // Combine all state into a single object to reduce state updates
+  const [pageState, setPageState] = useState({
+    requireAcknowledge: false,
+    selectedType: 'myPDFs' as 'myPDFs' | 'sharedPDFs' | 'singleUsePDFs' | 'textPage',
+    isEditingTitle: false,
+    pageTitle: title
+  });
+
+  // Initialize state from store data only once when component mounts or title changes
   useEffect(() => {
     if (pageData) {
-      setRequireAcknowledge(pageData.requireAcknowledge);
-      setSelectedType(pageData.type);
-      setPageTitle(pageData.title);
+      setPageState(prev => ({
+        ...prev,
+        requireAcknowledge: pageData.requireAcknowledge || false,
+        selectedType: pageData.type || 'myPDFs',
+        pageTitle: pageData.title || title
+      }));
     }
-  }, [title, customPages]);
+  }, [title]); // Only depend on title changes
 
-  // Update store when values change
+  // Debounced update to store
   useEffect(() => {
-    if (pageData) {
+    if (!pageData) return;
+
+    const timeoutId = setTimeout(() => {
       updateCustomPage(pageData.id, {
-        requireAcknowledge,
-        type: selectedType,
-        title: pageTitle,
+        requireAcknowledge: pageState.requireAcknowledge,
+        type: pageState.selectedType,
+        title: pageState.pageTitle,
       });
-    }
-  }, [requireAcknowledge, selectedType, pageTitle]);
+    }, 500); // 500ms debounce
 
+    return () => clearTimeout(timeoutId);
+  }, [pageState, pageData?.id]); // Only update when pageState or pageData.id changes
+
+  const handleStateChange = (key: keyof typeof pageState, value: any) => {
+    setPageState(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  };
+
+  // Update your handlers to use the new state management
   const handleSave = () => {
     if (pageData) {
       updateCustomPage(pageData.id, {
-        requireAcknowledge,
-        type: selectedType,
-        title: pageTitle,
+        requireAcknowledge: pageState.requireAcknowledge,
+        type: pageState.selectedType,
+        title: pageState.pageTitle,
       });
     }
-    console.log('Saving changes...');
   };
 
   const renderPDFContent = () => {
     if (!pageData) return null;
     
-    switch (selectedType) {
+    switch (pageState.selectedType) {
       case 'myPDFs':
         return <PDFContent key={`pdf-${pageData.id}`} title="My PDFs" pageId={pageData.id} />;
       case 'sharedPDFs':
@@ -314,21 +332,20 @@ const theme = useTheme();
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Card style={styles.card}>
-        {/* Header */}
         <View style={styles.header}>
           <View style={styles.titleRow}>
-            {isEditingTitle ? (
+            {pageState.isEditingTitle ? (
               <Input
-                value={pageTitle}
-                onChangeText={setPageTitle}
-                onBlur={() => setIsEditingTitle(false)}
+                value={pageState.pageTitle}
+                onChangeText={(value) => handleStateChange('pageTitle', value)}
+                onBlur={() => handleStateChange('isEditingTitle', false)}
                 autoFocus
                 style={styles.titleInput}
               />
             ) : (
               <>
-                <Text style={styles.title}>{pageTitle}</Text>
-                <TouchableOpacity onPress={() => setIsEditingTitle(true)}>
+                <Text style={styles.title}>{pageState.pageTitle}</Text>
+                <TouchableOpacity onPress={() => handleStateChange('isEditingTitle', true)}>
                   <Feather name="edit-2" size={16} color={Colors.primary} />
                 </TouchableOpacity>
               </>
@@ -347,8 +364,8 @@ const theme = useTheme();
             </Text>
           </View>
           <Switch
-            value={requireAcknowledge}
-            onValueChange={setRequireAcknowledge}
+            value={pageState.requireAcknowledge}
+            onValueChange={(value) => handleStateChange('requireAcknowledge', value)}
             trackColor={{ false: Colors.gray[200], true: Colors.primary }}
             thumbColor="white"
           />
@@ -357,49 +374,49 @@ const theme = useTheme();
         {/* Type Selection */}
         <View style={styles.typeContainer}>
           <TouchableOpacity 
-            style={[styles.typeButton, selectedType === 'myPDFs' && styles.selectedType]}
-            onPress={() => setSelectedType('myPDFs')}
+            style={[styles.typeButton, pageState.selectedType === 'myPDFs' && styles.selectedType]}
+            onPress={() => handleStateChange('selectedType', 'myPDFs')}
           >
-            <View style={[styles.radio, selectedType === 'myPDFs' && styles.selectedRadio]}>
-              <View style={selectedType === 'myPDFs' ? styles.radioInner : undefined} />
+            <View style={[styles.radio, pageState.selectedType === 'myPDFs' && styles.selectedRadio]}>
+              <View style={pageState.selectedType === 'myPDFs' ? styles.radioInner : undefined} />
             </View>
-            <Text style={[styles.typeText, selectedType === 'myPDFs' && styles.selectedTypeText]}>
+            <Text style={[styles.typeText, pageState.selectedType === 'myPDFs' && styles.selectedTypeText]}>
               My PDFs
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
-            style={[styles.typeButton, selectedType === 'sharedPDFs' && styles.selectedType]}
-            onPress={() => setSelectedType('sharedPDFs')}
+            style={[styles.typeButton, pageState.selectedType === 'sharedPDFs' && styles.selectedType]}
+            onPress={() => handleStateChange('selectedType', 'sharedPDFs')}
           >
-            <View style={[styles.radio, selectedType === 'sharedPDFs' && styles.selectedRadio]}>
-              <View style={selectedType === 'sharedPDFs' ? styles.radioInner : undefined} />
+            <View style={[styles.radio, pageState.selectedType === 'sharedPDFs' && styles.selectedRadio]}>
+              <View style={pageState.selectedType === 'sharedPDFs' ? styles.radioInner : undefined} />
             </View>
-            <Text style={[styles.typeText, selectedType === 'sharedPDFs' && styles.selectedTypeText]}>
+            <Text style={[styles.typeText, pageState.selectedType === 'sharedPDFs' && styles.selectedTypeText]}>
               Shared PDFs
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
-            style={[styles.typeButton, selectedType === 'singleUsePDFs' && styles.selectedType]}
-            onPress={() => setSelectedType('singleUsePDFs')}
+            style={[styles.typeButton, pageState.selectedType === 'singleUsePDFs' && styles.selectedType]}
+            onPress={() => handleStateChange('selectedType', 'singleUsePDFs')}
           >
-            <View style={[styles.radio, selectedType === 'singleUsePDFs' && styles.selectedRadio]}>
-              <View style={selectedType === 'singleUsePDFs' ? styles.radioInner : undefined} />
+            <View style={[styles.radio, pageState.selectedType === 'singleUsePDFs' && styles.selectedRadio]}>
+              <View style={pageState.selectedType === 'singleUsePDFs' ? styles.radioInner : undefined} />
             </View>
-            <Text style={[styles.typeText, selectedType === 'singleUsePDFs' && styles.selectedTypeText]}>
+            <Text style={[styles.typeText, pageState.selectedType === 'singleUsePDFs' && styles.selectedTypeText]}>
               Single Use PDFs
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
-            style={[styles.typeButton, selectedType === 'textPage' && styles.selectedType]}
-            onPress={() => setSelectedType('textPage')}
+            style={[styles.typeButton, pageState.selectedType === 'textPage' && styles.selectedType]}
+            onPress={() => handleStateChange('selectedType', 'textPage')}
           >
-            <View style={[styles.radio, selectedType === 'textPage' && styles.selectedRadio]}>
-              <View style={selectedType === 'textPage' ? styles.radioInner : undefined} />
+            <View style={[styles.radio, pageState.selectedType === 'textPage' && styles.selectedRadio]}>
+              <View style={pageState.selectedType === 'textPage' ? styles.radioInner : undefined} />
             </View>
-            <Text style={[styles.typeText, selectedType === 'textPage' && styles.selectedTypeText]}>
+            <Text style={[styles.typeText, pageState.selectedType === 'textPage' && styles.selectedTypeText]}>
               Text Page
             </Text>
           </TouchableOpacity>
