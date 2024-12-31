@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Pressable,
+  Image,
 } from "react-native";
 import { Card } from "../../common/Card";
 import { useTheme } from "@/app/components/providers/ThemeProvider";
@@ -176,10 +177,11 @@ export function ReviewAndShareScreen({
                 </Pressable>
         <Card style={styles.detailCard}>
           <View style={styles.logoContainer}>
-            <Text style={styles.mrQuote}>Mr Quote</Text>
-            <Text style={styles.desc}>
-              Residential & Commercial Gutter Experts
-            </Text>
+            <Image 
+              source={require("@/assets/images/mr-quote-logo.png")}
+              style={styles.logo}
+              resizeMode="contain"
+            />
           </View>
           <View style={styles.details}>
             <View style={styles.row}>
@@ -299,11 +301,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  mrQuote: {
-    color: Colors.black,
-    fontSize: 32,
-    fontWeight: "600",
-    textAlign: "center",
+  logo: {
+    height: 75,
+    width: "100%",
     marginBottom: 5,
   },
   desc: {
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
   key: {
     color: Colors.black,
     fontSize: 16,
-    fontWeight: "500",
+    fontWeight: "bold",
     flex: 1,
   },
   value: {
