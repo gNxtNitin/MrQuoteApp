@@ -64,12 +64,54 @@ const OptionCard = ({
     ]}
     onPress={onSelect}
   >
-    <Text style={[styles.option, isSelected && { color: Colors.white }]}>
-      {item.option}
-    </Text>
-    <Text style={[styles.value2, isSelected && { color: Colors.white }]}>
-      {item.value}
-    </Text>
+    <View style={styles.radioContainer}>
+      <View style={styles.radioOuter}>
+        {isSelected && <View style={styles.radioInner} />}
+      </View>
+      <View style={styles.optionContent}>
+        <Text style={[styles.option, isSelected && { color: Colors.white }]}>
+          {item.option}
+        </Text>
+        <Text style={[styles.value2, isSelected && { color: Colors.white }]}>
+          {item.value}
+        </Text>
+      </View>
+    </View>
+  </TouchableOpacity>
+);
+
+const MultiSelectCard = ({
+  item,
+  isSelected,
+  onSelect,
+}: {
+  item: OptionData;
+  isSelected: boolean;
+  onSelect: () => void;
+}) => (
+  <TouchableOpacity
+    style={[
+      styles.optionCard,
+      isSelected && { backgroundColor: Colors.primary },
+    ]}
+    onPress={onSelect}
+  >
+    <View style={styles.checkboxContainer}>
+      <View style={[
+        styles.checkboxOuter,
+        isSelected && { backgroundColor: Colors.white }
+      ]}>
+        {isSelected && <MaterialIcons name="check" size={14} color={Colors.primary} />}
+      </View>
+      <View style={styles.optionContent}>
+        <Text style={[styles.option, isSelected && { color: Colors.white }]}>
+          {item.option}
+        </Text>
+        <Text style={[styles.value2, isSelected && { color: Colors.white }]}>
+          {item.value}
+        </Text>
+      </View>
+    </View>
   </TouchableOpacity>
 );
 
@@ -84,6 +126,31 @@ const OptionList = ({ data }: { data: OptionData[] }) => {
           item={item}
           isSelected={selectedOption === item.option}
           onSelect={() => setSelectedOption(item.option)}
+        />
+      ))}
+    </View>
+  );
+};
+
+const MultiSelectList = ({ data }: { data: OptionData[] }) => {
+  const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+
+  const toggleOption = (option: string) => {
+    setSelectedOptions(prev => 
+      prev.includes(option) 
+        ? prev.filter(item => item !== option)
+        : [...prev, option]
+    );
+  };
+
+  return (
+    <View style={styles.optionListContainer}>
+      {data.map((item, index) => (
+        <MultiSelectCard
+          key={`${item.option}-${index}`}
+          item={item}
+          isSelected={selectedOptions.includes(item.option)}
+          onSelect={() => toggleOption(item.option)}
         />
       ))}
     </View>
@@ -141,7 +208,7 @@ export function ReviewAndShareScreen({
               </Text>
               <View>
                 <Text style={styles.leaf}>Leaf Protection</Text>
-                <OptionList data={ProtectionData} />
+                <MultiSelectList data={ProtectionData} />
               </View>
             </View>
 
@@ -284,39 +351,72 @@ const styles = StyleSheet.create({
   optionListContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
     marginBottom: 16,
+    gap: 12,
   },
   optionCard: {
-    width: "48%",
-    gap: 10,
+    width: "23%", // Adjusted to fit 4 items per row with gap
     backgroundColor: Colors.white,
     borderRadius: 8,
-    paddingVertical: 16,
-    paddingHorizontal: 12,
+    padding: 8,
     justifyContent: "center",
-    alignItems: "center",
     shadowColor: Colors.primary,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
-    marginBottom: 12,
     borderBottomColor: Colors.primary,
     borderBottomWidth: 2,
   },
+  radioContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  checkboxContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  radioOuter: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: Colors.primary,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  checkboxOuter: {
+    width: 16,
+    height: 16,
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: Colors.primary,
+    backgroundColor: Colors.white,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  radioInner: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: Colors.white,
+  },
+  optionContent: {
+    flex: 1,
+  },
   option: {
     color: Colors.primary,
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "700",
-    textAlign: "center",
-    marginBottom: 4,
+    marginBottom: 2,
   },
   value2: {
     color: Colors.primary,
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "500",
-    textAlign: "center",
   },
   leaf: {
     color: Colors.black,
@@ -380,4 +480,3 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 });
-
