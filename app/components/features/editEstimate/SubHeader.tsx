@@ -1,12 +1,14 @@
-import { View, Text, StyleSheet, Alert } from "react-native";
+import { View, Text, StyleSheet, Alert, Pressable } from "react-native";
 import { Colors } from "@/app/constants/colors";
-import { router } from "expo-router";
-import { Pressable } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Button } from "../../common/Button";
 import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
 import { useTheme } from "../../providers/ThemeProvider";
-import { useRouter } from 'expo-router';
+import { useRouter } from "expo-router";
+import * as Sharing from "expo-sharing";
+import * as Print from "expo-print";
+import * as FileSystem from "expo-file-system";
+import * as Linking from "expo-linking";
 
 const DEFAULT_PAGES = [
   "Title",
@@ -19,17 +21,93 @@ const DEFAULT_PAGES = [
   "Warranty",
 ];
 
+
+const handleViewPage = async (formData: Record<string, any>) => {
+  try {
+    let base64PrimaryImage = '';
+    let base64CertificateOrSecLogo = '';
+
+    // Convert primaryImage to base64 if it's an image
+    if (formData.primaryImage && formData.primaryImage.uri) {
+      if (formData.primaryImage.mimeType.includes('image')) {
+        base64PrimaryImage = await FileSystem.readAsStringAsync(
+          formData.primaryImage.uri,
+          { encoding: FileSystem.EncodingType.Base64 }
+        );
+      }
+    }
+
+    // Convert certificateOrSecLogo to base64 if it's a PDF
+    if (
+      formData.certificateOrSecLogo &&
+      formData.certificateOrSecLogo.uri &&
+      formData.certificateOrSecLogo.mimeType.includes('pdf')
+    ) {
+      base64CertificateOrSecLogo = await FileSystem.readAsStringAsync(
+        formData.certificateOrSecLogo.uri,
+        { encoding: FileSystem.EncodingType.Base64 }
+      );
+    }
+
+    // Generate HTML content for the PDF (using inline base64 images)
+    let htmlContent = `
+      <html>
+        <body>
+          <h1>${formData.title || 'Untitled Report'}</h1>
+          <p><strong>Company Name:</strong> ${formData.companyName || 'N/A'}</p>
+          <p><strong>Report Type:</strong> ${formData.reportType || 'N/A'}</p>
+          <p><strong>Date:</strong> ${formData.date || 'N/A'}</p>
+          <p><strong>Address:</strong> ${formData.address || 'N/A'}</p>
+          <p><strong>City:</strong> ${formData.city || 'N/A'}</p>
+          <p><strong>State:</strong> ${formData.state || 'N/A'}</p>
+          <p><strong>Postal Code:</strong> ${formData.postalCode || 'N/A'}</p>
+          <p><strong>Name:</strong> ${formData.name || 'N/A'} ${formData.lastName || ''}</p>
+        </body>
+      </html>
+    `;
+
+    if (base64PrimaryImage) {
+      htmlContent += `
+        <p><strong>Primary Image:</strong></p>
+        <img src="data:image/jpeg;base64,${base64PrimaryImage}" alt="Primary Image" style="width: 200px; height: auto;" />
+      `;
+    }
+
+    if (base64CertificateOrSecLogo) {
+      htmlContent += `
+        <p><strong>Certificate or Sec Logo (PDF) included:</strong></p>
+        <p>The file is embedded as base64, and should be viewed in a compatible viewer. </p>
+        <p>PDF content is not rendered inline, but the file has been attached to the document.</p>
+      `;
+    }
+
+    // Generate the PDF file using the HTML content
+    const { uri } = await Print.printToFileAsync({ html: htmlContent });
+
+    // Share the generated PDF
+    if (await Sharing.isAvailableAsync()) {
+      await Sharing.shareAsync(uri);
+    } else {
+      Alert.alert("Sharing Not Available", "Cannot share the generated PDF.");
+    }
+  } catch (error) {
+    console.error("Error generating or sharing PDF:", error);
+    Alert.alert("Error", "An error occurred while generating the PDF.");
+  }
+};
+
+
+
+
+
+
 export function SubHeader() {
-    const router = useRouter();
-  
+  const router = useRouter();
+  const formData = useEstimatePageStore((state) => state.formData);
   const { currentPage, removeCustomPage, customPages, setCurrentPage } =
     useEstimatePageStore();
-  const handleBack = () => router.back();
   const theme = useTheme();
-  const handleViewPage = () => {
-    // Handle view page action
-  };
-
+  const handleBack = () => router.back();
   const isCustomPage = currentPage.startsWith("Custom Page");
   const currentCustomPage = isCustomPage
     ? customPages.find((page) => page.title === currentPage)
@@ -54,13 +132,10 @@ export function SubHeader() {
                 ...customPages.map((cp) => cp.title),
               ];
 
-              // Find current page index
               const currentIndex = allPages.indexOf(currentPage);
 
-              // Remove the page
               removeCustomPage(currentCustomPage.id);
 
-              // Navigate to next page or previous if it's the last page
               const nextPage =
                 allPages[currentIndex + 1] ||
                 allPages[currentIndex - 1] ||
@@ -104,7 +179,7 @@ export function SubHeader() {
         )}
         <Button
           label="View Page"
-          onPress={handleViewPage}
+          onPress={() => handleViewPage(formData)}
           variant="primary"
           size="medium"
         />
@@ -117,7 +192,7 @@ export function SubHeader() {
             },
           ]}
           onPress={() => {
-            router.push('/reviewandshare');
+            router.push("/reviewandshare");
           }}
         >
           <MaterialIcons name="ios-share" size={16} color={theme.textPrimary} />
@@ -172,7 +247,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
   },
-
   actionButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -184,6 +258,5 @@ const styles = StyleSheet.create({
     borderColor: Colors.primary,
     backgroundColor: Colors.white,
   },
-
   actionButtonText: { fontSize: 14, fontWeight: "600", color: Colors.primary },
 });

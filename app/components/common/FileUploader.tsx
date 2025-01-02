@@ -1,98 +1,83 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Card } from './Card';
-import { MaterialIcons, Feather } from '@expo/vector-icons';
-import { Colors } from '@/app/constants/colors';
-import * as MediaLibrary from 'expo-media-library';
-import * as FileSystem from 'expo-file-system';
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import * as DocumentPicker from "expo-document-picker"; // Import DocumentPicker
+import { Colors } from "@/app/constants/colors"; // Custom colors (if any)
+import { Card } from "./Card";
+import { MaterialIcons, Feather } from "@expo/vector-icons";
 
-interface FileUploaderProps {
-  label?: string;
-  subtitle?: string;
-  accept?: 'image' | 'pdf' | 'both';
-  height?: number;
-  onUpload?: (file: any) => void;
-  showBorder?: boolean;
-  variant?: 'solid' | 'dashed';
-}
-
-export function FileUploader({ 
-  label, 
-  subtitle,
-  accept = 'both',
+export function FileUploader({
+  label,
+  accept = "both",
   height = 180,
   onUpload,
-  showBorder = true,
-  variant = 'dashed'
-}: FileUploaderProps) {
-  
+}: {
+  label?: string;
+  accept?: "image" | "pdf" | "both";
+  height?: number;
+  onUpload?: (file: any) => void;
+}) {
+  const [selectedFile, setSelectedFile] = useState<any | null>(null);
+
   const pickFile = async () => {
     try {
-      if (accept === 'image' || accept === 'both') {
-        const permission = await MediaLibrary.requestPermissionsAsync();
-        if (permission.granted) {
-          const result = await MediaLibrary.getAssetsAsync({
-            mediaType: MediaLibrary.MediaType.photo,
-            first: 1,
-          });
+      if (accept === "pdf" || accept === "both") {
+        const pdfResult = await DocumentPicker.getDocumentAsync({
+          type: "*/*",
+        });
 
-          if (result.assets && result.assets.length > 0) {
-            const image = result.assets[0];
-            onUpload?.(image);
-          }
-        } else {
-          console.log('Permission to access media library was denied');
-        }
-      } else if (accept === 'pdf') {
-        const res = await pickDocument();
-        if (res.uri) {
-          onUpload?.(res);
+        // Check if the user successfully selected a PDF
+        if (pdfResult.assets && pdfResult.assets[0]?.uri) {
+          setSelectedFile(pdfResult.assets[0]);
+          onUpload?.(pdfResult.assets[0]);
         }
       }
     } catch (err) {
-      console.error('Error while picking file: ', err);
+      console.error("Error picking file:", err);
     }
   };
 
-  const pickDocument = async () => {
-    try {
-      const file = await FileSystem.readAsStringAsync(FileSystem.documentDirectory + 'sample.pdf');
-      return { uri: file };
-    } catch (err) {
-      console.error('Error reading document: ', err);
-      return { uri: '' };
-    }
+  const deleteFile = () => {
+    setSelectedFile(null);
+    onUpload?.(null);
   };
 
   const getIcon = () => {
-    if (accept === 'image') {
-      return <MaterialIcons name="image" size={24} color={Colors.primary} />;
-    } else if (accept === 'pdf') {
-      return <MaterialIcons name="picture-as-pdf" size={24} color={Colors.primary} />;
+    if (accept === "pdf") {
+      return (
+        <MaterialIcons name="picture-as-pdf" size={24} color={Colors.primary} />
+      );
     }
     return <Feather name="upload-cloud" size={24} color={Colors.primary} />;
-  };
-
-  const getUploadText = () => {
-    if (accept === 'image') return 'Upload image';
-    if (accept === 'pdf') return 'Upload PDF';
-    return 'Upload file';
   };
 
   return (
     <View style={styles.container}>
       {label && <Text style={styles.label}>{label}</Text>}
-      <TouchableOpacity
-      //  onPress={pickFile}
-       style={styles.touchable}>
-        <View style={[styles.uploadContainer, showBorder && styles.border, variant === 'dashed' && styles.dashedBorder, { height }]}>
-          <Card variant="outlined" style={[styles.uploadCard, variant === 'dashed' && styles.dashedCard]}>
-            {getIcon()}
-            <Text style={styles.uploadText}>{getUploadText()}</Text>
-            {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
-          </Card>
+      {selectedFile ? (
+        <View style={styles.successContainer}>
+          <Text style={styles.successText}>
+            {selectedFile.name || "File uploaded"}
+          </Text>
+          <MaterialIcons name="check-circle" size={24} color={Colors.green} />;
+          <TouchableOpacity onPress={deleteFile} style={styles.deleteBtn}>
+            <MaterialIcons name="delete" size={35} color={Colors.gray[500]} />;
+          </TouchableOpacity>
         </View>
-      </TouchableOpacity>
+      ) : (
+        <TouchableOpacity onPress={pickFile} style={styles.touchable}>
+          <View style={[styles.uploadContainer, { height }]}>
+            <Card
+              variant="outlined"
+              style={[styles.uploadCard, styles.dashedCard]}
+            >
+              {getIcon()}
+              <Text style={styles.uploadText}>
+                {accept === "pdf" ? "Upload PDF" : "Upload File"}
+              </Text>
+            </Card>
+          </View>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -103,9 +88,9 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
     marginBottom: 8,
-    color: '#333',
+    color: "#333",
   },
   touchable: {
     flex: 1,
@@ -113,38 +98,61 @@ const styles = StyleSheet.create({
   uploadContainer: {
     flex: 1,
     padding: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
     borderRadius: 14,
-  },
-  border: {
-    borderWidth: 1,
-    borderColor: Colors.gradientPrimary + '40',
-  },
-  dashedBorder: {
-    borderStyle: 'dashed',
   },
   uploadCard: {
     flex: 1,
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
   },
   dashedCard: {
-    borderStyle: 'dashed',
+    borderStyle: "dashed",
     borderColor: Colors.primary,
   },
   uploadText: {
-    color: '#666',
+    color: "#666",
     fontSize: 14,
     marginTop: 8,
   },
-  subtitle: {
-    color: Colors.gray[500],
-    fontSize: 12,
-    marginTop: 4,
-    textAlign: 'center',
-  }
+  successContainer: {
+    height: 100,
+    flex: 1,
+    flexDirection: "row",
+    backgroundColor: Colors.white,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: Colors.gray[200],
+    position: "relative",
+    alignItems: "center",
+    gap: 20,
+  },
+  successText: {
+    fontSize: 16,
+    color: Colors.black,
+    marginLeft: 10,
+  },
+  deleteBtn: {
+    position: "absolute",
+    backgroundColor: Colors.white,
+    top: 10,
+    right: 10,
+    borderRadius:35,
+    padding:5,
+    shadowColor:Colors.gray[500],
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+
+    elevation: 5,
+  },
 });

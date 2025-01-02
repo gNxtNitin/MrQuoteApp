@@ -25,15 +25,19 @@ interface CustomPage {
 interface EstimatePageState {
   currentPage: string;
   customPages: CustomPage[];
+  formData: Record<string, any>; 
   setCurrentPage: (page: string) => void;
   addCustomPage: (page: Partial<CustomPage>) => void;
   removeCustomPage: (id: number) => void;
   updateCustomPage: (id: number, data: Partial<CustomPage>) => void;
+  setFormData: (data: Record<string, any>) => void; 
 }
 
 export const useEstimatePageStore = create<EstimatePageState>((set) => ({
   currentPage: 'Title',
   customPages: [],
+  formData: {}, // Initial empty data
+  setFormData: (data) => set({ formData: data }),
   setCurrentPage: (page) => set({ currentPage: page }),
   addCustomPage: (page) => set((state) => ({
     customPages: [...state.customPages, {
