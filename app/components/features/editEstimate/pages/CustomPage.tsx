@@ -1,33 +1,51 @@
-import { View, Text, StyleSheet, Switch, TouchableOpacity, TextInput } from 'react-native';
-import { Card } from '../../../common/Card';
-import { Colors } from '@/app/constants/colors';
-import { Feather } from '@expo/vector-icons';
-import { useState, useEffect } from 'react';
-import { Input } from '../../../common/Input';
-import { RichEditor, RichToolbar, actions } from 'react-native-pell-rich-editor';
-import React from 'react';
-import { MaterialIcons } from '@expo/vector-icons';
-import { Button } from '../../../common/Button';
-import { FileUploader } from '@/app/components/common/FileUploader';
-import { useEstimatePageStore } from '@/app/stores/estimatePageStore';
-import { useTheme } from '@/app/components/providers/ThemeProvider';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Switch,
+  TouchableOpacity,
+  TextInput,
+  ScrollView,
+  FlatList,
+} from "react-native";
+import { Card } from "../../../common/Card";
+import { Colors } from "@/app/constants/colors";
+import { Feather } from "@expo/vector-icons";
+import { useState, useEffect } from "react";
+import { Input } from "../../../common/Input";
+import {
+  RichEditor,
+  RichToolbar,
+  actions,
+} from "react-native-pell-rich-editor";
+import React from "react";
+import { MaterialIcons } from "@expo/vector-icons";
+import { Button } from "../../../common/Button";
+import { FileUploader } from "@/app/components/common/FileUploader";
+import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
+import { useTheme } from "@/app/components/providers/ThemeProvider";
 
 interface CustomPageProps {
   title: string;
 }
 
+type Folder = {
+  id: string;
+  name: string;
+};
+
 const TOKENS = [
-  { label: 'Customer Name', value: '{{CUSTOMER_NAME}}' },
-  { label: 'Project Address', value: '{{PROJECT_ADDRESS}}' },
-  { label: 'Quote Date', value: '{{QUOTE_DATE}}' },
-  { label: 'Quote Number', value: '{{QUOTE_NUMBER}}' },
-  { label: 'Total Amount', value: '{{TOTAL_AMOUNT}}' },
+  { label: "Customer Name", value: "{{CUSTOMER_NAME}}" },
+  { label: "Project Address", value: "{{PROJECT_ADDRESS}}" },
+  { label: "Quote Date", value: "{{QUOTE_DATE}}" },
+  { label: "Quote Number", value: "{{QUOTE_NUMBER}}" },
+  { label: "Total Amount", value: "{{TOTAL_AMOUNT}}" },
 ];
 
 const PDFContent = ({ title, pageId }: { title: string; pageId: number }) => {
   const { customPages, updateCustomPage } = useEstimatePageStore();
-  const pageData = customPages.find(page => page.id === pageId);
-  const [searchQuery, setSearchQuery] = useState('');
+  const pageData = customPages.find((page) => page.id === pageId);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Handle PDF specific content updates
   const handleFileSelection = (files: string[]) => {
@@ -37,17 +55,41 @@ const PDFContent = ({ title, pageId }: { title: string; pageId: number }) => {
           ...pageData.content,
           myPDFs: {
             ...pageData.content?.myPDFs,
-            selectedFiles: files
-          }
-        }
+            selectedFiles: files,
+          },
+        },
       });
     }
   };
 
+  const [isGridView, setIsGridView] = useState(true);
+
+  const folders = [
+    { id: "1", name: "New Folder (0)" },
+    { id: "2", name: "New Folder (3)" },
+  ];
+
+  const toggleToGridView = () => setIsGridView(true);
+  const toggleToListView = () => setIsGridView(false);
+
+  const renderFolder = ({ item }: { item: { id: string; name: string } }) => (
+    <TouchableOpacity
+      style={[
+        styles.folderCard,
+        isGridView ? styles.gridItem : styles.tileItem,
+      ]}
+    >
+      <View style={styles.folderIcon}>
+        <Feather name="folder" size={24} color={Colors.primary} />
+      </View>
+      <Text style={styles.folderName}>{item.name}</Text>
+    </TouchableOpacity>
+  );
+
   return (
     <View style={styles.pdfContent}>
       <Text style={styles.sectionTitle}>{title}</Text>
-      
+
       {/* Combined Search and Files Area */}
       <View style={styles.searchArea}>
         {/* Search Input */}
@@ -64,35 +106,86 @@ const PDFContent = ({ title, pageId }: { title: string; pageId: number }) => {
 
         {/* Files Section */}
         <View style={styles.filesSection}>
-          <Text style={styles.filesSectionTitle}>Files /</Text>
-          <View style={styles.foldersContainer}>
-            <TouchableOpacity style={styles.folderCard}>
-              <View style={styles.folderIcon}>
-                <Feather name="folder" size={24} color={Colors.primary} />
-              </View>
-              <Text style={styles.folderName}>New Folder (0)</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.folderCard}>
-              <View style={styles.folderIcon}>
-                <Feather name="folder" size={24} color={Colors.primary} />
-              </View>
-              <Text style={styles.folderName}>New Folder (3)</Text>
-            </TouchableOpacity>
+          <View style={styles.row}>
+            <Text style={styles.filesSectionTitle}>Files /</Text>
+            <View style={styles.viewToggleContainer}>
+              <TouchableOpacity
+                onPress={toggleToGridView}
+                style={styles.toggleButton}
+              >
+                <MaterialIcons
+                  name="grid-view"
+                  size={24}
+                  color={isGridView ? Colors.primary : Colors.gray[500]}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={toggleToListView}
+                style={styles.toggleButton}
+              >
+                <MaterialIcons
+                  name="view-list"
+                  size={24}
+                  color={!isGridView ? Colors.primary : Colors.gray[500]}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
+
+          <ScrollView horizontal={true} style={{ width: "100%" }}>
+              <FlatList
+                data={folders}
+                renderItem={renderFolder}
+                keyExtractor={(item) => item.id}
+                key={isGridView ? "g" : "t"}
+                numColumns={isGridView ? 2 : 1}
+                contentContainerStyle={
+                  isGridView ? styles.gridContainer : styles.tileContainer
+                }
+              />
+          </ScrollView>
         </View>
       </View>
     </View>
   );
 };
 
-const SharedPDFsContent = ({ title, pageId }: { title: string; pageId: number }) => {
-  const [searchQuery, setSearchQuery] = useState('');
+const SharedPDFsContent = ({
+  title,
+  pageId,
+}: {
+  title: string;
+  pageId: number;
+}) => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isGridView, setIsGridView] = useState(true);
+
+  const folders = [
+    { id: "1", name: "New Folder (0)" },
+    { id: "2", name: "New Folder (3)" },
+  ];
+
+  const toggleToGridView = () => setIsGridView(true);
+  const toggleToListView = () => setIsGridView(false);
+
+  const renderFolder = ({ item }: { item: { id: string; name: string } }) => (
+    <TouchableOpacity
+      style={[
+        styles.folderCard,
+        isGridView ? styles.gridItem : styles.tileItem,
+      ]}
+    >
+      <View style={styles.folderIcon}>
+        <Feather name="folder" size={24} color={Colors.primary} />
+      </View>
+      <Text style={styles.folderName}>{item.name}</Text>
+    </TouchableOpacity>
+  );
 
   return (
     <View style={styles.pdfContent}>
       <Text style={styles.sectionTitle}>{title}</Text>
-      
+
       {/* Combined Search and Files Area */}
       <View style={styles.searchArea}>
         {/* Search Input */}
@@ -109,29 +202,57 @@ const SharedPDFsContent = ({ title, pageId }: { title: string; pageId: number })
 
         {/* Files Section */}
         <View style={styles.filesSection}>
-          <Text style={styles.filesSectionTitle}>Files /</Text>
-          <View style={styles.foldersContainer}>
-            <TouchableOpacity style={styles.folderCard}>
-              <View style={styles.folderIcon}>
-                <Feather name="folder" size={24} color={Colors.primary} />
-              </View>
-              <Text style={styles.folderName}>New Folder (0)</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.folderCard}>
-              <View style={styles.folderIcon}>
-                <Feather name="folder" size={24} color={Colors.primary} />
-              </View>
-              <Text style={styles.folderName}>New Folder (3)</Text>
-            </TouchableOpacity>
+        <View style={styles.row}>
+            <Text style={styles.filesSectionTitle}>Files /</Text>
+            <View style={styles.viewToggleContainer}>
+              <TouchableOpacity
+                onPress={toggleToGridView}
+                style={styles.toggleButton}
+              >
+                <MaterialIcons
+                  name="grid-view"
+                  size={24}
+                  color={isGridView ? Colors.primary : Colors.gray[500]}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={toggleToListView}
+                style={styles.toggleButton}
+              >
+                <MaterialIcons
+                  name="view-list"
+                  size={24}
+                  color={!isGridView ? Colors.primary : Colors.gray[500]}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
+
+          <ScrollView horizontal={true} style={{ width: "100%" }}>
+              <FlatList
+                data={folders}
+                renderItem={renderFolder}
+                keyExtractor={(item) => item.id}
+                key={isGridView ? "g" : "t"}
+                numColumns={isGridView ? 2 : 1}
+                contentContainerStyle={
+                  isGridView ? styles.gridContainer : styles.tileContainer
+                }
+              />
+          </ScrollView>
         </View>
       </View>
     </View>
   );
 };
 
-const SingleUsePDFContent = ({ title, pageId }: { title: string; pageId: number }) => {
+const SingleUsePDFContent = ({
+  title,
+  pageId,
+}: {
+  title: string;
+  pageId: number;
+}) => {
   return (
     <View style={styles.pdfContent}>
       <Text style={styles.sectionTitle}>{title}</Text>
@@ -140,17 +261,23 @@ const SingleUsePDFContent = ({ title, pageId }: { title: string; pageId: number 
         height={300}
         subtitle="Drag and drop your file here or click to browse"
         variant="dashed"
-        onUpload={() => console.log('Upload PDF')}
+        onUpload={() => console.log("Upload PDF")}
       />
     </View>
   );
 };
 
-const TextPageContent = ({ title, pageId }: { title: string; pageId: number }) => {
+const TextPageContent = ({
+  title,
+  pageId,
+}: {
+  title: string;
+  pageId: number;
+}) => {
   const { customPages, updateCustomPage } = useEstimatePageStore();
-  const pageData = customPages.find(page => page.id === pageId);
-  
-  const [editorContent, setEditorContent] = useState('');
+  const pageData = customPages.find((page) => page.id === pageId);
+
+  const [editorContent, setEditorContent] = useState("");
   const [showTokens, setShowTokens] = useState(false);
   const editorRef = React.useRef<RichEditor>(null);
   const tokenButtonRef = React.useRef<View>(null);
@@ -158,7 +285,7 @@ const TextPageContent = ({ title, pageId }: { title: string; pageId: number }) =
 
   // Initialize editor content when page changes
   useEffect(() => {
-    const content = pageData?.content?.textPage || '';
+    const content = pageData?.content?.textPage || "";
     setEditorContent(content);
     contentRef.current = content;
   }, [pageId]);
@@ -171,8 +298,8 @@ const TextPageContent = ({ title, pageId }: { title: string; pageId: number }) =
         updateCustomPage(pageId, {
           content: {
             ...pageData.content,
-            textPage: editorContent
-          }
+            textPage: editorContent,
+          },
         });
       }
     }, 500); // 500ms debounce
@@ -192,18 +319,18 @@ const TextPageContent = ({ title, pageId }: { title: string; pageId: number }) =
   return (
     <View style={styles.pdfContent}>
       <Text style={styles.sectionTitle}>{title}</Text>
-      
+
       <View style={styles.editorContainer}>
         <View style={styles.toolbarContainer}>
           <View style={styles.tokenContainer} ref={tokenButtonRef}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.tokenButton}
               onPress={() => setShowTokens(!showTokens)}
             >
-              <MaterialIcons 
-                name={showTokens ? "expand-less" : "expand-more"} 
-                size={24} 
-                color={Colors.black} 
+              <MaterialIcons
+                name={showTokens ? "expand-less" : "expand-more"}
+                size={24}
+                color={Colors.black}
               />
               <Text style={styles.tokenButtonText}>Insert Token</Text>
             </TouchableOpacity>
@@ -230,7 +357,7 @@ const TextPageContent = ({ title, pageId }: { title: string; pageId: number }) =
               actions.insertBulletsList,
               actions.insertOrderedList,
               actions.setStrikethrough,
-              actions.blockquote
+              actions.blockquote,
             ]}
             style={styles.toolbar}
             iconTint={Colors.black}
@@ -256,25 +383,29 @@ const TextPageContent = ({ title, pageId }: { title: string; pageId: number }) =
 
 export function CustomPage({ title }: CustomPageProps) {
   const { customPages, updateCustomPage } = useEstimatePageStore();
-  const pageData = customPages.find(page => page.title === title);
+  const pageData = customPages.find((page) => page.title === title);
   const theme = useTheme();
 
   // Combine all state into a single object to reduce state updates
   const [pageState, setPageState] = useState({
     requireAcknowledge: false,
-    selectedType: 'myPDFs' as 'myPDFs' | 'sharedPDFs' | 'singleUsePDFs' | 'textPage',
+    selectedType: "myPDFs" as
+      | "myPDFs"
+      | "sharedPDFs"
+      | "singleUsePDFs"
+      | "textPage",
     isEditingTitle: false,
-    pageTitle: title
+    pageTitle: title,
   });
 
   // Initialize state from store data only once when component mounts or title changes
   useEffect(() => {
     if (pageData) {
-      setPageState(prev => ({
+      setPageState((prev) => ({
         ...prev,
         requireAcknowledge: pageData.requireAcknowledge || false,
-        selectedType: pageData.type || 'myPDFs',
-        pageTitle: pageData.title || title
+        selectedType: pageData.type || "myPDFs",
+        pageTitle: pageData.title || title,
       }));
     }
   }, [title]); // Only depend on title changes
@@ -295,9 +426,9 @@ export function CustomPage({ title }: CustomPageProps) {
   }, [pageState, pageData?.id]); // Only update when pageState or pageData.id changes
 
   const handleStateChange = (key: keyof typeof pageState, value: any) => {
-    setPageState(prev => ({
+    setPageState((prev) => ({
       ...prev,
-      [key]: value
+      [key]: value,
     }));
   };
 
@@ -314,16 +445,40 @@ export function CustomPage({ title }: CustomPageProps) {
 
   const renderPDFContent = () => {
     if (!pageData) return null;
-    
+
     switch (pageState.selectedType) {
-      case 'myPDFs':
-        return <PDFContent key={`pdf-${pageData.id}`} title="My PDFs" pageId={pageData.id} />;
-      case 'sharedPDFs':
-        return <SharedPDFsContent key={`shared-${pageData.id}`} title="Shared PDFs" pageId={pageData.id} />;
-      case 'singleUsePDFs':
-        return <SingleUsePDFContent key={`single-${pageData.id}`} title="Single Use PDFs" pageId={pageData.id} />;
-      case 'textPage':
-        return <TextPageContent key={`text-${pageData.id}`} title="Text Page" pageId={pageData.id} />;
+      case "myPDFs":
+        return (
+          <PDFContent
+            key={`pdf-${pageData.id}`}
+            title="My PDFs"
+            pageId={pageData.id}
+          />
+        );
+      case "sharedPDFs":
+        return (
+          <SharedPDFsContent
+            key={`shared-${pageData.id}`}
+            title="Shared PDFs"
+            pageId={pageData.id}
+          />
+        );
+      case "singleUsePDFs":
+        return (
+          <SingleUsePDFContent
+            key={`single-${pageData.id}`}
+            title="Single Use PDFs"
+            pageId={pageData.id}
+          />
+        );
+      case "textPage":
+        return (
+          <TextPageContent
+            key={`text-${pageData.id}`}
+            title="Text Page"
+            pageId={pageData.id}
+          />
+        );
       default:
         return null;
     }
@@ -332,108 +487,199 @@ export function CustomPage({ title }: CustomPageProps) {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Card style={styles.card}>
-        <View style={styles.header}>
-          <View style={styles.titleRow}>
-            {pageState.isEditingTitle ? (
-              <Input
-                value={pageState.pageTitle}
-                onChangeText={(value) => handleStateChange('pageTitle', value)}
-                onBlur={() => handleStateChange('isEditingTitle', false)}
-                autoFocus
-                style={styles.titleInput}
-              />
-            ) : (
-              <>
-                <Text style={styles.title}>{pageState.pageTitle}</Text>
-                <TouchableOpacity onPress={() => handleStateChange('isEditingTitle', true)}>
-                  <Feather name="edit-2" size={16} color={Colors.primary} />
-                </TouchableOpacity>
-              </>
-            )}
+        <ScrollView>
+          <View style={styles.header}>
+            <View style={styles.titleRow}>
+              {pageState.isEditingTitle ? (
+                <Input
+                  value={pageState.pageTitle}
+                  onChangeText={(value) =>
+                    handleStateChange("pageTitle", value)
+                  }
+                  onBlur={() => handleStateChange("isEditingTitle", false)}
+                  autoFocus
+                  style={styles.titleInput}
+                />
+              ) : (
+                <>
+                  <Text style={styles.title}>{pageState.pageTitle}</Text>
+                  <TouchableOpacity
+                    onPress={() => handleStateChange("isEditingTitle", true)}
+                  >
+                    <Feather name="edit-2" size={16} color={Colors.primary} />
+                  </TouchableOpacity>
+                </>
+              )}
+            </View>
           </View>
-        </View>
 
-        {/* Acknowledge Switch */}
-        <View style={styles.acknowledgeContainer}>
-          <View style={styles.acknowledgeContent}>
-            <Text style={styles.acknowledgeTitle}>
-              Require customers to acknowledge this page
-            </Text>
-            <Text style={styles.acknowledgeSubtitle}>
-              They will be asked during the signing process
-            </Text>
+          {/* Acknowledge Switch */}
+          <View style={styles.acknowledgeContainer}>
+            <View style={styles.acknowledgeContent}>
+              <Text style={styles.acknowledgeTitle}>
+                Require customers to acknowledge this page
+              </Text>
+              <Text style={styles.acknowledgeSubtitle}>
+                They will be asked during the signing process
+              </Text>
+            </View>
+            <Switch
+              value={pageState.requireAcknowledge}
+              onValueChange={(value) =>
+                handleStateChange("requireAcknowledge", value)
+              }
+              trackColor={{ false: Colors.gray[200], true: Colors.primary }}
+              thumbColor="white"
+            />
           </View>
-          <Switch
-            value={pageState.requireAcknowledge}
-            onValueChange={(value) => handleStateChange('requireAcknowledge', value)}
-            trackColor={{ false: Colors.gray[200], true: Colors.primary }}
-            thumbColor="white"
-          />
-        </View>
 
-        {/* Type Selection */}
-        <View style={styles.typeContainer}>
-          <TouchableOpacity 
-            style={[styles.typeButton, pageState.selectedType === 'myPDFs' && styles.selectedType]}
-            onPress={() => handleStateChange('selectedType', 'myPDFs')}
-          >
-            <View style={[styles.radio, pageState.selectedType === 'myPDFs' && styles.selectedRadio]}>
-              <View style={pageState.selectedType === 'myPDFs' ? styles.radioInner : undefined} />
-            </View>
-            <Text style={[styles.typeText, pageState.selectedType === 'myPDFs' && styles.selectedTypeText]}>
-              My PDFs
-            </Text>
-          </TouchableOpacity>
+          {/* Type Selection */}
+          <View style={styles.typeContainer}>
+            <TouchableOpacity
+              style={[
+                styles.typeButton,
+                pageState.selectedType === "myPDFs" && styles.selectedType,
+              ]}
+              onPress={() => handleStateChange("selectedType", "myPDFs")}
+            >
+              <View
+                style={[
+                  styles.radio,
+                  pageState.selectedType === "myPDFs" && styles.selectedRadio,
+                ]}
+              >
+                <View
+                  style={
+                    pageState.selectedType === "myPDFs"
+                      ? styles.radioInner
+                      : undefined
+                  }
+                />
+              </View>
+              <Text
+                style={[
+                  styles.typeText,
+                  pageState.selectedType === "myPDFs" &&
+                    styles.selectedTypeText,
+                ]}
+              >
+                My PDFs
+              </Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity 
-            style={[styles.typeButton, pageState.selectedType === 'sharedPDFs' && styles.selectedType]}
-            onPress={() => handleStateChange('selectedType', 'sharedPDFs')}
-          >
-            <View style={[styles.radio, pageState.selectedType === 'sharedPDFs' && styles.selectedRadio]}>
-              <View style={pageState.selectedType === 'sharedPDFs' ? styles.radioInner : undefined} />
-            </View>
-            <Text style={[styles.typeText, pageState.selectedType === 'sharedPDFs' && styles.selectedTypeText]}>
-              Shared PDFs
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.typeButton,
+                pageState.selectedType === "sharedPDFs" && styles.selectedType,
+              ]}
+              onPress={() => handleStateChange("selectedType", "sharedPDFs")}
+            >
+              <View
+                style={[
+                  styles.radio,
+                  pageState.selectedType === "sharedPDFs" &&
+                    styles.selectedRadio,
+                ]}
+              >
+                <View
+                  style={
+                    pageState.selectedType === "sharedPDFs"
+                      ? styles.radioInner
+                      : undefined
+                  }
+                />
+              </View>
+              <Text
+                style={[
+                  styles.typeText,
+                  pageState.selectedType === "sharedPDFs" &&
+                    styles.selectedTypeText,
+                ]}
+              >
+                Shared PDFs
+              </Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity 
-            style={[styles.typeButton, pageState.selectedType === 'singleUsePDFs' && styles.selectedType]}
-            onPress={() => handleStateChange('selectedType', 'singleUsePDFs')}
-          >
-            <View style={[styles.radio, pageState.selectedType === 'singleUsePDFs' && styles.selectedRadio]}>
-              <View style={pageState.selectedType === 'singleUsePDFs' ? styles.radioInner : undefined} />
-            </View>
-            <Text style={[styles.typeText, pageState.selectedType === 'singleUsePDFs' && styles.selectedTypeText]}>
-              Single Use PDFs
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.typeButton,
+                pageState.selectedType === "singleUsePDFs" &&
+                  styles.selectedType,
+              ]}
+              onPress={() => handleStateChange("selectedType", "singleUsePDFs")}
+            >
+              <View
+                style={[
+                  styles.radio,
+                  pageState.selectedType === "singleUsePDFs" &&
+                    styles.selectedRadio,
+                ]}
+              >
+                <View
+                  style={
+                    pageState.selectedType === "singleUsePDFs"
+                      ? styles.radioInner
+                      : undefined
+                  }
+                />
+              </View>
+              <Text
+                style={[
+                  styles.typeText,
+                  pageState.selectedType === "singleUsePDFs" &&
+                    styles.selectedTypeText,
+                ]}
+              >
+                Single Use PDFs
+              </Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity 
-            style={[styles.typeButton, pageState.selectedType === 'textPage' && styles.selectedType]}
-            onPress={() => handleStateChange('selectedType', 'textPage')}
-          >
-            <View style={[styles.radio, pageState.selectedType === 'textPage' && styles.selectedRadio]}>
-              <View style={pageState.selectedType === 'textPage' ? styles.radioInner : undefined} />
-            </View>
-            <Text style={[styles.typeText, pageState.selectedType === 'textPage' && styles.selectedTypeText]}>
-              Text Page
-            </Text>
-          </TouchableOpacity>
-        </View>
+            <TouchableOpacity
+              style={[
+                styles.typeButton,
+                pageState.selectedType === "textPage" && styles.selectedType,
+              ]}
+              onPress={() => handleStateChange("selectedType", "textPage")}
+            >
+              <View
+                style={[
+                  styles.radio,
+                  pageState.selectedType === "textPage" && styles.selectedRadio,
+                ]}
+              >
+                <View
+                  style={
+                    pageState.selectedType === "textPage"
+                      ? styles.radioInner
+                      : undefined
+                  }
+                />
+              </View>
+              <Text
+                style={[
+                  styles.typeText,
+                  pageState.selectedType === "textPage" &&
+                    styles.selectedTypeText,
+                ]}
+              >
+                Text Page
+              </Text>
+            </TouchableOpacity>
+          </View>
 
-        {/* Render PDF content based on selected type */}
-        {renderPDFContent()}
+          {/* Render PDF content based on selected type */}
+          {renderPDFContent()}
 
-        {/* Add Save Button */}
-        <View style={styles.buttonContainer}>
-          <Button 
-            label="Save Changes"
-            onPress={handleSave}
-            variant="primary"
-            size="small"
-          />
-        </View>
+          {/* Add Save Button */}
+          <View style={styles.buttonContainer}>
+            <Button
+              label="Save Changes"
+              onPress={handleSave}
+              variant="primary"
+              size="small"
+            />
+          </View>
+        </ScrollView>
       </Card>
     </View>
   );
@@ -443,7 +689,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 24,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
   },
   card: {
     padding: 24,
@@ -454,15 +700,15 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: "600",
     color: Colors.black,
   },
   acknowledgeContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: 16,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderWidth: 1,
     borderColor: Colors.gray[200],
     borderRadius: 8,
@@ -474,7 +720,7 @@ const styles = StyleSheet.create({
   },
   acknowledgeTitle: {
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: "500",
     color: Colors.black,
     marginBottom: 4,
   },
@@ -483,24 +729,24 @@ const styles = StyleSheet.create({
     color: Colors.gray[500],
   },
   typeContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: 16,
   },
   typeButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderWidth: 1,
     borderColor: Colors.gray[200],
     borderRadius: 8,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     minWidth: 120,
   },
   selectedType: {
     borderColor: Colors.primary,
-    backgroundColor: Colors.primary + '10',
+    backgroundColor: Colors.primary + "10",
   },
   radio: {
     width: 20,
@@ -509,8 +755,8 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: Colors.gray[400],
     marginRight: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   selectedRadio: {
     borderColor: Colors.primary,
@@ -527,18 +773,18 @@ const styles = StyleSheet.create({
   },
   selectedTypeText: {
     color: Colors.primary,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
     marginBottom: 8,
   },
   titleInput: {
     flex: 1,
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   pdfContent: {
     marginTop: 24,
@@ -546,13 +792,13 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     color: Colors.black,
     marginBottom: 16,
   },
   searchArea: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderWidth: 1,
     borderColor: Colors.gray[200],
     borderRadius: 8,
@@ -560,8 +806,8 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   searchInputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 12,
     height: 40,
     backgroundColor: Colors.gray[50],
@@ -575,29 +821,32 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     fontSize: 14,
     color: Colors.black,
-    height: '100%',
+    height: "100%",
   },
   filesSection: {
     flex: 1,
   },
   filesSectionTitle: {
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: "500",
     color: Colors.black,
     marginBottom: 16,
   },
   foldersContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 16,
   },
   folderCard: {
-    width: 140,
+    width: 155,
     padding: 12,
     backgroundColor: Colors.gray[50],
     borderWidth: 1,
     borderColor: Colors.gray[200],
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 12,
+    marginBottom: 5,
   },
   folderIcon: {
     marginBottom: 8,
@@ -605,7 +854,7 @@ const styles = StyleSheet.create({
   folderName: {
     fontSize: 14,
     color: Colors.black,
-    textAlign: 'center',
+    textAlign: "center",
   },
   uploadContainer: {
     flex: 1,
@@ -613,27 +862,27 @@ const styles = StyleSheet.create({
   },
   uploadBox: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderWidth: 2,
     borderColor: Colors.gray[200],
-    borderStyle: 'dashed',
+    borderStyle: "dashed",
     borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     padding: 24,
   },
   uploadIconContainer: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: Colors.primary + '10',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: Colors.primary + "10",
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 16,
   },
   uploadTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     color: Colors.black,
     marginBottom: 8,
   },
@@ -641,7 +890,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.gray[500],
     marginBottom: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
   browseButton: {
     paddingVertical: 8,
@@ -651,9 +900,9 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   browseButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   uploadLimit: {
     fontSize: 12,
@@ -664,11 +913,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.gray[200],
     borderRadius: 8,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   toolbarContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#f9fafb',
+    flexDirection: "row",
+    backgroundColor: "#f9fafb",
     borderBottomWidth: 1,
     borderBottomColor: Colors.gray[200],
     borderTopLeftRadius: 8,
@@ -676,20 +925,20 @@ const styles = StyleSheet.create({
   },
   toolbar: {
     flex: 1,
-    backgroundColor: 'transparent',
-    alignItems: 'flex-start',
+    backgroundColor: "transparent",
+    alignItems: "flex-start",
   },
   toolbarIcon: {
-    justifyContent: 'flex-start',
+    justifyContent: "flex-start",
   },
   tokenContainer: {
     borderRightWidth: 1,
     borderRightColor: Colors.gray[200],
-    position: 'relative',
+    position: "relative",
   },
   tokenButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 8,
     gap: 4,
   },
@@ -698,16 +947,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   tokenDropdown: {
-    position: 'absolute',
-    top: '100%',
+    position: "absolute",
+    top: "100%",
     left: 0,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderWidth: 1,
     borderColor: Colors.gray[200],
     borderRadius: 4,
     width: 200,
     zIndex: 1000,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -733,7 +982,44 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 24,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+    flexDirection: "row",
+    justifyContent: "flex-end",
+  },
+
+  viewToggleContainer: {
+    alignItems: "flex-end",
+    marginBottom: 8,
+    flexDirection: "row",
+  },
+  toggleButton: {
+    padding: 8,
+  },
+  gridContainer: {
+    justifyContent: "space-between",
+  },
+  tileContainer: {
+    flexDirection: "column",
+  },
+
+  gridItem: {
+    width: 140,
+    padding: 12,
+    backgroundColor: Colors.gray[50],
+    borderWidth: 1,
+    borderColor: Colors.gray[200],
+    borderRadius: 8,
+    alignItems: "center",
+    marginEnd: 10,
+  },
+  tileItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    marginBottom: 10,
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
 });
