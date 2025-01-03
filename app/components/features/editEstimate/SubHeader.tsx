@@ -5,12 +5,7 @@ import { Button } from "../../common/Button";
 import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
 import { useTheme } from "../../providers/ThemeProvider";
 import { useRouter } from "expo-router";
-import * as Sharing from "expo-sharing";
-import * as Print from "expo-print";
-import * as FileSystem from "expo-file-system";
-import * as Linking from "expo-linking";
-import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
-
+import PdfGenerator from "../../common/PDFGenerater";
 
 const DEFAULT_PAGES = [
   "Title",
@@ -23,155 +18,15 @@ const DEFAULT_PAGES = [
   "Warranty",
 ];
 
-
 // Utility function to convert a Uint8Array to a base64 string
 const uint8ArrayToBase64 = (uint8Array: Uint8Array): string => {
-  let binary = '';
+  let binary = "";
   const len = uint8Array.byteLength;
   for (let i = 0; i < len; i++) {
     binary += String.fromCharCode(uint8Array[i]);
   }
   return btoa(binary);
 };
-
-// Utility function to convert a base64 string to a Uint8Array
-const base64ToUint8Array = (base64: string): Uint8Array => {
-  const binaryString = atob(base64);
-  const len = binaryString.length;
-  const bytes = new Uint8Array(len);
-  for (let i = 0; i < len; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
-  }
-  return bytes;
-};
-
-const handleViewPage = async (formData: Record<string, any>) => {
-  try {
-    let base64PrimaryFile = '';
-    let base64CertificateOrSecLogo = '';
-
-    // Convert primaryImage to base64
-    if (formData.primaryImage && formData.primaryImage.uri) {
-      base64PrimaryFile = await FileSystem.readAsStringAsync(
-        formData.primaryImage.uri,
-        { encoding: FileSystem.EncodingType.Base64 }
-      );
-    }
-
-    // Convert certificateOrSecLogo to base64
-    if (formData.certificateOrSecLogo && formData.certificateOrSecLogo.uri) {
-      base64CertificateOrSecLogo = await FileSystem.readAsStringAsync(
-        formData.certificateOrSecLogo.uri,
-        { encoding: FileSystem.EncodingType.Base64 }
-      );
-    }
-
-    // Create a new PDF document
-    const pdfDoc = await PDFDocument.create();
-    const page = pdfDoc.addPage([600, 800]);
-    const { width, height } = page.getSize();
-    let yOffset = height - 50;
-    const lineHeight = 20;
-
-    // Add text content to the PDF
-    page.drawText(formData.title || 'Untitled Report', {
-      x: 50,
-      y: yOffset,
-      size: 18,
-      color: rgb(0, 0, 0),
-    });
-    yOffset -= lineHeight * 2;
-
-    const textFields = [
-      { label: 'Company Name', value: formData.companyName || 'N/A' },
-      { label: 'Report Type', value: formData.reportType || 'N/A' },
-      { label: 'Date', value: formData.date || 'N/A' },
-      { label: 'Address', value: formData.address || 'N/A' },
-      { label: 'City', value: formData.city || 'N/A' },
-      { label: 'State', value: formData.state || 'N/A' },
-      { label: 'Postal Code', value: formData.postalCode || 'N/A' },
-      { label: 'Name', value: `${formData.name || 'N/A'} ${formData.lastName || ''}` },
-    ];
-
-    textFields.forEach(({ label, value }) => {
-      page.drawText(`${label}: ${value}`, {
-        x: 50,
-        y: yOffset,
-        size: 12,
-        color: rgb(0, 0, 0),
-      });
-      yOffset -= lineHeight;
-    });
-
-    // Handle Primary File (Image or PDF)
-    if (base64PrimaryFile) {
-      const primaryBytes = base64ToUint8Array(base64PrimaryFile);
-
-      if (formData.primaryImage.mimeType.includes('image')) {
-        const primaryImage = await pdfDoc.embedJpg(primaryBytes);
-        const imageDims = primaryImage.scale(0.25);
-        page.drawImage(primaryImage, {
-          x: 50,
-          y: yOffset - imageDims.height,
-          width: imageDims.width,
-          height: imageDims.height,
-        });
-        yOffset -= imageDims.height + lineHeight;
-      } else if (formData.primaryImage.mimeType.includes('pdf')) {
-        const primaryPdfDoc = await PDFDocument.load(primaryBytes);
-        const primaryPages = await pdfDoc.copyPages(primaryPdfDoc, primaryPdfDoc.getPageIndices());
-        primaryPages.forEach((p) => pdfDoc.addPage(p));
-      }
-    }
-
-    // Handle Certificate/Logo File (Image or PDF)
-    if (base64CertificateOrSecLogo) {
-      const certBytes = base64ToUint8Array(base64CertificateOrSecLogo);
-
-      if (formData.certificateOrSecLogo.mimeType.includes('image')) {
-        const certImage = await pdfDoc.embedJpg(certBytes);
-        const imageDims = certImage.scale(0.25);
-        page.drawImage(certImage, {
-          x: 50,
-          y: yOffset - imageDims.height,
-          width: imageDims.width,
-          height: imageDims.height,
-        });
-        yOffset -= imageDims.height + lineHeight;
-      } else if (formData.certificateOrSecLogo.mimeType.includes('pdf')) {
-        const certPdfDoc = await PDFDocument.load(certBytes);
-        const certPages = await pdfDoc.copyPages(certPdfDoc, certPdfDoc.getPageIndices());
-        certPages.forEach((p) => pdfDoc.addPage(p));
-      }
-    }
-
-    // Save the PDF document
-    const pdfBytes = await pdfDoc.save();
-    const base64Pdf = uint8ArrayToBase64(pdfBytes);
-    const pdfUri = FileSystem.documentDirectory + 'generated_report.pdf';
-
-    // Write the PDF file to the file system
-    await FileSystem.writeAsStringAsync(pdfUri, base64Pdf, {
-      encoding: FileSystem.EncodingType.Base64,
-    });
-
-    // Share the generated PDF
-    if (await Sharing.isAvailableAsync()) {
-      await Sharing.shareAsync(pdfUri);
-    } else {
-      Alert.alert('Sharing Not Available', 'Cannot share the generated PDF.');
-    }
-  } catch (error) {
-    console.error('Error generating or sharing PDF:', error);
-    Alert.alert('Error', 'An error occurred while generating the PDF.');
-  }
-};
-
-
-
-
-
-
 
 export function SubHeader() {
   const router = useRouter();
@@ -249,12 +104,7 @@ export function SubHeader() {
             />
           </View>
         )}
-        <Button
-          label="View Page"
-          onPress={() => handleViewPage(formData)}
-          variant="primary"
-          size="medium"
-        />
+        <PdfGenerator formData={formData} />
         <Pressable
           style={[
             styles.actionButton,
