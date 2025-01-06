@@ -1,6 +1,6 @@
-import { PinScreen } from "./components/features/pin/PinScreen";
+import { PinScreen } from '@/app/components/features/pin/PinScreen';
 
-export default function PinPage() {
-  return <PinScreen onPin={() => {}} isDarkMode={false} />;
+export default function Pin() {
+  return <PinScreen />;
 }
 

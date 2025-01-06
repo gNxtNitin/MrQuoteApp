@@ -1,29 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { SplashScreen } from './components/features/splashScreen/SplashScreen';
 import { LoginScreen } from './components/features/login/LoginScreen';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { HomeScreen } from './components/features/home/HomeScreen';
-import { EstimateDetails } from './components/features/estimate/EstimateDetails';
-import { EstimateScreen } from './components/features/estimate/EstimateScreen';
 import { useDatabase } from './hooks/useDatabase';
 import ErrorScreen from './components/ErrorScreen';
+import { useAuth } from './hooks/useAuth';
+import { useRouter } from 'expo-router';
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { db, dbLoading, error } = useDatabase();
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
-    setTimeout(() => {
+    const initApp = async () => {
+      await new Promise(resolve => setTimeout(resolve, 2000));
       setIsLoading(false);
-    }, 2000);
-  }, []);
 
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-  };
+      if (user) {
+        if (user.pin) {
+          router.replace('/pin');
+        } else {
+          router.replace('/login');
+        }
+      } else {
+        router.replace('/login');
+      }
+    };
 
-  if (isLoading || dbLoading) {
+    if (!dbLoading && !authLoading) {
+      initApp();
+    }
+  }, [dbLoading, authLoading, user]);
+
+  if (isLoading || dbLoading || authLoading) {
     return <SplashScreen />;
   }
   
@@ -31,9 +41,5 @@ export default function App() {
     return <ErrorScreen message="Your database is not initialized properly. Please restart the app."/>;
   }
 
-  if (!isLoggedIn) {
-    return <LoginScreen onLogin={handleLogin} isDarkMode={false} />;
-  }
-
-  return <HomeScreen />;
+  return null;
 } 

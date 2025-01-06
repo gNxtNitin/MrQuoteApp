@@ -1,26 +1,34 @@
 import { useEffect, useState } from 'react';
-import { openDatabase, initDatabase } from '../services/database/init';
 import * as SQLite from 'expo-sqlite';
+import { openDatabase, initDatabase, Database } from '../services/database/init';
 
-export const useDatabase = () => {
-  const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);
-  const [dbLoading, setDbLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+interface DatabaseHook {
+    db: Database | null;
+    dbLoading: boolean;
+    error: Error | null;
+}
 
-  useEffect(() => {
-    const initDB = async () => {
-      try {
-        const database = await initDatabase() as SQLite.SQLiteDatabase;
-        setDb(database);
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to initialize database'));
-      } finally {
-        setDbLoading(false);
-      }
-    };
+export function useDatabase(): DatabaseHook {
+    const [db, setDb] = useState<Database | null>(null);
+    const [dbLoading, setDbLoading] = useState(true);
+    const [error, setError] = useState<Error | null>(null);
 
-    initDB();
-  }, []);
+    useEffect(() => {
+        async function initDB() {
+            try {
+                const database = await initDatabase();
+                setDb(database);
+            } catch (err) {
+                const error = err instanceof Error ? err : new Error('Failed to initialize database');
+                console.error('Database initialization error:', error);
+                setError(error);
+            } finally {
+                setDbLoading(false);
+            }
+        }
 
-  return { db, dbLoading, error };
-};
+        initDB();
+    }, []);
+
+    return { db, dbLoading, error };
+}
