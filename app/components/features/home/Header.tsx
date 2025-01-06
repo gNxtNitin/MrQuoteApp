@@ -17,6 +17,7 @@ import { useTheme } from "@/app/components/providers/ThemeProvider";
 import { useThemeStore } from "@/app/stores/themeStore";
 import { usePathname } from "expo-router";
 import { useSidebarStore } from "@/app/stores/sidebarStore";
+import { useAuth } from '@/app/hooks/useAuth';
 
 interface HeaderState {
   showSwitcher: boolean;
@@ -40,6 +41,7 @@ export function Header() {
   const pathname = usePathname();
   const showSidebarButton = pathname === "/editEstimate";
   const { open: openSidebar } = useSidebarStore();
+  const { logout } = useAuth();
 
   const companies = [
     {
@@ -61,8 +63,9 @@ export function Header() {
     setShowSwitcher(false);
   };
 
-  const handleLogout = () => {
-    router.replace("/login");
+  const handleLogout = async () => {
+    await logout();
+    setShowSwitcher(false);
   };
 
   const handleLogoPress = () => {

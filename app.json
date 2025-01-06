@@ -40,6 +40,20 @@
         {
           "initialOrientation": "LANDSCAPE"
         }
+      ],
+      [
+        "expo-sqlite",
+        {
+          "enableFTS": true,
+          "useSQLCipher": true,
+          "customBuildFlags": ["-DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_SNAPSHOT=1"],
+          "android": {
+            "databaseName": "mrQuote.db"
+          },
+          "ios": {
+            "databaseName": "mrQuote.db"
+          }
+        }
       ]
     ],
     "experiments": {
