@@ -51,6 +51,7 @@ export const Role = {
       );
     `;
     await db.execAsync(query);
+    console.log('Role table created');
   },
 
   insert: async (roleData: RoleData) => {

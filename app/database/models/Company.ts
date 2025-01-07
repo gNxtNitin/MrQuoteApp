@@ -77,6 +77,7 @@ export const Company = {
       );
     `;
     await db.execAsync(query);
+    console.log('Company table created');
   },
 
   insert: async (companyData: CompanyData) => {

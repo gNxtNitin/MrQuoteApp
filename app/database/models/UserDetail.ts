@@ -77,6 +77,7 @@ export const UserDetail = {
       );
     `;
     await db.execAsync(query);
+    console.log('UserDetail table created');
   },
 
   insert: async (userDetailData: UserDetailData) => {

@@ -6,6 +6,7 @@ export const Colors = {
   white: '#FFFFFF',
   black: '#000000',
   error: '#ff3b30',
+  success: '#28a745',
   placeholderTextColor:'#BBCBD8',
   green:'#28a745',
   lightGreen:'#e7f9e7',

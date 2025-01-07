@@ -18,6 +18,7 @@ import { useThemeStore } from "@/app/stores/themeStore";
 import { usePathname } from "expo-router";
 import { useSidebarStore } from "@/app/stores/sidebarStore";
 import { useAuth } from '@/app/hooks/useAuth';
+import { initialsName } from "../../common/Utils";
 
 interface HeaderState {
   showSwitcher: boolean;
@@ -41,7 +42,7 @@ export function Header() {
   const pathname = usePathname();
   const showSidebarButton = pathname === "/editEstimate";
   const { open: openSidebar } = useSidebarStore();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
   const companies = [
     {
@@ -108,8 +109,8 @@ export function Header() {
           </Pressable>
         </View>
 
-        <View style={[styles.rightSection, { zIndex: 9999 }]}>
-          <Pressable onPress={toggleTheme} style={styles.themeButton}>
+        <View style={styles.rightSection}>
+          <Pressable style={styles.themeButton} onPress={toggleTheme}>
             <MaterialIcons
               name={isDarkMode ? "light-mode" : "dark-mode"}
               size={24}
@@ -132,7 +133,7 @@ export function Header() {
                 ]}
               >
                 <Text style={[styles.initial, { color: Colors.primary }]}>
-                  {"AS"}
+                  {initialsName(`${user?.first_name || ''} ${user?.last_name || ''}`)}
                 </Text>
               </View>
             </Pressable>

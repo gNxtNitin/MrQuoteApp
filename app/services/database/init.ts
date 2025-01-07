@@ -63,46 +63,56 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                     // Insert sample data
                     await Company.insert({
                         id: 1,
-                        company_name: 'Demo Company',
+                        company_name: 'Mr. Gutter',
                         company_phone_number: '1234567890',
-                        company_email: 'contact@democompany.com',
+                        company_email: 'contact@gutter.com',
+                        area_title: 'USA',
+                        area_name_1: 'California',
+                        area_name_2: 'San Diego',
                         business_number: 'BN123456',
-                        web_address: 'www.democompany.com',
+                        company_logo: 'gutter',
+                        web_address: 'www.gutter.com',
                         is_active: true
                     });
 
-                    // Insert roles
-                    await Role.insert({
+                    await Company.insert({
                         id: 1,
-                        role_name: 'Admin',
+                        company_name: 'Mr. Roofing',
+                        company_phone_number: '1234567890',
+                        company_email: 'contact@roofing.com',
+                        area_title: 'USA',
+                        area_name_1: 'California',
+                        area_name_2: 'San Diego',
+                        business_number: 'BN123456',
+                        company_logo: 'roofing',
+                        web_address: 'www.roofing.com',
+                        is_active: true
+                    });
+
+                    await Company.insert({
+                        id: 1,
+                        company_name: 'Mr. Test',
+                        company_phone_number: '1234567890',
+                        company_email: 'contact@test.com',
+                        area_title: 'USA',
+                        area_name_1: 'California',
+                        area_name_2: 'San Diego',
+                        business_number: 'BN123456',
+                        company_logo: 'test',
+                        web_address: 'www.test.com',
                         is_active: true
                     });
                     
                     await Role.insert({
-                        id: 2,
+                        id: 1,
                         role_name: 'User',
                         is_active: true
                     });
 
-                    // Insert demo user details
-                    await UserDetail.insert({
-                        id: 1,
-                        username: 'admin',
-                        password_hash: 'admin123',
-                        email: 'admin@democompany.com',
-                        first_name: 'Admin',
-                        last_name: 'User',
-                        phone_number: '1234567890',
-                        company_id: 1,
-                        is_active: true,
-                        is_logged_in: false,
-                        created_date: new Date().toISOString(),
-                        modified_date: new Date().toISOString()
-                    });
 
                     await UserDetail.insert({
-                        id: 2,
-                        username: 'demouser',
+                        id: 1,
+                        username: 'demo',
                         password_hash: 'demo123',
                         email: 'user@democompany.com',
                         first_name: 'Demo',

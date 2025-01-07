@@ -3,6 +3,7 @@ import { View, Text, Pressable, StyleSheet, Image } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/app/constants/colors";
 import { useAuth } from '@/app/hooks/useAuth';
+import { initialsName } from "../../common/Utils";
 
 const gutter = require("@/assets/images/gutter-logo.png");
 const roofing = require("@/assets/images/roofing-logo.png");
@@ -22,12 +23,12 @@ interface CompanySwitcherProps {
   onLogout: () => void;
 }
 
-function initialsName(name: string) {
-  return name
-    .split(" ")
-    .map((word) => word[0])
-    .join("");
-}
+// function initialsName(name: string) {
+//   return name
+//     .split(" ")
+//     .map((word) => word[0])
+//     .join("");
+// }
 
 export function CompanySwitcher({
   companies,
@@ -35,7 +36,7 @@ export function CompanySwitcher({
   onSelectCompany,
   onLogout,
 }: CompanySwitcherProps) {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
   const handleLogout = async () => {
     await logout();
@@ -47,12 +48,16 @@ export function CompanySwitcher({
       <View style={styles.userInfo}>
         <View style={styles.userIcon}>
           <Text style={styles.userInitials}>
-            {initialsName("Ankush Singh")}
+            {initialsName(`${user?.first_name || ''} ${user?.last_name || ''}`)}
           </Text>
         </View>
         <View>
-          <Text style={styles.userName}>Ankush Singh</Text>
-          <Text style={styles.userStatus}>Active</Text>
+          <Text style={styles.userName}>
+            {`${user?.first_name || ''} ${user?.last_name || ''}`}
+          </Text>
+          <Text style={styles.userStatus}>
+            {user?.is_active ? 'Active' : 'Inactive'}
+          </Text>
         </View>
       </View>
 

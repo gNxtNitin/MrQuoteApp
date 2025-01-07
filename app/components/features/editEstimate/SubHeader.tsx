@@ -7,6 +7,7 @@ import { Button } from "../../common/Button";
 import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
 import { useTheme } from "../../providers/ThemeProvider";
 import { useRouter } from 'expo-router';
+import { useAuth } from '@/app/hooks/useAuth';
 
 const DEFAULT_PAGES = [
   "Title",
@@ -20,12 +21,13 @@ const DEFAULT_PAGES = [
 ];
 
 export function SubHeader() {
-    const router = useRouter();
-  
-  const { currentPage, removeCustomPage, customPages, setCurrentPage } =
-    useEstimatePageStore();
-  const handleBack = () => router.back();
+  const router = useRouter();
+  const { user } = useAuth();
+  const { currentPage, removeCustomPage, customPages, setCurrentPage } = useEstimatePageStore();
   const theme = useTheme();
+
+  const handleBack = () => router.back();
+  
   const handleViewPage = () => {
     // Handle view page action
   };
@@ -86,9 +88,27 @@ export function SubHeader() {
           <Text style={[styles.estimateName, { color: theme.primary }]}>
             Estimate #1234
           </Text>
-          <Text style={[styles.layoutText, { color: theme.textSecondary }]}>
-            Layout: Default Layout
-          </Text>
+          <View style={styles.detailsRow}>
+            <Text style={[styles.layoutText, { color: theme.textSecondary }]}>
+              Layout: Default Layout
+            </Text>
+            <View style={styles.userInfo}>
+              <MaterialIcons name="person" size={16} color={theme.textSecondary} />
+              <Text style={[styles.userText, { color: theme.textSecondary }]}>
+                Created by: {user?.first_name} {user?.last_name}
+              </Text>
+            </View>
+            <View style={styles.statusInfo}>
+              <MaterialIcons 
+                name="circle" 
+                size={8} 
+                color={user?.is_active ? Colors.success : Colors.error} 
+              />
+              <Text style={[styles.statusText, { color: theme.textSecondary }]}>
+                {user?.is_active ? 'Active' : 'Inactive'}
+              </Text>
+            </View>
+          </View>
         </View>
       </View>
       <View style={styles.buttonContainer}>
@@ -186,4 +206,29 @@ const styles = StyleSheet.create({
   },
 
   actionButtonText: { fontSize: 14, fontWeight: "600", color: Colors.primary },
+
+  detailsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    marginTop: 4,
+  },
+  userInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  userText: {
+    fontSize: 14,
+    opacity: 0.7,
+  },
+  statusInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  statusText: {
+    fontSize: 14,
+    opacity: 0.7,
+  },
 });
