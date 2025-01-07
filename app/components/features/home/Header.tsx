@@ -8,7 +8,7 @@ import {
   Pressable,
 } from "react-native";
 import { Colors } from "@/app/constants/colors";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CompanySwitcher } from "../company/CompanySwitcher";
 import { router } from "expo-router";
 import { create } from "zustand";
@@ -19,17 +19,18 @@ import { usePathname } from "expo-router";
 import { useSidebarStore } from "@/app/stores/sidebarStore";
 import { useAuth } from '@/app/hooks/useAuth';
 import { initialsName } from "../../common/Utils";
+import { Company, CompanyData } from "@/app/database/models/Company";
 
 interface HeaderState {
   showSwitcher: boolean;
-  selectedCompany: string;
+  selectedCompany: number;
   setShowSwitcher: (show: boolean) => void;
-  setSelectedCompany: (companyId: string) => void;
+  setSelectedCompany: (companyId: number) => void;
 }
 
 const useHeaderStore = create<HeaderState>((set) => ({
   showSwitcher: false,
-  selectedCompany: "gutter",
+  selectedCompany: 1,
   setShowSwitcher: (show) => set({ showSwitcher: show }),
   setSelectedCompany: (companyId) => set({ selectedCompany: companyId }),
 }));
@@ -43,23 +44,36 @@ export function Header() {
   const showSidebarButton = pathname === "/editEstimate";
   const { open: openSidebar } = useSidebarStore();
   const { logout, user } = useAuth();
+  
+  const [companies, setCompanies] = useState<CompanyData[]>([]);
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        if (user?.company_id) {
+          const companyIds = JSON.parse(user.company_id as string);
+          
+          const companyDetails = await Promise.all(
+            companyIds.map(async (id: number) => {
+              const company = await Company.getById(id);
+              return company;
+            })
+          );
 
-  const companies = [
-    {
-      id: "gutter",
-      borderColor: "#0F5695",
-      name: "Mr. Gutter",
-      color: "#f3f4f6",
-    },
-    {
-      id: "roofing",
-      borderColor: "#ef4444",
-      name: "Mr. Roofing",
-      color: "#f3f4f6",
-    },
-  ];
+          setCompanies(companyDetails.filter(Boolean));
+          
+          if (!selectedCompany && companyDetails.length > 0) {
+            setSelectedCompany(companyDetails[0].id);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching companies:', error);
+      }
+    };
 
-  const handleSelectCompany = (companyId: string) => {
+    fetchCompanies();
+  }, [user?.company_id]);
+
+  const handleSelectCompany = (companyId: number) => {
     setSelectedCompany(companyId);
     setShowSwitcher(false);
   };
@@ -81,10 +95,18 @@ export function Header() {
     openSidebar();
   };
 
-  const gutter = require("@/assets/images/gutter-logo.png");
-  const roofing = require("@/assets/images/roofing-logo.png");
+  const getCompanyLogo = (companyId: number) => {
+    switch (companyId) {
+      case 1:
+        return require("@/assets/images/gutter-logo.png");
+      case 2:
+        return require("@/assets/images/roofing-logo.png");
+      default:
+        return require("@/assets/images/gutter-logo.png");
+    }
+  };
 
-  const logoToShow = selectedCompany === "gutter" ? gutter : roofing;
+  const logoToShow = currentCompany ? getCompanyLogo(currentCompany.id as number) : null;
 
   return (
     <View style={[styles.header, { zIndex: 9999 }]}>
@@ -117,9 +139,11 @@ export function Header() {
               color={Colors.white}
             />
           </Pressable>
-          <Image source={logoToShow} resizeMode="contain" style={styles.dynamicLogo} />
+          {logoToShow && (
+            <Image source={logoToShow} resizeMode="contain" style={styles.dynamicLogo} />
+          )}
           <Text style={styles.companyName}>
-            {currentCompany?.name.toUpperCase()}
+            {currentCompany?.company_name?.toUpperCase()}
           </Text>
           <View>
             <Pressable

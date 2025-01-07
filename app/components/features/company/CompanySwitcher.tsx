@@ -4,7 +4,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/app/constants/colors";
 import { useAuth } from '@/app/hooks/useAuth';
 import { initialsName } from "../../common/Utils";
-
+import { CompanyData } from "@/app/database/models/Company";
 const gutter = require("@/assets/images/gutter-logo.png");
 const roofing = require("@/assets/images/roofing-logo.png");
 
@@ -17,18 +17,11 @@ interface Company {
 }
 
 interface CompanySwitcherProps {
-  companies: Company[];
-  selectedCompany: string;
-  onSelectCompany: (companyId: string) => void;
+  companies: CompanyData[];
+  selectedCompany: number;
+  onSelectCompany: (companyId: number) => void;
   onLogout: () => void;
 }
-
-// function initialsName(name: string) {
-//   return name
-//     .split(" ")
-//     .map((word) => word[0])
-//     .join("");
-// }
 
 export function CompanySwitcher({
   companies,
@@ -70,9 +63,9 @@ export function CompanySwitcher({
       {companies.map((company) => {
         let logoSource;
 
-        if (company.id === "gutter") {
+        if (company.company_logo === "gutter") {
           logoSource = gutter;
-        } else if (company.id === "roofing") {
+        } else if (company.company_logo === "roofing") {
           logoSource = roofing;
         }
 
@@ -80,22 +73,22 @@ export function CompanySwitcher({
           <Pressable
             key={company.id}
             style={styles.companyRow}
-            onPress={() => onSelectCompany(company.id)}
+            onPress={() => onSelectCompany(company.id || 0)}
           >
             <View
               style={[
                 styles.companyIcon,
                 {
-                  backgroundColor: company.color,
+                  backgroundColor: Colors.lightGreen,
                   marginStart: 14,
-                  borderColor: company.borderColor,
+                  borderColor: Colors.placeholderTextColor,
                 },
               ]}
             >
               <Image source={logoSource} style={styles.logo} resizeMode="center" />
             </View>
             <Text style={[styles.companyName, { marginStart: 14 }]}>
-              {company.name}
+              {company.company_name}
             </Text>
             {selectedCompany === company.id ? (
               <MaterialIcons

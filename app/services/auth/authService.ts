@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CURRENT_USER_KEY = '@user_id';
 const PIN_ATTEMPTS_KEY = '@pin_attempts';
-const MAX_PIN_ATTEMPTS = 3;
+const MAX_PIN_ATTEMPTS = 5;
 
 interface LoginResponse {
   success: boolean;

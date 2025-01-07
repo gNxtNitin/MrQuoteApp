@@ -29,7 +29,7 @@ interface UserDetailColumns {
 
 export interface UserDetailData {
   id?: number;
-  company_id?: number;
+  company_id?: string;
   first_name?: string;
   last_name?: string;
   username?: string;
@@ -50,7 +50,7 @@ export const UserDetail = {
   tableName: 'user_details',
   columns: {
     id: { type: 'INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE' },
-    company_id: { type: 'INTEGER' },
+    company_id: { type: 'TEXT' },
     first_name: { type: 'TEXT' },
     last_name: { type: 'TEXT' },
     username: { type: 'TEXT UNIQUE' },
@@ -72,8 +72,7 @@ export const UserDetail = {
       CREATE TABLE IF NOT EXISTS ${UserDetail.tableName} (
         ${Object.entries(UserDetail.columns)
           .map(([key, value]) => `${key} ${value.type}`)
-          .join(',\n')},
-        FOREIGN KEY (company_id) REFERENCES companies(id)
+          .join(',\n')}
       );
     `;
     await db.execAsync(query);
@@ -84,12 +83,14 @@ export const UserDetail = {
     const keys = Object.keys(userDetailData);
     const values = Object.values(userDetailData);
     const placeholders = values.map(() => '?').join(',');
+    console.log('UserDetail inserting...');
 
     const query = `
       INSERT INTO ${UserDetail.tableName} (${keys.join(',')})
       VALUES (${placeholders});
     `;
     await db.runAsync(query, values);
+    console.log('UserDetail inserted');
   },
 
   getById: async (id: number): Promise<UserDetailData | null> => {

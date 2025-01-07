@@ -71,35 +71,16 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                         area_name_2: 'San Diego',
                         business_number: 'BN123456',
                         company_logo: 'gutter',
-                        web_address: 'www.gutter.com',
                         is_active: true
                     });
 
                     await Company.insert({
-                        id: 1,
                         company_name: 'Mr. Roofing',
-                        company_phone_number: '1234567890',
+                        company_phone_number: '0987654321',
                         company_email: 'contact@roofing.com',
-                        area_title: 'USA',
-                        area_name_1: 'California',
-                        area_name_2: 'San Diego',
-                        business_number: 'BN123456',
-                        company_logo: 'roofing',
+                        business_number: 'BN654321',
                         web_address: 'www.roofing.com',
-                        is_active: true
-                    });
-
-                    await Company.insert({
-                        id: 1,
-                        company_name: 'Mr. Test',
-                        company_phone_number: '1234567890',
-                        company_email: 'contact@test.com',
-                        area_title: 'USA',
-                        area_name_1: 'California',
-                        area_name_2: 'San Diego',
-                        business_number: 'BN123456',
-                        company_logo: 'test',
-                        web_address: 'www.test.com',
+                        company_logo: 'roofing',
                         is_active: true
                     });
                     
@@ -109,7 +90,6 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                         is_active: true
                     });
 
-
                     await UserDetail.insert({
                         id: 1,
                         username: 'demo',
@@ -118,7 +98,7 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                         first_name: 'Demo',
                         last_name: 'User',
                         phone_number: '0987654321',
-                        company_id: 1,
+                        company_id: '[1, 2]',
                         is_active: true,
                         is_logged_in: false,
                         created_date: new Date().toISOString(),
@@ -129,13 +109,6 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                     await User.insert({
                         id: 1,
                         user_detail_id: 1,
-                        created_date: new Date().toISOString(),
-                        modified_date: new Date().toISOString()
-                    });
-
-                    await User.insert({
-                        id: 2,
-                        user_detail_id: 2,
                         created_date: new Date().toISOString(),
                         modified_date: new Date().toISOString()
                     });
