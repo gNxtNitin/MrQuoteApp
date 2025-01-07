@@ -14,9 +14,7 @@ import { Feather, MaterialIcons } from "@expo/vector-icons";
 import { FileUploader } from "@/app/components/common/FileUploader";
 import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
 
-
 export function TitlePage() {
-
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [title, setTitle] = useState("Title");
   const [reportType, setReportType] = useState("");
@@ -52,7 +50,6 @@ export function TitlePage() {
     };
     console.log("Saving changes...", formData);
     useEstimatePageStore.getState().setFormData(formData);
-
   };
 
   return (
@@ -106,7 +103,7 @@ export function TitlePage() {
                 label="Primary Image"
                 accept="both"
                 onUpload={(file) => {
-                  setPrimaryImage(file ||null); 
+                  setPrimaryImage(file || null);
                 }}
                 height={180}
               />

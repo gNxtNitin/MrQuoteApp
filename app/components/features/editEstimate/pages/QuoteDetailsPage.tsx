@@ -198,6 +198,13 @@ export function QuoteDetailsPage() {
     }));
   };
 
+   const handleSave = () => {
+      const quoteDetailsPageData = {
+  
+      };
+      console.log("Saving changes...");
+    };
+
   const renderItem = (quoteId: string, sectionId: string) => ({ item, drag, isActive }: RenderItemParams<LineItem>) => {
     return (
       <ScaleDecorator>
@@ -427,6 +434,15 @@ export function QuoteDetailsPage() {
               textAlignVertical="top"
             />
           </View>
+            <View style={styles.buttonContainer}>
+              <Button
+                label="Save Changes"
+                onPress={handleSave}
+                variant="primary"
+                size="small"
+              />
+            </View>
+
         </View>
       </View>
     );
@@ -886,5 +902,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+  },
+  buttonContainer: {
+    alignItems: "flex-end",
+    marginTop: 4,
   },
 });

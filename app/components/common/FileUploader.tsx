@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import * as DocumentPicker from "expo-document-picker"; // Import DocumentPicker
-import { Colors } from "@/app/constants/colors"; // Custom colors (if any)
+import * as DocumentPicker from "expo-document-picker";
+import { Colors } from "@/app/constants/colors"; 
 import { Card } from "./Card";
 import { MaterialIcons, Feather } from "@expo/vector-icons";
 

@@ -31,23 +31,31 @@ const PdfGenerator: React.FC<PdfGeneratorProps> = ({ formData }) => {
 
       let cursorY = height - 40; // Start near the top of the page
 
-      // Extract and display title if available
-      if (formData.title) {
-        page.drawText(`${formData.title}`, {
+      const addTextToPage = (text: string) => {
+        if (cursorY < 40) {
+          const newPage = pdfDoc.addPage([width, height]);
+          cursorY = height - 40;
+        }
+        page.drawText(text, {
           x: 40,
           y: cursorY,
-          size: fontSize + 4,
+          size: fontSize,
           font,
           color: rgb(0, 0, 0),
         });
-        cursorY -= 30; // Move cursor down
-      }
+        cursorY -= 20;
+      };
 
-      // Iterate through key-value pairs in formData
-      for (const [key, value] of Object.entries(formData)) {
-        if (key === "primaryImage" || key === "certificateOrSecLogo") {
-          // Handle images and PDFs
-          if (value?.mimeType.includes("image")) {
+      const processData = async (key: string, value: any) => {
+        if (value === null || value === undefined) {
+          addTextToPage(`${key}: N/A`);
+          return;
+        }
+      
+        if (typeof value === "string") {
+          addTextToPage(`${key}: ${value}`);
+        } else if (value?.mimeType?.includes("image")) {
+          try {
             const imageBytes = await FileSystem.readAsStringAsync(value.uri, {
               encoding: FileSystem.EncodingType.Base64,
             });
@@ -55,35 +63,32 @@ const PdfGenerator: React.FC<PdfGeneratorProps> = ({ formData }) => {
               c.charCodeAt(0)
             );
             const image = await pdfDoc.embedJpg(imageBuffer);
-            const maxImageSize = 200; // Max size for image box
+            const maxImageSize = 200;
             const imageDims = image.scale(1);
-
+      
             const scaledWidth =
               imageDims.width > maxImageSize ? maxImageSize : imageDims.width;
             const scaledHeight =
               imageDims.height > maxImageSize ? maxImageSize : imageDims.height;
-
-            // Check if there's space for the image, or add a new page
+      
             if (cursorY - scaledHeight < 40) {
-              page.drawText(`Page continued...`, {
-                x: 40,
-                y: 40,
-                font,
-                size: fontSize,
-              });
               const newPage = pdfDoc.addPage([width, height]);
               cursorY = height - 40;
             }
-
+      
             page.drawImage(image, {
               x: 40,
               y: cursorY - scaledHeight,
               width: scaledWidth,
               height: scaledHeight,
             });
-
-            cursorY -= scaledHeight + 20; // Move cursor down
-          } else if (value?.mimeType.includes("pdf")) {
+      
+            cursorY -= scaledHeight + 20;
+          } catch (error) {
+            console.error(`Failed to process image for key: ${key}`, error);
+          }
+        } else if (value?.mimeType?.includes("pdf")) {
+          try {
             const pdfBytes = await FileSystem.readAsStringAsync(value.uri, {
               encoding: FileSystem.EncodingType.Base64,
             });
@@ -92,36 +97,31 @@ const PdfGenerator: React.FC<PdfGeneratorProps> = ({ formData }) => {
               embeddedPdf,
               embeddedPdf.getPageIndices()
             );
-
-            pdfPages.forEach((pdfPage) => {
-              pdfDoc.addPage(pdfPage);
-            });
+      
+            pdfPages.forEach((pdfPage) => pdfDoc.addPage(pdfPage));
+          } catch (error) {
+            console.error(`Failed to process PDF for key: ${key}`, error);
           }
-        } else if (typeof value === "string") {
-          // Handle text fields
-          page.drawText(`${key}: ${value || "N/A"}`, {
-            x: 40,
-            y: cursorY,
-            size: fontSize,
-            font,
-            color: rgb(0, 0, 0),
-          });
-
-          cursorY -= 20; // Move cursor down
-          if (cursorY < 40) {
-            page.drawText(`Page continued...`, {
-              x: 40,
-              y: 40,
-              font,
-              size: fontSize,
-            });
-            const newPage = pdfDoc.addPage([width, height]);
-            cursorY = height - 40;
+        } else if (Array.isArray(value)) {
+          addTextToPage(`${key}: [Array]`);
+          for (const item of value) {
+            await processData("Item", item);
           }
+        } else if (typeof value === "object") {
+          addTextToPage(`${key}: {Object}`);
+          for (const [nestedKey, nestedValue] of Object.entries(value)) {
+            await processData(nestedKey, nestedValue);
+          }
+        } else {
+          addTextToPage(`${key}: ${value || "N/A"}`);
         }
+      };
+      
+
+      for (const [key, value] of Object.entries(formData)) {
+        await processData(key, value);
       }
 
-      // Save the PDF and share
       const pdfBytes = await pdfDoc.save();
       const pdfBase64 = uint8ArrayToBase64(pdfBytes);
       const pdfUri = `${FileSystem.documentDirectory}generated_report.pdf`;
