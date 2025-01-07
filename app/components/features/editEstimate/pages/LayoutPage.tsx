@@ -37,7 +37,7 @@ export function LayoutPage() {
       description,
     };
     console.log("Saving Layout Page...", LayoutData);
-    useEstimatePageStore.getState().setFormData(LayoutData);
+    useEstimatePageStore.getState().setFormData("Layout",LayoutData);
   };
 
   return (

@@ -156,7 +156,7 @@ export function InspectionPage() {
       JSON.stringify({ inspectionData }, null, 2)
     );
 
-    useEstimatePageStore.getState().setFormData(inspectionData);
+    useEstimatePageStore.getState().setFormData("Inspection",inspectionData);
   };
 
   return (

@@ -9,6 +9,7 @@ type FormData = Record<string, any>;
 
 interface PdfGeneratorProps {
   formData: FormData;
+  pageKey: string; // The key to extract data for the specific page
 }
 
 const uint8ArrayToBase64 = (bytes: Uint8Array): string => {
@@ -20,7 +21,7 @@ const uint8ArrayToBase64 = (bytes: Uint8Array): string => {
   return btoa(binary);
 };
 
-const PdfGenerator: React.FC<PdfGeneratorProps> = ({ formData }) => {
+const PdfGenerator: React.FC<PdfGeneratorProps> = ({ formData, pageKey }) => {
   const handleGeneratePdf = async () => {
     try {
       const pdfDoc = await PDFDocument.create();
@@ -51,7 +52,7 @@ const PdfGenerator: React.FC<PdfGeneratorProps> = ({ formData }) => {
           addTextToPage(`${key}: N/A`);
           return;
         }
-      
+
         if (typeof value === "string") {
           addTextToPage(`${key}: ${value}`);
         } else if (value?.mimeType?.includes("image")) {
@@ -65,24 +66,24 @@ const PdfGenerator: React.FC<PdfGeneratorProps> = ({ formData }) => {
             const image = await pdfDoc.embedJpg(imageBuffer);
             const maxImageSize = 200;
             const imageDims = image.scale(1);
-      
+
             const scaledWidth =
               imageDims.width > maxImageSize ? maxImageSize : imageDims.width;
             const scaledHeight =
               imageDims.height > maxImageSize ? maxImageSize : imageDims.height;
-      
+
             if (cursorY - scaledHeight < 40) {
               const newPage = pdfDoc.addPage([width, height]);
               cursorY = height - 40;
             }
-      
+
             page.drawImage(image, {
               x: 40,
               y: cursorY - scaledHeight,
               width: scaledWidth,
               height: scaledHeight,
             });
-      
+
             cursorY -= scaledHeight + 20;
           } catch (error) {
             console.error(`Failed to process image for key: ${key}`, error);
@@ -97,7 +98,7 @@ const PdfGenerator: React.FC<PdfGeneratorProps> = ({ formData }) => {
               embeddedPdf,
               embeddedPdf.getPageIndices()
             );
-      
+
             pdfPages.forEach((pdfPage) => pdfDoc.addPage(pdfPage));
           } catch (error) {
             console.error(`Failed to process PDF for key: ${key}`, error);
@@ -116,9 +117,14 @@ const PdfGenerator: React.FC<PdfGeneratorProps> = ({ formData }) => {
           addTextToPage(`${key}: ${value || "N/A"}`);
         }
       };
-      
 
-      for (const [key, value] of Object.entries(formData)) {
+      const pageData = formData[pageKey]; // Extract data for the specific page
+      if (!pageData) {
+        Alert.alert("Error", `No data found for page: ${pageKey}`);
+        return;
+      }
+
+      for (const [key, value] of Object.entries(pageData)) {
         await processData(key, value);
       }
 

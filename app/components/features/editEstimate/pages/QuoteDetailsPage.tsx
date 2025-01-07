@@ -463,12 +463,12 @@ export function QuoteDetailsPage() {
                   style={styles.titleInput}
                 />
               ) : (
-                <>
+                <View style={styles.row}>
                   <Text style={styles.titleText}>{title}</Text>
                   <TouchableOpacity onPress={() => setIsEditingTitle(true)}>
                     <Feather name="edit-2" size={16} color={Colors.primary} />
                   </TouchableOpacity>
-                </>
+                </View>
               )}
             </View>
             <View style={styles.subtitleRow}>
@@ -907,4 +907,9 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     marginTop: 4,
   },
+  row:{
+    flexDirection:'row',
+    alignItems:'center',
+    gap:10
+  }
 });

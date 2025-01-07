@@ -49,7 +49,7 @@ export function TitlePage() {
       postalCode,
     };
     console.log("Saving changes...", formData);
-    useEstimatePageStore.getState().setFormData(formData);
+    useEstimatePageStore.getState().setFormData("Title",formData);
   };
 
   return (

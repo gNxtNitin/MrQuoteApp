@@ -104,7 +104,7 @@ export function SubHeader() {
             />
           </View>
         )}
-        <PdfGenerator formData={formData} />
+        <PdfGenerator formData={formData} pageKey={currentPage} />
         <Pressable
           style={[
             styles.actionButton,

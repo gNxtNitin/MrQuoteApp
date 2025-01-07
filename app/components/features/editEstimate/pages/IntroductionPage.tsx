@@ -54,7 +54,7 @@ export function IntroductionPage() {
       };
       // Save to storage or state management
       console.log("Saving template:", newTemplate);
-      useEstimatePageStore.getState().setFormData(newTemplate);
+      useEstimatePageStore.getState().setFormData("Introduction",newTemplate);
     }
   };
 
