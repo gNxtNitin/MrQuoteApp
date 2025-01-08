@@ -10,19 +10,19 @@ import { useTheme } from '@/app/components/providers/ThemeProvider';
 interface EstimateCardProps {
   estimate: Estimate;
   index: number;
-  onStatusChange?: (estimateId: string, newStatus: Estimate['status']) => Promise<void>;
+  onStatusChange?: (estimateId: string, newStatus: Estimate['estimateStatus']) => Promise<void>;
 }
 
 export function EstimateCard({ estimate, index, onStatusChange }: EstimateCardProps) {
   const router = useRouter();
   const [isSyncing, setIsSyncing] = useState(false);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
-  const [currentStatus, setCurrentStatus] = useState<Estimate['status']>(estimate.status);
+  const [currentStatus, setCurrentStatus] = useState<Estimate['estimateStatus']>(estimate.estimateStatus);
   const theme = useTheme();
 
   const houseImage = getHouseImage(estimate.id);
 
-  const handleStatusChange = async (newStatus: Estimate['status']) => {
+  const handleStatusChange = async (newStatus: Estimate['estimateStatus']) => {
     try {
       setIsSyncing(true);
       if (onStatusChange) {
@@ -53,7 +53,7 @@ export function EstimateCard({ estimate, index, onStatusChange }: EstimateCardPr
     });
   };
 
-  const getStatusTextColor = (status: Estimate['status']) => {
+  const getStatusTextColor = (status: Estimate['estimateStatus']) => {
     switch (status) {
       case 'provided':
         return '#B45309';
@@ -152,7 +152,7 @@ export function EstimateCard({ estimate, index, onStatusChange }: EstimateCardPr
             <TouchableOpacity 
               key={s}
               style={[styles.dropdownItem, currentStatus === s && styles.dropdownItemActive]}
-              onPress={() => handleStatusChange(s as Estimate['status'])}
+              onPress={() => handleStatusChange(s as Estimate['estimateStatus'])}
             >
               <Text style={[styles.dropdownText, currentStatus === s && styles.dropdownTextActive]}>
                 {s.replace('_', ' ').charAt(0).toUpperCase() + s.slice(1).replace('_', ' ')}
@@ -171,6 +171,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     width: '32%',
     height: 420,
+    margin: 8,
     shadowColor: Colors.black,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
@@ -186,6 +187,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 200,
     position: 'relative',
+    alignItems: 'flex-start',
   },
   houseImage: {
     width: '100%',

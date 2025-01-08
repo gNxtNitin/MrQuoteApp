@@ -1,13 +1,17 @@
-import { View, Text, TextInput, StyleSheet, Modal, Pressable } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Modal, Pressable, Alert } from 'react-native';
 import { Colors } from '@/app/constants/colors';
 import { Card } from '@/app/components/common/Card';
 import { useState } from 'react';
 import { useTheme } from '../../providers/ThemeProvider';
+import { Estimate } from '@/app/database/models/Estimate';
+import { EstimateDetail } from '@/app/database/models/EstimateDetail';
+import { useAuth } from '@/app/hooks/useAuth';
 
 interface CreateEstimateDialogProps {
   visible: boolean;
   onClose: () => void;
-  onSave: (data: EstimateFormData) => void;
+  onSave: () => void;
+  companyId: number;
 }
 
 interface EstimateFormData {
@@ -24,8 +28,13 @@ interface EstimateFormData {
   zipCode: string;
 }
 
-export function CreateEstimateDialog({ visible, onClose, onSave }: CreateEstimateDialogProps) {
+interface ValidationErrors {
+  [key: string]: string;
+}
+
+export function CreateEstimateDialog({ visible, onClose, onSave, companyId }: CreateEstimateDialogProps) {
   const theme = useTheme();
+  const { user } = useAuth();
   const [formData, setFormData] = useState<EstimateFormData>({
     projectName: '',
     firstName: '',
@@ -39,16 +48,124 @@ export function CreateEstimateDialog({ visible, onClose, onSave }: CreateEstimat
     state: '',
     zipCode: '',
   });
+  const [errors, setErrors] = useState<ValidationErrors>({});
+
+  const validateForm = (): boolean => {
+    const newErrors: ValidationErrors = {};
+    
+    if (!formData.projectName.trim()) {
+      newErrors.projectName = 'Project name is required';
+    }
+    
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = 'First name is required';
+    }
+    
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = 'Last name is required';
+    }
+    
+    if (!formData.phoneNumber.trim()) {
+      newErrors.phoneNumber = 'Phone number is required';
+    } else if (!/^\d{10}$/.test(formData.phoneNumber.replace(/\D/g, ''))) {
+      newErrors.phoneNumber = 'Invalid phone number format';
+    }
+    
+    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Invalid email format';
+    }
+    
+    if (!formData.addressLine1.trim()) {
+      newErrors.addressLine1 = 'Address is required';
+    }
+    
+    if (!formData.city.trim()) {
+      newErrors.city = 'City is required';
+    }
+    
+    if (!formData.state.trim()) {
+      newErrors.state = 'State is required';
+    }
+    
+    if (!formData.zipCode.trim()) {
+      newErrors.zipCode = 'ZIP code is required';
+    } else if (!/^\d{5}(-\d{4})?$/.test(formData.zipCode)) {
+      newErrors.zipCode = 'Invalid ZIP code format';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSave = async () => {
+    if (!validateForm()) {
+      Alert.alert('Validation Error', 'Please check the form for errors');
+      return;
+    }
+
+    try {
+      if (!user?.id) {
+        throw new Error('User not found');
+      }
+
+      // Create estimate record
+      const estimateData = {
+        company_id: companyId,
+        estimate_name: formData.projectName,
+        description: `Estimate for ${formData.firstName} ${formData.lastName}`,
+        estimate_status: 'NEW',
+        is_active: true,
+        created_by: user.id,
+        modified_by: user.id
+      };
+
+      await Estimate.insert(estimateData);
+      const { id: estimateId } = await Estimate.getLastInsertedId();
+
+      if (!estimateId) {
+        throw new Error('Failed to get estimate ID');
+      }
+
+      // Create estimate detail record
+      const estimateDetailData = {
+        estimate_id: estimateId,
+        sales_person: `${user.first_name || ''} ${user.last_name || ''}`.trim(),
+        address: `${formData.addressLine1} ${formData.addressLine2}`.trim(),
+        state: formData.state,
+        zip_code: formData.zipCode,
+        is_active: true,
+        created_by: user.id,
+        modified_by: user.id
+      };
+
+      await EstimateDetail.insert(estimateDetailData);
+
+      onSave();
+      onClose();
+      setFormData({
+        projectName: '',
+        firstName: '',
+        lastName: '',
+        companyName: '',
+        phoneNumber: '',
+        email: '',
+        addressLine1: '',
+        addressLine2: '',
+        city: '',
+        state: '',
+        zipCode: '',
+      });
+    } catch (error) {
+      console.error('Error saving estimate:', error);
+      Alert.alert('Error', 'Failed to save estimate. Please try again.');
+    }
+  };
 
   const handleChange = (field: keyof EstimateFormData, value: string) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
-  };
-
-  const handleSave = () => {
-    onSave(formData);
   };
 
   return (
@@ -74,16 +191,22 @@ export function CreateEstimateDialog({ visible, onClose, onSave }: CreateEstimat
                 <View style={styles.field}>
                   <Text style={styles.label}>Project Name</Text>
                   <TextInput 
-                    style={[styles.input, { 
-                      borderColor: theme.border,
-                      backgroundColor: theme.background,
-                      color: theme.textSecondary
-                    }]}
+                    style={[
+                      styles.input, 
+                      { 
+                        borderColor: errors.projectName ? Colors.error : theme.border,
+                        backgroundColor: theme.background,
+                        color: theme.textSecondary
+                      }
+                    ]}
                     placeholder="Enter project name" 
                     placeholderTextColor={theme.secondary}
                     value={formData.projectName}
                     onChangeText={(value) => handleChange('projectName', value)}
                   />
+                  {errors.projectName && (
+                    <Text style={styles.errorText}>{errors.projectName}</Text>
+                  )}
                 </View>
                 <View style={styles.field}>
                   <Text style={styles.label}>First name</Text>
@@ -348,4 +471,9 @@ const styles = StyleSheet.create({
     marginRight: 0,
     marginBottom: 24
   },
+  errorText: {
+    color: Colors.error,
+    fontSize: 12,
+    marginTop: 4,
+  }
 }); 

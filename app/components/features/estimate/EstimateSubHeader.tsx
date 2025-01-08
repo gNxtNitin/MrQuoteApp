@@ -15,7 +15,7 @@ export function EstimateSubHeader({
   address, 
   phone, 
   email, 
-  status, 
+  estimateStatus, 
   date 
 }: EstimateSubHeaderProps) {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
@@ -65,9 +65,9 @@ export function EstimateSubHeader({
               <Text style={[styles.customerName, { color: theme.primary }]}>
                 {customerName}
               </Text>
-              <View style={[styles.badge, styles[`status_${status}`]]}>
-                <Text style={[styles.badgeText, styles[`statusText_${status}`]]}>
-                  {status.toUpperCase()}
+              <View style={[styles.badge, styles[`status_${estimateStatus}`]]}>
+                <Text style={[styles.badgeText, styles[`statusText_${estimateStatus}`]]}>
+                  {estimateStatus.toUpperCase()}
                 </Text>
               </View>
             </View>
@@ -146,8 +146,9 @@ export function EstimateSubHeader({
       <CreateEstimateDialog
         visible={showCreateDialog}
         onClose={handleCloseDialog}
-        onSave={handleSaveEstimate}
-      />
+        onSave={() => {}} 
+        companyId={0}
+        />
 
       <ChangeLayoutDialog
         visible={showLayoutDialog}

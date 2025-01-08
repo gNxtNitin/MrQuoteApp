@@ -5,7 +5,7 @@ export interface Estimate {
   customerName: string;
   address: string;
   date: string;
-  status: 'provided' | 'accepted' | 'requested' | 'completed' | 'revised' | 'cancelled';
+  estimateStatus: 'provided' | 'accepted' | 'requested' | 'completed' | 'revised' | 'cancelled';
   phone: string;
   email: string;
   houseImage: ImageSourcePropType;

@@ -20,24 +20,17 @@ import { useSidebarStore } from "@/app/stores/sidebarStore";
 import { useAuth } from '@/app/hooks/useAuth';
 import { initialsName } from "../../common/Utils";
 import { Company, CompanyData } from "@/app/database/models/Company";
-
-interface HeaderState {
-  showSwitcher: boolean;
-  selectedCompany: number;
-  setShowSwitcher: (show: boolean) => void;
-  setSelectedCompany: (companyId: number) => void;
-}
-
-const useHeaderStore = create<HeaderState>((set) => ({
-  showSwitcher: false,
-  selectedCompany: 1,
-  setShowSwitcher: (show) => set({ showSwitcher: show }),
-  setSelectedCompany: (companyId) => set({ selectedCompany: companyId }),
-}));
+import { useHeaderStore } from '@/app/stores/headerStore';
 
 export function Header() {
-  const { showSwitcher, selectedCompany, setShowSwitcher, setSelectedCompany } =
-    useHeaderStore();
+  const { 
+    showSwitcher, 
+    selectedCompany, 
+    setShowSwitcher, 
+    setSelectedCompany,
+    lastSelectedCompany,
+    setLastSelectedCompany 
+  } = useHeaderStore();
   const theme = useTheme();
   const { isDarkMode, toggleTheme } = useThemeStore();
   const pathname = usePathname();
@@ -46,6 +39,8 @@ export function Header() {
   const { logout, user } = useAuth();
   
   const [companies, setCompanies] = useState<CompanyData[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
+
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
@@ -59,10 +54,21 @@ export function Header() {
             })
           );
 
-          setCompanies(companyDetails.filter(Boolean));
+          const validCompanies = companyDetails.filter(Boolean);
+          setCompanies(validCompanies);
           
-          if (!selectedCompany && companyDetails.length > 0) {
-            setSelectedCompany(companyDetails[0].id);
+          // Only set company if not already initialized
+          if (!isInitialized) {
+            // If there's a last selected company and it's in the user's companies, use it
+            if (lastSelectedCompany && companyIds.includes(lastSelectedCompany)) {
+              setSelectedCompany(lastSelectedCompany);
+            }
+            // Otherwise, if no company is selected and we have companies, select the first one
+            else if ((!selectedCompany || !companyIds.includes(selectedCompany)) && validCompanies.length > 0) {
+              setSelectedCompany(validCompanies[0].id!);
+              setLastSelectedCompany(validCompanies[0].id!);
+            }
+            setIsInitialized(true);
           }
         }
       } catch (error) {
@@ -71,10 +77,11 @@ export function Header() {
     };
 
     fetchCompanies();
-  }, [user?.company_id]);
+  }, [user?.company_id, isInitialized]);
 
   const handleSelectCompany = (companyId: number) => {
     setSelectedCompany(companyId);
+    setLastSelectedCompany(companyId);
     setShowSwitcher(false);
   };
 

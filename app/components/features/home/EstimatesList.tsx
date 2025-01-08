@@ -1,87 +1,28 @@
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { EstimateCard } from './EstimateCard';
-import { Estimate } from '@/app/types/estimate';
+import { Estimate, EstimateData } from '@/app/database/models/Estimate';
+import { EstimateDetailData } from '@/app/database/models/EstimateDetail';
 import { useState } from 'react';
 
-const INITIAL_DATA: Estimate[] = [
-  {
-    id: '1',
-    customerName: 'John Doe',
-    address: '123 Main St, City, State',
-    date: 'Created 1 year ago',
-    status: 'provided',
-    email: 'john.doe@example.com',
-    phone: '(555) 123-4567',
-    houseImage: require('@/assets/images/house-1.jpg'),
-  },
-  {
-    id: '2',
-    customerName: 'Jane Smith',
-    address: '456 Oak Ave, Town, State',
-    date: 'Created 1 year ago',
-    status: 'requested',
-    email: 'jane.smith@example.com',
-    phone: '(555) 234-5678',
-    houseImage: require('@/assets/images/house-2.jpg'),
-  },
-  {
-    id: '3',
-    customerName: 'Bob Johnson',
-    address: '789 Pine Rd, Village, State',
-    date: 'Created 1 year ago',
-    status: 'accepted',
-    email: 'bob.johnson@example.com',
-    phone: '(555) 345-6789',
-    houseImage: require('@/assets/images/house-3.jpg'),
-  },
-  {
-    id: '4',
-    customerName: 'Alice Brown',
-    address: '321 Elm St, City, State',
-    date: 'Created 1 year ago',
-    status: 'completed',
-    email: 'alice.brown@example.com',
-    phone: '(555) 456-7890',
-    houseImage: require('@/assets/images/house-2.jpg'),
-  },
-  {
-    id: '5',
-    customerName: 'Charlie Wilson',
-    address: '654 Maple Ave, Town, State',
-    date: 'Created 1 year ago',
-    status: 'revised',
-    email: 'charlie.wilson@example.com',
-    phone: '(555) 567-8901',
-    houseImage: require('@/assets/images/house-1.jpg'),
-  },
-  {
-    id: '6',
-    customerName: 'David Miller',
-    address: '987 Cedar Rd, Village, State',
-    date: 'Created 1 year ago',
-    status: 'cancelled',
-    email: 'david.miller@example.com',
-    phone: '(555) 678-9012',
-    houseImage: require('@/assets/images/house-3.jpg'),
-    },
-];
+type EstimateStatus = "provided" | "accepted" | "requested" | "completed" | "revised" | "cancelled";
 
-export function EstimatesList() {
-  const [estimates, setEstimates] = useState<Estimate[]>(INITIAL_DATA);
+interface EstimateWithDetails {
+  estimate: EstimateData;
+  detail: EstimateDetailData;
+}
 
-  const handleStatusChange = async (estimateId: string, newStatus: Estimate['status']) => {
+interface EstimatesListProps {
+  estimates: EstimateWithDetails[];
+}
+
+export function EstimatesList({ estimates }: EstimatesListProps) {
+  const handleStatusChange = async (estimateId: string, newStatus: EstimateStatus) => {
     try {
-      // Update the estimates state
-      setEstimates(prevEstimates =>
-        prevEstimates.map(estimate =>
-          estimate.id === estimateId
-            ? { ...estimate, status: newStatus }
-            : estimate
-        )
-      );
-      
-      // Here you would typically make an API call to update the backend
-      // await updateEstimateStatus(estimateId, newStatus);
+      // Update the estimate status in the database
+      await Estimate.update(parseInt(estimateId, 10), {
+        estimate_status: newStatus,
+        modified_date: new Date().toISOString()
+      });
       
       return Promise.resolve();
     } catch (error) {
@@ -93,10 +34,19 @@ export function EstimatesList() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.content}>
-        {estimates.map((estimate, index) => (
+        {estimates.map((item, index) => (
           <EstimateCard
-            key={estimate.id}
-            estimate={estimate}
+            key={item.estimate.id}
+            estimate={{
+              id: item.estimate.id?.toString() || '',
+              customerName: `${item.estimate.estimate_name || 'Unknown'}`,
+              address: `${item.detail.address || ''}, ${item.detail.state || ''} ${item.detail.zip_code || ''}`,
+              date: `Created ${new Date(item.estimate.created_date || '').toLocaleDateString()}`,
+              estimateStatus: item.estimate.estimate_status as EstimateStatus || 'provided',
+              email: item.detail.email || '',  // Add if needed from detail
+              phone: item.detail.phone || '', // Add if needed from detail
+              houseImage: item.detail.image_url ? require('@/assets/images/house-1.jpg') : require('@/assets/images/house-2.jpg'),
+            }}
             index={index}
             onStatusChange={handleStatusChange}
           />
@@ -114,6 +64,6 @@ const styles = StyleSheet.create({
   content: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
   },
 }); 
