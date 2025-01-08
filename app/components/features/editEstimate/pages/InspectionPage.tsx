@@ -19,6 +19,7 @@ import {
 import { useTheme } from "@/app/components/providers/ThemeProvider";
 import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
 import { FileUploader } from "@/app/components/common/FileUploader";
+import { flattenObject } from "@/app/utils/flattenObj";
 
 export function InspectionPage() {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -144,19 +145,19 @@ export function InspectionPage() {
     };
 
     // Log all images in sections
-    updatedSections.forEach((section) => {
-      console.log(`Images for Section: ${section.title}`);
-      section.items.forEach((item) => {
-        console.log(`Item ${item.id} Images:`, item.images);
-      });
-    });
+    // updatedSections.forEach((section) => {
+    //   console.log(`Images for Section: ${section.title}`);
+    //   section.items.forEach((item) => {
+    //     console.log(`Item ${item.id} Images:`, item.images);
+    //   });
+    // });
 
     console.log(
       "Saving changes Inspection:",
       JSON.stringify({ inspectionData }, null, 2)
     );
-
-    useEstimatePageStore.getState().setFormData("Inspection",inspectionData);
+    const flattenedData = flattenObject(inspectionData);
+    useEstimatePageStore.getState().setFormData("Inspection", flattenedData);
   };
 
   return (
