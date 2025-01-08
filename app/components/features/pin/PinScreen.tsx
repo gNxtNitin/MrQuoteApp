@@ -4,11 +4,37 @@ import { useAuth } from '@/app/hooks/useAuth';
 import { useRouter } from 'expo-router';
 import { Colors } from '@/app/constants/colors';
 import { LinearGradient } from 'expo-linear-gradient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { UserDetail } from '@/app/database/models/UserDetail';
 
 export function PinScreen() {
   const [pin, setPin] = useState('');
+  const [username, setUsername] = useState('');
   const { loginWithPin, logout } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    loadUserData();
+  }, []);
+
+  const loadUserData = async () => {
+    try {
+      const userId = await AsyncStorage.getItem('@user_id');
+      if (userId) {
+        const userDetails = await UserDetail.getById(parseInt(userId));
+        if (userDetails?.username) {
+          setUsername(userDetails.username);
+        } else {
+          router.replace('/login');
+        }
+      } else {
+        router.replace('/login');
+      }
+    } catch (error) {
+      console.error('Error loading user data:', error);
+      router.replace('/login');
+    }
+  };
 
   const handlePinInput = async (digit: string) => {
     const newPin = pin + digit;
@@ -103,6 +129,8 @@ export function PinScreen() {
       style={styles.container}
     >
       <View style={styles.content}>
+        <Text style={styles.welcomeText}>Welcome back</Text>
+        <Text style={styles.username}>{username}</Text>
         <Text style={styles.title}>Enter PIN</Text>
         {renderPinDots()}
         {renderNumpad()}
@@ -175,5 +203,18 @@ const styles = StyleSheet.create({
     marginTop: 20,
     textDecorationLine: 'underline',
     opacity: 0.8
-  }
+  },
+  welcomeText: {
+    fontSize: 24,
+    color: Colors.white,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  username: {
+    fontSize: 18,
+    color: Colors.white,
+    marginBottom: 32,
+    opacity: 0.9,
+    textAlign: 'center',
+  },
 });
