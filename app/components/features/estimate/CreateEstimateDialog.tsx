@@ -1,7 +1,7 @@
 import { View, Text, TextInput, StyleSheet, Modal, Pressable, Alert } from 'react-native';
 import { Colors } from '@/app/constants/colors';
 import { Card } from '@/app/components/common/Card';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTheme } from '../../providers/ThemeProvider';
 import { Estimate } from '@/app/database/models/Estimate';
 import { EstimateDetail } from '@/app/database/models/EstimateDetail';
@@ -50,6 +50,25 @@ export function CreateEstimateDialog({ visible, onClose, onSave, companyId }: Cr
   });
   const [errors, setErrors] = useState<ValidationErrors>({});
 
+  useEffect(() => {
+    if (visible) {
+      setFormData({
+        projectName: '',
+        firstName: '',
+        lastName: '',
+        companyName: '',
+        phoneNumber: '',
+        email: '',
+        addressLine1: '',
+        addressLine2: '',
+        city: '',
+        state: '',
+        zipCode: '',
+      });
+      setErrors({});
+    }
+  }, [visible]);
+
   const validateForm = (): boolean => {
     const newErrors: ValidationErrors = {};
     
@@ -65,13 +84,19 @@ export function CreateEstimateDialog({ visible, onClose, onSave, companyId }: Cr
       newErrors.lastName = 'Last name is required';
     }
     
+    if (!formData.companyName.trim()) {
+      newErrors.companyName = 'Company name is required';
+    }
+    
     if (!formData.phoneNumber.trim()) {
       newErrors.phoneNumber = 'Phone number is required';
     } else if (!/^\d{10}$/.test(formData.phoneNumber.replace(/\D/g, ''))) {
       newErrors.phoneNumber = 'Invalid phone number format';
     }
     
-    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Invalid email format';
     }
     
@@ -89,11 +114,16 @@ export function CreateEstimateDialog({ visible, onClose, onSave, companyId }: Cr
     
     if (!formData.zipCode.trim()) {
       newErrors.zipCode = 'ZIP code is required';
-    } else if (!/^\d{5}(-\d{4})?$/.test(formData.zipCode)) {
-      newErrors.zipCode = 'Invalid ZIP code format';
+    } else if (!/^\d{6}$/.test(formData.zipCode)) {
+      newErrors.zipCode = 'Invalid ZIP code format. It must be a 6-digit number.';
     }
 
     setErrors(newErrors);
+    
+    if (Object.keys(newErrors).length > 0) {
+      console.log('Validation errors:', newErrors);
+    }
+    
     return Object.keys(newErrors).length === 0;
   };
 
@@ -111,6 +141,7 @@ export function CreateEstimateDialog({ visible, onClose, onSave, companyId }: Cr
       // Create estimate record
       const estimateData = {
         company_id: companyId,
+        user_id: user.id,
         estimate_name: formData.projectName,
         description: `Estimate for ${formData.firstName} ${formData.lastName}`,
         estimate_status: 'NEW',
@@ -130,7 +161,9 @@ export function CreateEstimateDialog({ visible, onClose, onSave, companyId }: Cr
       const estimateDetailData = {
         estimate_id: estimateId,
         sales_person: `${user.first_name || ''} ${user.last_name || ''}`.trim(),
-        address: `${formData.addressLine1} ${formData.addressLine2}`.trim(),
+        email: formData.email,
+        phone: formData.phoneNumber,
+        address: `${formData.addressLine1}${formData.addressLine2 ? ` ${formData.addressLine2}` : ''}, ${formData.city}`,
         state: formData.state,
         zip_code: formData.zipCode,
         is_active: true,
@@ -142,19 +175,6 @@ export function CreateEstimateDialog({ visible, onClose, onSave, companyId }: Cr
 
       onSave();
       onClose();
-      setFormData({
-        projectName: '',
-        firstName: '',
-        lastName: '',
-        companyName: '',
-        phoneNumber: '',
-        email: '',
-        addressLine1: '',
-        addressLine2: '',
-        city: '',
-        state: '',
-        zipCode: '',
-      });
     } catch (error) {
       console.error('Error saving estimate:', error);
       Alert.alert('Error', 'Failed to save estimate. Please try again.');
@@ -189,7 +209,7 @@ export function CreateEstimateDialog({ visible, onClose, onSave, companyId }: Cr
             <View style={styles.form}>
               <View style={styles.row}>
                 <View style={styles.field}>
-                  <Text style={styles.label}>Project Name</Text>
+                  <Text style={styles.label}>Project Name <Text style={styles.required}>*</Text></Text>
                   <TextInput 
                     style={[
                       styles.input, 
@@ -209,156 +229,216 @@ export function CreateEstimateDialog({ visible, onClose, onSave, companyId }: Cr
                   )}
                 </View>
                 <View style={styles.field}>
-                  <Text style={styles.label}>First name</Text>
+                  <Text style={styles.label}>First name <Text style={styles.required}>*</Text></Text>
                   <TextInput 
-                    style={[styles.input, { 
-                      borderColor: theme.border,
-                      backgroundColor: theme.background,
-                      color: theme.textSecondary  
-                    }]}
+                    style={[
+                      styles.input, 
+                      { 
+                        borderColor: errors.firstName ? Colors.error : theme.border,
+                        backgroundColor: theme.background,
+                        color: theme.textSecondary  
+                      }
+                    ]}
                     placeholder="Enter first name" 
                     placeholderTextColor={theme.secondary}
                     value={formData.firstName}
                     onChangeText={(value) => handleChange('firstName', value)}
                   />
+                  {errors.firstName && (
+                    <Text style={styles.errorText}>{errors.firstName}</Text>
+                  )}
                 </View>
                 <View style={styles.field}>
-                  <Text style={styles.label}>Last name</Text>
+                  <Text style={styles.label}>Last name <Text style={styles.required}>*</Text></Text>
                   <TextInput 
-                    style={[styles.input, { 
-                      borderColor: theme.border,
-                      backgroundColor: theme.background,
-                      color: theme.textSecondary    
-                    }]}
+                    style={[
+                      styles.input, 
+                      { 
+                        borderColor: errors.lastName ? Colors.error : theme.border,
+                        backgroundColor: theme.background,
+                        color: theme.textSecondary    
+                      }
+                    ]}
                     placeholder="Enter last name" 
                     placeholderTextColor={theme.secondary}
                     value={formData.lastName}
                     onChangeText={(value) => handleChange('lastName', value)}
                   />
+                  {errors.lastName && (
+                    <Text style={styles.errorText}>{errors.lastName}</Text>
+                  )}
                 </View>
               </View>
 
               <View style={styles.row}>
                 <View style={styles.field}>
-                  <Text style={styles.label}>Company name</Text>
+                  <Text style={styles.label}>Company name <Text style={styles.required}>*</Text></Text>
                   <TextInput 
-                    style={[styles.input, { 
-                      borderColor: theme.border,
-                      backgroundColor: theme.background,
-                      color: theme.textSecondary  
-                    }]}
+                    style={[
+                      styles.input, 
+                      { 
+                        borderColor: errors.companyName ? Colors.error : theme.border,
+                        backgroundColor: theme.background,
+                        color: theme.textSecondary  
+                      }
+                    ]}
                     placeholder="Enter company name" 
                     placeholderTextColor={theme.secondary}
                     value={formData.companyName}
                     onChangeText={(value) => handleChange('companyName', value)}
                   />
+                  {errors.companyName && (
+                    <Text style={styles.errorText}>{errors.companyName}</Text>
+                  )}
                 </View>
                 <View style={styles.field}>
-                  <Text style={styles.label}>Phone number</Text>
+                  <Text style={styles.label}>Phone number <Text style={styles.required}>*</Text></Text>
                   <TextInput 
-                    style={[styles.input, { 
-                      borderColor: theme.border,
-                      backgroundColor: theme.background,
-                      color: theme.textSecondary  
-                    }]}
+                    style={[
+                      styles.input, 
+                      { 
+                        borderColor: errors.phoneNumber ? Colors.error : theme.border,
+                        backgroundColor: theme.background,
+                        color: theme.textSecondary  
+                      }
+                    ]}
                     placeholder="Enter phone number" 
                     placeholderTextColor={theme.secondary}
                     keyboardType="phone-pad"
                     value={formData.phoneNumber}
                     onChangeText={(value) => handleChange('phoneNumber', value)}
                   />
+                  {errors.phoneNumber && (
+                    <Text style={styles.errorText}>{errors.phoneNumber}</Text>
+                  )}
                 </View>
                 <View style={styles.field}>
-                  <Text style={styles.label}>Email</Text>
+                  <Text style={styles.label}>Email <Text style={styles.required}>*</Text></Text>
                   <TextInput 
-                    style={[styles.input, { 
-                      borderColor: theme.border,
-                      backgroundColor: theme.background,
-                      color: theme.textSecondary
-                    }]}
+                    style={[
+                      styles.input, 
+                      { 
+                        borderColor: errors.email ? Colors.error : theme.border,
+                        backgroundColor: theme.background,
+                        color: theme.textSecondary
+                      }
+                    ]}
                     placeholder="Enter email" 
                     placeholderTextColor={theme.secondary}
                     keyboardType="email-address"
                     value={formData.email}
                     onChangeText={(value) => handleChange('email', value)}
                   />
+                  {errors.email && (
+                    <Text style={styles.errorText}>{errors.email}</Text>
+                  )}
                 </View>
               </View>
 
               <View style={styles.row}>
                 <View style={styles.field}>
-                  <Text style={styles.label}>Address line 1</Text>
+                  <Text style={styles.label}>Address line 1 <Text style={styles.required}>*</Text></Text>
                   <TextInput 
-                    style={[styles.input, { 
-                      borderColor: theme.border,
-                      backgroundColor: theme.background,
-                      color: theme.textSecondary
-                    }]}
+                    style={[
+                      styles.input, 
+                      { 
+                        borderColor: errors.addressLine1 ? Colors.error : theme.border,
+                        backgroundColor: theme.background,
+                        color: theme.textSecondary
+                      }
+                    ]}
                     placeholder="Enter address" 
                     placeholderTextColor={theme.secondary}
                     value={formData.addressLine1}
                     onChangeText={(value) => handleChange('addressLine1', value)}
                   />
+                  {errors.addressLine1 && (
+                    <Text style={styles.errorText}>{errors.addressLine1}</Text>
+                  )}
                 </View>
                 <View style={styles.field}>
                   <Text style={styles.label}>Address line 2</Text>
                   <TextInput 
-                    style={[styles.input, { 
-                      borderColor: theme.border,
-                      backgroundColor: theme.background,
-                      color: theme.textSecondary
-                    }]}
+                    style={[
+                      styles.input, 
+                      { 
+                        borderColor: errors.addressLine2 ? Colors.error : theme.border,
+                        backgroundColor: theme.background,
+                        color: theme.textSecondary
+                      }
+                    ]}
                     placeholder="Enter address" 
                     placeholderTextColor={theme.secondary}
                     value={formData.addressLine2}
                     onChangeText={(value) => handleChange('addressLine2', value)}
                   />
+                  {errors.addressLine2 && (
+                    <Text style={styles.errorText}>{errors.addressLine2}</Text>
+                  )}
                 </View>
                 <View style={styles.field}>
-                  <Text style={styles.label}>City</Text>
+                  <Text style={styles.label}>City <Text style={styles.required}>*</Text></Text>
                   <TextInput 
-                    style={[styles.input, { 
-                      borderColor: theme.border,
-                      backgroundColor: theme.background,
-                      color: theme.textSecondary
-                    }]}
+                    style={[
+                      styles.input, 
+                      { 
+                        borderColor: errors.city ? Colors.error : theme.border,
+                        backgroundColor: theme.background,
+                        color: theme.textSecondary
+                      }
+                    ]}
                     placeholder="Enter city" 
                     placeholderTextColor={theme.secondary}
                     value={formData.city}
                     onChangeText={(value) => handleChange('city', value)}
                   />
+                  {errors.city && (
+                    <Text style={styles.errorText}>{errors.city}</Text>
+                  )}
                 </View>
               </View>
 
               <View style={[styles.row, styles.lastRow]}>
                 <View style={styles.field}>
-                  <Text style={styles.label}>State/Province</Text>
+                  <Text style={styles.label}>State/Province <Text style={styles.required}>*</Text></Text>
                   <TextInput 
-                    style={[styles.input, { 
-                      borderColor: theme.border,
-                      backgroundColor: theme.background,
-                      color: theme.textSecondary
-                    }]}
+                    style={[
+                      styles.input, 
+                      { 
+                        borderColor: errors.state ? Colors.error : theme.border,
+                        backgroundColor: theme.background,
+                        color: theme.textSecondary
+                      }
+                    ]}
                     placeholder="Enter state" 
                     placeholderTextColor={theme.secondary}
                     value={formData.state}
                     onChangeText={(value) => handleChange('state', value)}
                   />
+                  {errors.state && (
+                    <Text style={styles.errorText}>{errors.state}</Text>
+                  )}
                 </View>
                 <View style={styles.field}>
-                  <Text style={styles.label}>Zip code/Postal code</Text>
+                  <Text style={styles.label}>Zip code/Postal code <Text style={styles.required}>*</Text></Text>
                   <TextInput 
-                    style={[styles.input, { 
-                      borderColor: theme.border,
-                      backgroundColor: theme.background,
-                      color: theme.textSecondary
-                    }]}
+                    style={[
+                      styles.input, 
+                      { 
+                        borderColor: errors.zipCode ? Colors.error : theme.border,
+                        backgroundColor: theme.background,
+                        color: theme.textSecondary
+                      }
+                    ]}
                     placeholder="Enter zip code" 
                     placeholderTextColor={theme.secondary}
                     keyboardType="numeric"
                     value={formData.zipCode}
                     onChangeText={(value) => handleChange('zipCode', value)}
                   />
+                  {errors.zipCode && (
+                    <Text style={styles.errorText}>{errors.zipCode}</Text>
+                  )}
                 </View>
                 <View style={styles.field} />
               </View>
@@ -422,11 +502,17 @@ const styles = StyleSheet.create({
   },
   field: {
     flex: 1,
+    marginBottom: 8,
   },
   label: {
     fontSize: 14,
     color: '#000',
     marginBottom: 8,
+  },
+  required: {
+    color: Colors.error,
+    fontSize: 12,
+    marginLeft: 4,
   },
   input: {
     borderWidth: 1,
@@ -434,6 +520,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
+    marginBottom: 4,
   },
   footer: {
     flexDirection: 'row',
@@ -474,6 +561,6 @@ const styles = StyleSheet.create({
   errorText: {
     color: Colors.error,
     fontSize: 12,
-    marginTop: 4,
+    marginTop: 2,
   }
-}); 
+});

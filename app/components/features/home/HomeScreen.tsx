@@ -35,9 +35,26 @@ export function HomeScreen() {
         const estimatesWithDetails = await Promise.all(
           estimatesData.map(async (estimate) => {
             const detail = await EstimateDetail.getByEstimateId(estimate.id!);
+            if (!detail) {
+              // If no detail exists, create a default detail object
+              return {
+                estimate,
+                detail: {
+                  estimate_id: estimate.id,
+                  address: '',
+                  state: '',
+                  zip_code: '',
+                  email: '',
+                  phone: '',
+                  is_active: true,
+                  created_by: user.id,
+                  modified_by: user.id
+                }
+              };
+            }
             return {
               estimate,
-              detail: detail!
+              detail
             };
           })
         );
