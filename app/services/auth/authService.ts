@@ -27,14 +27,14 @@ export const authService = {
         };
       }
 
+      // Store current user ID for PIN verification
+      await AsyncStorage.setItem(CURRENT_USER_KEY, user.id.toString());
+
       // Update login status
       await UserDetail.update(user.id, {
         is_logged_in: true,
         last_login_at: new Date().toISOString()
       });
-
-      // Store current user
-      await AsyncStorage.setItem(CURRENT_USER_KEY, user.id.toString());
 
       return {
         success: true,
@@ -52,6 +52,15 @@ export const authService = {
 
   loginWithPin: async (pin: number): Promise<LoginResponse> => {
     try {
+      // Get current user ID
+      const userId = await AsyncStorage.getItem(CURRENT_USER_KEY);
+      if (!userId) {
+        return {
+          success: false,
+          message: 'Please login with username and password'
+        };
+      }
+
       // Check PIN attempts
       const attempts = await AsyncStorage.getItem(PIN_ATTEMPTS_KEY);
       const pinAttempts = attempts ? parseInt(attempts) : 0;
@@ -63,7 +72,8 @@ export const authService = {
         };
       }
 
-      const user = await UserDetail.findByPin(pin);
+      // Find user by ID and verify PIN
+      const user = await UserDetail.findByPinAndId(pin, parseInt(userId));
       
       if (!user || !user.id) {
         // Increment failed attempts
@@ -82,8 +92,6 @@ export const authService = {
         is_logged_in: true,
         last_login_at: new Date().toISOString()
       });
-
-      await AsyncStorage.setItem(CURRENT_USER_KEY, user.id.toString());
 
       return {
         success: true,

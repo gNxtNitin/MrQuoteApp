@@ -146,5 +146,21 @@ export const UserDetail = {
     } finally {
       await statement.finalizeAsync();
     }
+  },
+
+  findByPinAndId: async (pin: number, userId: number): Promise<UserDetailData | null> => {
+    const statement = await db.prepareAsync(
+      `SELECT * FROM ${UserDetail.tableName}
+       WHERE pin = ?
+       AND id = ?
+       AND is_active = true`
+    );
+
+    try {
+      const result = await statement.executeAsync([pin, userId]);
+      return await result.getFirstAsync() || null;
+    } finally {
+      await statement.finalizeAsync();
+    }
   }
 } as const;
