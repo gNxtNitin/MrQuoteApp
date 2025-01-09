@@ -1,7 +1,7 @@
 import { Stack } from "expo-router";
 import { useEffect } from "react";
 import { StatusBar, StyleSheet, View } from 'react-native';
-import { lockLandscapeOrientation, preventOrientationChange } from "./config/orientation";
+// import { lockLandscapeOrientation, preventOrientationChange } from "./config/orientation";
 import { ThemeProvider } from '@/app/components/providers/ThemeProvider';
 import { Sidebar } from '@/app/components/features/sidebar/Sidebar';
 import { useSidebarStore } from '@/app/stores/sidebarStore';
@@ -10,11 +10,11 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 export default function RootLayout() {
   const { isOpen, close } = useSidebarStore();
 
-  useEffect(() => {
-    lockLandscapeOrientation();
-    const cleanup = preventOrientationChange();
-    return cleanup;
-  }, []);
+  // useEffect(() => {
+  //   lockLandscapeOrientation();
+  //   const cleanup = preventOrientationChange();
+  //   return cleanup;
+  // }, []);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
