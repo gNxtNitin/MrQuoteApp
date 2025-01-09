@@ -1,61 +1,68 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Alert, Pressable } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Alert } from 'react-native';
 import { useAuth } from '@/app/hooks/useAuth';
 import { useRouter } from 'expo-router';
 import { Colors } from '@/app/constants/colors';
 import { LinearGradient } from 'expo-linear-gradient';
 
-export function PinScreen() {
+export function SetPinScreen() {
   const [pin, setPin] = useState('');
-  const { loginWithPin, logout } = useAuth();
+  const [confirmPin, setConfirmPin] = useState('');
+  const [step, setStep] = useState<'enter' | 'confirm'>('enter');
+  const { setupPin, user } = useAuth();
   const router = useRouter();
 
   const handlePinInput = async (digit: string) => {
-    const newPin = pin + digit;
-    setPin(newPin);
-
-    if (newPin.length === 4) {
-      try {
-        const response = await loginWithPin(parseInt(newPin));
-        if (response.success) {
-          router.replace('/home');
+    if (step === 'enter') {
+      const newPin = pin + digit;
+      if (newPin.length === 4) {
+        setPin(newPin);
+        setStep('confirm');
+      } else {
+        setPin(newPin);
+      }
+    } else {
+      const newConfirmPin = confirmPin + digit;
+      if (newConfirmPin.length === 4) {
+        if (newConfirmPin === pin && user?.id) {
+          try {
+            const success = await setupPin(user.id, parseInt(newConfirmPin));
+            if (success) {
+              router.replace('/home');
+            } else {
+              Alert.alert('Error', 'Failed to set PIN. Please try again.');
+              resetPins();
+            }
+          } catch (error) {
+            Alert.alert('Error', 'Failed to set PIN. Please try again.');
+            resetPins();
+          }
         } else {
-          Alert.alert('Error', response.message);
-          setPin('');
+          Alert.alert('Error', 'PINs do not match. Please try again.');
+          resetPins();
         }
-      } catch (error) {
-        Alert.alert('Error', 'Failed to verify PIN');
-        setPin('');
+      } else {
+        setConfirmPin(newConfirmPin);
       }
     }
   };
 
-  const handleDelete = () => {
-    setPin(prev => prev.slice(0, -1));
+  const resetPins = () => {
+    setPin('');
+    setConfirmPin('');
+    setStep('enter');
   };
 
-  const handleResetPin = () => {
-    Alert.alert(
-      'Reset PIN',
-      'This will log you out and you will need to login again with your username and password. Continue?',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel'
-        },
-        {
-          text: 'Reset',
-          style: 'destructive',
-          onPress: async () => {
-            await logout();
-            router.replace('/login');
-          }
-        }
-      ]
-    );
+  const handleDelete = () => {
+    if (step === 'enter') {
+      setPin(prev => prev.slice(0, -1));
+    } else {
+      setConfirmPin(prev => prev.slice(0, -1));
+    }
   };
 
   const renderPinDots = () => {
+    const currentPin = step === 'enter' ? pin : confirmPin;
     return (
       <View style={styles.dotsContainer}>
         {[...Array(4)].map((_, index) => (
@@ -63,7 +70,7 @@ export function PinScreen() {
             key={index}
             style={[
               styles.dot,
-              index < pin.length ? styles.dotFilled : styles.dotEmpty
+              index < currentPin.length ? styles.dotFilled : styles.dotEmpty
             ]}
           />
         ))}
@@ -103,12 +110,17 @@ export function PinScreen() {
       style={styles.container}
     >
       <View style={styles.content}>
-        <Text style={styles.title}>Enter PIN</Text>
+        <Text style={styles.title}>
+          {step === 'enter' ? 'Enter New PIN' : 'Confirm PIN'}
+        </Text>
+        <Text style={styles.subtitle}>
+          {step === 'enter' 
+            ? 'Please enter a 4-digit PIN'
+            : 'Please confirm your PIN'
+          }
+        </Text>
         {renderPinDots()}
         {renderNumpad()}
-        <Pressable onPress={handleResetPin}>
-          <Text style={styles.resetText}>Reset PIN</Text>
-        </Pressable>
       </View>
     </LinearGradient>
   );
@@ -130,6 +142,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: Colors.white,
     marginBottom: 30,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: Colors.white,
+    marginBottom: 20,
+    textAlign: 'center',
   },
   dotsContainer: {
     flexDirection: 'row',
@@ -169,11 +187,4 @@ const styles = StyleSheet.create({
     color: Colors.white,
     padding: 15,
   },
-  resetText: {
-    color: Colors.white,
-    fontSize: 16,
-    marginTop: 20,
-    textDecorationLine: 'underline',
-    opacity: 0.8
-  }
-});
+}); 

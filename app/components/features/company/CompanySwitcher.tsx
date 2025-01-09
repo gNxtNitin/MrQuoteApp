@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, Pressable, StyleSheet, Image } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/app/constants/colors";
+import { useAuth } from '@/app/hooks/useAuth';
 
 const gutter = require("@/assets/images/gutter-logo.png");
 const roofing = require("@/assets/images/roofing-logo.png");
@@ -34,6 +35,13 @@ export function CompanySwitcher({
   onSelectCompany,
   onLogout,
 }: CompanySwitcherProps) {
+  const { logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+    onLogout();
+  };
+
   return (
     <View style={[styles.container, { zIndex: 9999 }]}>
       <View style={styles.userInfo}>
@@ -97,7 +105,7 @@ export function CompanySwitcher({
         );
       })}
 
-      <Pressable style={styles.logoutRow} onPress={onLogout}>
+      <Pressable style={styles.logoutRow} onPress={handleLogout}>
         <Text style={styles.logoutText}>Logout</Text>
         <MaterialIcons name="logout" size={24} color="#666" />
       </Pressable>
