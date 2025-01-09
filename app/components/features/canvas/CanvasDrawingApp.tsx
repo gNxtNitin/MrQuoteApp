@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { TextInput } from 'react-native';
 import { View, StyleSheet, GestureResponderEvent, Alert, useWindowDimensions } from 'react-native';
 import { Svg, Path, Text as SvgText } from 'react-native-svg';
-import * as ScreenOrientation from 'expo-screen-orientation';
-import { lockLandscapeOrientation, preventOrientationChange } from '@/app/config/orientation';
+// import { lockLandscapeOrientation, preventOrientationChange } from '@/app/config/orientation';
 import { PathWithLabel, PathType, Label } from '@/app/types/drawing';
 import { DrawingControls } from './DrawingControls';
 import { Ruler } from './Ruler';
@@ -20,11 +19,11 @@ export default function CanvasDrawingApp() {
 
   const CLOSE_THRESHOLD = 20;
 
-  useEffect(() => {
-    lockLandscapeOrientation();
-    const cleanup = preventOrientationChange();
-    return cleanup;
-  }, []);
+  // useEffect(() => {
+  //   lockLandscapeOrientation();
+  //   const cleanup = preventOrientationChange();
+  //   return cleanup;
+  // }, []);
 
   const handleAddLabelClick = () => {
     setIsAddingLabel(true);
