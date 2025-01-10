@@ -109,6 +109,7 @@ const styles = StyleSheet.create({
   tabBarContainer: {
     position: "relative",
     width: "100%",
+    marginBottom:10,
   },
   tabBar: {
     flexDirection: "row",
@@ -147,8 +148,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    width: "100%",
+    width: "98%",
     margin: 5,
+    borderRadius:10,
     padding: 5,
     paddingVertical: 10,
     backgroundColor: Colors.white,

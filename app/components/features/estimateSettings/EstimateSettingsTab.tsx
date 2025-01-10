@@ -8,6 +8,7 @@ import { FileUploader } from "../../common/FileUploader";
 import { CustomCollapsible } from "../../common/Collapsable";
 import { router } from "expo-router";
 import { UploadSuccess } from "../../common/uploadsuccess";
+import { Card } from "../../common/Card";
 
 export const EstimateDetailsTab = () => {
   const handleBack = () => router.back();
@@ -19,69 +20,70 @@ export const EstimateDetailsTab = () => {
   const [nextCallback, setNextCallBack] = useState("");
 
   return (
-    <View style={styles.tabContent}>
-      {/* row 1 */}
-      <View style={styles.row}>
-        <View style={styles.contentRow}>
-          <CustomInputRow
-            label="Estimate No"
-            placeholder="0"
-            value={estimateNo}
-            onChangeText={setEstimateNo}
-            inputMode={"numeric"}
-          />
+    <Card>
+      <View style={styles.tabContent}>
+        {/* row 1 */}
+        <View style={styles.row}>
+          <View style={styles.contentRow}>
+            <CustomInputRow
+              label="Estimate No"
+              placeholder="0"
+              value={estimateNo}
+              onChangeText={setEstimateNo}
+              inputMode={"numeric"}
+            />
+          </View>
+          <View style={styles.contentRow}>
+            <CustomDropdownRow
+              label="Sales Person"
+              value={salesPerson}
+              onValueChange={setSalesPerson}
+              options={["Mr Gutter", "John Doe"]}
+            />
+          </View>
         </View>
-        <View style={styles.contentRow}>
-          <CustomDropdownRow
-            label="Sales Person"
-            value={salesPerson}
-            onValueChange={setSalesPerson}
-            options={["Mr Gutter", "John Doe"]}
-          />
+
+        {/* row 2 */}
+        <View style={styles.row}>
+          <View style={styles.contentRow}>
+            <CustomInputRow
+              label="Created Date"
+              placeholder="MM/DD/YYYY"
+              value={createdDate}
+              onChangeText={setCreatedDate}
+              inputMode={"numeric"}
+            />
+          </View>
+          <View style={styles.contentRow}>
+            <CustomDropdownRow
+              label="Estimate Revenue"
+              value={estimaeRevenue}
+              onValueChange={setEstimateRevenue}
+              options={["$0.00", "$10.00"]}
+            />
+          </View>
+        </View>
+
+        {/* row 3 */}
+        <View style={styles.row}>
+          <View style={styles.contentRow}>
+            <CustomInputRow
+              label="Next callback"
+              placeholder="MM/DD/YYYY"
+              value={nextCallback}
+              onChangeText={setNextCallBack}
+              inputMode={"numeric"}
+            />
+          </View>
+          <View style={styles.contentRow}></View>
         </View>
       </View>
-
-      {/* row 2 */}
-      <View style={styles.row}>
-        <View style={styles.contentRow}>
-          <CustomInputRow
-            label="Created Date"
-            placeholder="MM/DD/YYYY"
-            value={createdDate}
-            onChangeText={setCreatedDate}
-            inputMode={"numeric"}
-          />
-        </View>
-        <View style={styles.contentRow}>
-          <CustomDropdownRow
-            label="Estimate Revenue"
-            value={estimaeRevenue}
-            onValueChange={setEstimateRevenue}
-            options={["$0.00", "$10.00"]}
-          />
-        </View>
-      </View>
-
-      {/* row 3 */}
-      <View style={styles.row}>
-        <View style={styles.contentRow}>
-          <CustomInputRow
-            label="Next callback"
-            placeholder="MM/DD/YYYY"
-            value={nextCallback}
-            onChangeText={setNextCallBack}
-            inputMode={"numeric"}
-          />
-        </View>
-        <View style={styles.contentRow}></View>
-      </View>
-
       {/* Button Row */}
       <View style={styles.btnRow}>
         <Button label={"Submit"} />
         <Button label={"Cancel"} variant="outline" onPress={handleBack} />
       </View>
-    </View>
+    </Card>
   );
 };
 
@@ -100,6 +102,7 @@ export const CustomerDetailsTab = () => {
   const [zipCode, setZipCode] = useState("");
 
   return (
+    <Card>
     <View style={styles.tabContent}>
       {/* row 1 */}
       <View style={styles.row}>
@@ -217,6 +220,7 @@ export const CustomerDetailsTab = () => {
         <Button label={"Cancel"} variant="outline" onPress={handleBack} />
       </View>
     </View>
+    </Card>
   );
 };
 
@@ -238,28 +242,25 @@ export const PropertyMeasurementsTab = () => {
   const [file, setFile] = useState<{ uri: string } | string | null>(null);
 
   return (
+    <Card>
     <View style={styles.tabContent}>
       <View style={styles.row}>
         <Text style={styles.heading}>Reports Available(0)</Text>
         {/* <Button label={"Upload File"} variant="primary" /> */}
         <View style={styles.file}>
-               {file === null ? (
-                     <FileUploader
-                       accept="both"
-                       onUpload={(file) => {
-                         console.log("File uploaded for Primary Image:", file); 
-                         setFile(file);
-                       }}
-                     />
-                   ) : (
-                     <UploadSuccess
-                       selectedImage={
-                         typeof file === "string"
-                           ? file
-                           : file?.uri
-                       }
-                     />
-                   )}
+          {file === null ? (
+            <FileUploader
+              accept="both"
+              onUpload={(file) => {
+                console.log("File uploaded for Primary Image:", file);
+                setFile(file);
+              }}
+            />
+          ) : (
+            <UploadSuccess
+              selectedImage={typeof file === "string" ? file : file?.uri}
+            />
+          )}
         </View>
       </View>
 
@@ -434,6 +435,7 @@ export const PropertyMeasurementsTab = () => {
         <Button label={"Cancel"} variant="outline" onPress={handleBack} />
       </View>
     </View>
+    </Card>
   );
 };
 
@@ -443,7 +445,7 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 35,
     backgroundColor: Colors.white,
-    marginBottom: 20,
+    padding: 20,
   },
   row: {
     flexDirection: "row",
