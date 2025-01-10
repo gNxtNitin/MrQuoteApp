@@ -6,6 +6,33 @@ import { User } from '../../database/models/User';
 import { Estimate } from '../../database/models/Estimate';
 import { EstimateDetail } from '../../database/models/EstimateDetail';
 import { UserRole } from '@/app/database/models/UserRole';
+import { ReportTheme } from '@/app/database/models/ReportTheme';
+import { Menu } from '@/app/database/models/Menu';
+import { UserMenuAccess } from '@/app/database/models/UserMenuAccess';
+import { RoofMeasurementToken } from '@/app/database/models/RoofMeasurementToken';
+import { RoofingAccessories } from '@/app/database/models/RoofingAccessories';
+import { RoofPitch } from '@/app/database/models/RoofPitch';
+import { ResidentialMetals } from '@/app/database/models/ResidentialMetals';
+import { WallMeasurementToken } from '@/app/database/models/WallMeasurementToken';
+import { Report } from '@/app/database/models/Report';
+import { Pages } from '@/app/database/models/Pages';
+import { Layouts } from '@/app/database/models/Layouts';
+import { ReportPages } from '@/app/database/models/ReportPages';
+import { LayoutPages } from '@/app/database/models/LayoutPages';
+import { TitlePageContent } from '@/app/database/models/TitlePageContent';
+import { IntroductionPageContent } from '@/app/database/models/IntroductionPageContent';
+import { InspectionPageContent } from '@/app/database/models/InspectionPageContent';
+import { TemplatesCategory } from '@/app/database/models/TemplatesCategory';
+import { Templates } from '@/app/database/models/Templates';
+import { TemplatePages } from '@/app/database/models/TemplatePages';
+import { CustomEmailInvoiceQuickText } from '@/app/database/models/CustomEmailInvoiceQuickText';
+import { Folders } from '@/app/database/models/Folders';
+import { Files } from '@/app/database/models/Files';
+import { UnitOfMeasurement } from '@/app/database/models/UnitOfMeasurement';
+import { MeasurementCategory } from '@/app/database/models/MeasurementCategory';
+import { MeasurementToken } from '@/app/database/models/MeasurementToken';
+import { ProductsPricing } from '@/app/database/models/ProductsPricing';
+import { TaxSetting } from '@/app/database/models/TaxSetting';
 
 // Create singleton database instance
 let dbInstance: SQLite.SQLiteDatabase | null = null;
@@ -53,7 +80,7 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
 
         await database.withTransactionAsync(async () => {
             try {
-                // Create tables
+                // Create tables in correct order (TemplatesCategory first, then Templates, then TemplatePages)
                 await Company.createTable();
                 await Role.createTable();
                 await UserDetail.createTable();
@@ -61,6 +88,33 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                 await Estimate.createTable();
                 await EstimateDetail.createTable();
                 await UserRole.createTable();
+                await ReportTheme.createTable();
+                await Menu.createTable();
+                await UserMenuAccess.createTable();
+                await RoofMeasurementToken.createTable();
+                await RoofingAccessories.createTable();
+                await RoofPitch.createTable();
+                await ResidentialMetals.createTable();
+                await WallMeasurementToken.createTable();
+                await Report.createTable();
+                await Pages.createTable();
+                await Layouts.createTable();
+                await ReportPages.createTable();
+                await LayoutPages.createTable();
+                await TitlePageContent.createTable();
+                await IntroductionPageContent.createTable();
+                await InspectionPageContent.createTable();
+                await TemplatesCategory.createTable();
+                await Templates.createTable();
+                await TemplatePages.createTable();
+                await CustomEmailInvoiceQuickText.createTable();
+                await Folders.createTable();
+                await Files.createTable();
+                await UnitOfMeasurement.createTable();
+                await MeasurementCategory.createTable();
+                await MeasurementToken.createTable();
+                await ProductsPricing.createTable();
+                await TaxSetting.createTable();
 
                 // Only insert sample data if database is empty
                 if (shouldInitialize) {
@@ -332,6 +386,360 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                         modified_by: 1,
                         created_date: new Date().toISOString(),
                         modified_date: new Date().toISOString()
+                    });
+
+                    // Add sample report themes
+                    await ReportTheme.insert({
+                        id: 1,
+                        theme_name: 'Default Theme',
+                        description: 'Default report theme',
+                        created_by: 1,
+                        modified_by: 1,
+                        created_date: new Date().toISOString(),
+                        modified_date: new Date().toISOString()
+                    });
+
+                    await ReportTheme.insert({
+                        id: 2,
+                        theme_name: 'Professional Theme',
+                        description: 'Professional looking report theme',
+                        created_by: 1,
+                        modified_by: 1,
+                        created_date: new Date().toISOString(),
+                        modified_date: new Date().toISOString()
+                    });
+
+                    // Add sample menu items
+                    await Menu.insert({
+                        id: 1,
+                        menu_name: 'Dashboard',
+                        area: 'Home',
+                        controller_name: 'HomeScreen',
+                        url: '/home',
+                        order_number: 1,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    await Menu.insert({
+                        id: 2,
+                        menu_name: 'Estimates',
+                        area: 'Estimates',
+                        controller_name: 'EstimateScreen',
+                        url: '/estimates',
+                        order_number: 2,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample user menu access entries
+                    await UserMenuAccess.insert({
+                        id: 1,
+                        role_id: 1,
+                        menu_id: 1,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    await UserMenuAccess.insert({
+                        id: 2,
+                        role_id: 1,
+                        menu_id: 2,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample roof measurement data
+                    await RoofMeasurementToken.insert({
+                        id: 1,
+                        estimate_id: 1,
+                        total_roof_area: 2500,
+                        total_eaves: '120',
+                        total_rakes: '80',
+                        total_valleys: '40',
+                        total_ridges_hips: '60',
+                        total_hips: '30',
+                        total_ridges: '30',
+                        suggested_waste_percentage: '10',
+                        quick_squares: '25',
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample roofing accessories data
+                    await RoofingAccessories.insert({
+                        id: 1,
+                        estimate_id: 1,
+                        vents_standard: '5',
+                        vents_turbine: '2',
+                        vents_phoenix: '1',
+                        exhaust_cap: '3',
+                        pipe_jacks: '4',
+                        bin_disposal_roofing: '1',
+                        skylights: '2',
+                        skylight_flashing_kits: '2',
+                        chimney_flashing_kits_average: '1',
+                        chimney_flashing_kits_large: '0',
+                        minimum_charge: 500,
+                        labor_hours: new Date().toISOString(),
+                        modified_by: 1
+                    });
+
+                    // Add sample roof pitch data
+                    await RoofPitch.insert({
+                        id: 1,
+                        estimate_id: 1,
+                        eight_by_twelve: '25',
+                        seven_by_twelve: '20',
+                        nine_by_twelve: '15',
+                        ten_by_twelve: '10',
+                        eleven_by_twelve: '5',
+                        twelve_by_twelve: '25'
+                    });
+
+                    // Add sample residential metals data
+                    await ResidentialMetals.insert({
+                        id: 1,
+                        estimate_id: 1,
+                        gutters: 150,
+                        downspouts: '8'
+                    });
+
+                    // Add sample wall measurement data
+                    await WallMeasurementToken.insert({
+                        id: 1,
+                        estimate_id: 1,
+                        total_wall_area: 1800,
+                        north_wall_area: '500',
+                        east_wall_area: '400',
+                        south_wall_area: '500',
+                        west_wall_area: '400',
+                        bin_disposal_siding: '1'
+                    });
+
+                    // Add sample report data
+                    await Report.insert({
+                        id: 1,
+                        estimate_id: 1,
+                        report_name: 'Initial Report',
+                        description: 'First assessment report',
+                        report_status: 'DRAFT',
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample pages data
+                    await Pages.insert({
+                        id: 1,
+                        page_name: 'Title Page',
+                        description: 'Default title page template',
+                        is_template: true,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample layouts data
+                    await Layouts.insert({
+                        id: 1,
+                        company_id: 1,
+                        layout_name: 'Default Report Layout',
+                        layout_type: 'Report',
+                        description: 'Standard report layout',
+                        is_shared: true,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample layout pages data
+                    await LayoutPages.insert({
+                        id: 1,
+                        page_id: 1,
+                        layout_id: 1,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample title page content
+                    await TitlePageContent.insert({
+                        id: 1,
+                        page_id: 1,
+                        title_name: 'Project Report',
+                        report_type: 'Assessment',
+                        primary_image: 'default.jpg',
+                        certification_logo: 'cert.png',
+                        first_name: 'John',
+                        last_name: 'Doe',
+                        company_name: 'Demo Company',
+                        address: '123 Main St',
+                        city: 'San Diego',
+                        state: 'CA',
+                        zip_code: '92101',
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample introduction page content
+                    await IntroductionPageContent.insert({
+                        id: 1,
+                        page_id: 1,
+                        introduction_content: 'Welcome to our detailed project assessment report. This document provides a comprehensive overview of our findings and recommendations.',
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample inspection page content
+                    await InspectionPageContent.insert({
+                        id: 1,
+                        page_id: 1,
+                        inspection_title: 'Property Inspection Report',
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample templates category
+                    await TemplatesCategory.insert({
+                        template_cat_id: 1,
+                        company_id: 1,
+                        category_name: 'Roofing Templates',
+                        description: 'Standard templates for roofing inspections',
+                        is_active: true,
+                        created_by: 1
+                    });
+
+                    // Add sample template data
+                    await Templates.insert({
+                        id: 1,
+                        template_cat_id: 1,
+                        company_id: 1,
+                        template_type: 'Report',
+                        template_name: 'Standard Inspection Report',
+                        description: 'Default template for inspection reports',
+                        is_shared: true,
+                        is_active: true,
+                        created_by: 1
+                    });
+
+                    // Add sample template pages data
+                    await TemplatePages.insert({
+                        id: 1,
+                        page_id: 1,
+                        template_id: 1,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample quick text
+                    await CustomEmailInvoiceQuickText.insert({
+                        id: 1,
+                        company_id: 1,
+                        template_id: 1,
+                        content: 'Thank you for your business. Please find your invoice attached.',
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample folder
+                    await Folders.insert({
+                        id: 1,
+                        company_id: 1,
+                        folder_name: 'Reports',
+                        is_shared: true,
+                        is_active: true,
+                        owner_id: 1,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample file
+                    await Files.insert({
+                        id: 1,
+                        folder_id: 1,
+                        company_id: 1,
+                        file_name: 'Sample Report.pdf',
+                        file_type: 'application/pdf',
+                        file_size: 1024,
+                        file_path: '/storage/reports/sample.pdf',
+                        owner_id: 1,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample unit of measurement
+                    await UnitOfMeasurement.insert({
+                        id: 1,
+                        company_id: 1,
+                        unit_name: 'Square Feet',
+                        description: 'Standard unit for area measurement',
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample measurement category
+                    await MeasurementCategory.insert({
+                        id: 1,
+                        company_id: 1,
+                        category_name: 'Roofing Measurements',
+                        order_number: 1,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample measurement token
+                    await MeasurementToken.insert({
+                        id: 1,
+                        company_id: 1,
+                        token_name: 'Total Roof Area',
+                        unit_of_measurement_id: 1,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample products pricing
+                    await ProductsPricing.insert({
+                        id: 1,
+                        company_id: 1,
+                        name: 'Standard Shingles',
+                        description: 'Basic roofing shingles',
+                        unit: 'sq ft',
+                        material_price: 2.50,
+                        labor: 1.75,
+                        margin: 0.30,
+                        price: 5.50,
+                        tax_exempt_status: false,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample tax setting
+                    await TaxSetting.insert({
+                        id: 1,
+                        company_id: 1,
+                        tax_name: 'Sales Tax',
+                        description: 'Standard sales tax rate',
+                        tax_rate: 8.50,
+                        is_required: true,
+                        order_number: 1,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
                     });
 
                     console.log('Sample data inserted successfully');
