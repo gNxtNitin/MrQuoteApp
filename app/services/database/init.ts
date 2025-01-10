@@ -33,6 +33,12 @@ import { MeasurementCategory } from '@/app/database/models/MeasurementCategory';
 import { MeasurementToken } from '@/app/database/models/MeasurementToken';
 import { ProductsPricing } from '@/app/database/models/ProductsPricing';
 import { TaxSetting } from '@/app/database/models/TaxSetting';
+import { SectionStyle } from '@/app/database/models/SectionStyle';
+import { InspectionPageSection } from '@/app/database/models/InspectionPageSection';
+import { InspectionSectionItems } from '@/app/database/models/InspectionSectionItems';
+import { QuotePageContent } from '@/app/database/models/QuotePageContent';
+import { QuotePageSection } from '@/app/database/models/QuotePageSection';
+import { QuotePagePriceSection } from '@/app/database/models/QuotePagePriceSection';
 
 // Create singleton database instance
 let dbInstance: SQLite.SQLiteDatabase | null = null;
@@ -115,6 +121,12 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                 await MeasurementToken.createTable();
                 await ProductsPricing.createTable();
                 await TaxSetting.createTable();
+                await SectionStyle.createTable();
+                await InspectionPageSection.createTable();
+                await InspectionSectionItems.createTable();
+                await QuotePageContent.createTable();
+                await QuotePageSection.createTable();
+                await QuotePagePriceSection.createTable();
 
                 // Only insert sample data if database is empty
                 if (shouldInitialize) {
@@ -737,6 +749,128 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                         tax_rate: 8.50,
                         is_required: true,
                         order_number: 1,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample section styles
+                    await SectionStyle.insert({
+                        id: 1,
+                        style_name: 'Default Style',
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    await SectionStyle.insert({
+                        id: 2,
+                        style_name: 'Modern Style',
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    await SectionStyle.insert({
+                        id: 3,
+                        style_name: 'Classic Style',
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample inspection page sections
+                    await InspectionPageSection.insert({
+                        id: 1,
+                        inspection_page_id: 1,
+                        section_style_id: 1,
+                        section_title: 'Roof Inspection',
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    await InspectionPageSection.insert({
+                        id: 2,
+                        inspection_page_id: 1,
+                        section_style_id: 2,
+                        section_title: 'Gutter Assessment',
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample inspection section items
+                    await InspectionSectionItems.insert({
+                        id: 1,
+                        inspection_section_id: 1,
+                        inspection_file: 'roof-damage.jpg',
+                        inspection_content: 'Significant wear observed on the north-facing shingles. Multiple shingles showing signs of deterioration.',
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    await InspectionSectionItems.insert({
+                        id: 2,
+                        inspection_section_id: 2,
+                        inspection_file: 'gutter-issue.jpg',
+                        inspection_content: 'Gutters showing signs of rust and improper drainage. Recommend replacement in affected areas.',
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample quote page content
+                    await QuotePageContent.insert({
+                        id: 1,
+                        page_id: 1,
+                        quote_page_title: 'Project Quote',
+                        quote_subtotal: 2500.00,
+                        total: 2875.00,
+                        notes: 'Price includes materials and labor. Valid for 30 days.',
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample quote page sections
+                    await QuotePageSection.insert({
+                        id: 1,
+                        quote_page_id: 1,
+                        section_title: 'Roofing Materials',
+                        section_total: 1500.00,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    await QuotePageSection.insert({
+                        id: 2,
+                        quote_page_id: 1,
+                        section_title: 'Labor Costs',
+                        section_total: 1000.00,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample quote page price sections
+                    await QuotePagePriceSection.insert({
+                        id: 1,
+                        quote_section_id: 1,
+                        price_section_id: 1,
+                        section_total: 1500.00,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    await QuotePagePriceSection.insert({
+                        id: 2,
+                        quote_section_id: 2,
+                        price_section_id: 1,
+                        section_total: 1000.00,
                         is_active: true,
                         created_by: 1,
                         modified_by: 1
