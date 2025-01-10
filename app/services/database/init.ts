@@ -5,6 +5,7 @@ import { UserDetail } from '../../database/models/UserDetail';
 import { User } from '../../database/models/User';
 import { Estimate } from '../../database/models/Estimate';
 import { EstimateDetail } from '../../database/models/EstimateDetail';
+import { UserRole } from '@/app/database/models/UserRole';
 
 // Create singleton database instance
 let dbInstance: SQLite.SQLiteDatabase | null = null;
@@ -59,6 +60,7 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                 await User.createTable();
                 await Estimate.createTable();
                 await EstimateDetail.createTable();
+                await UserRole.createTable();
 
                 // Only insert sample data if database is empty
                 if (shouldInitialize) {
@@ -136,6 +138,22 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                     await User.insert({
                         id: 2,
                         user_detail_id: 2,
+                        created_date: new Date().toISOString(),
+                        modified_date: new Date().toISOString()
+                    });
+
+                    UserRole.insert({
+                        id: 1,
+                        role_id: 1,
+                        user_id: 1,
+                        created_date: new Date().toISOString(),
+                        modified_date: new Date().toISOString()
+                    });
+
+                    UserRole.insert({
+                        id: 2,
+                        role_id: 1,
+                        user_id: 2,
                         created_date: new Date().toISOString(),
                         modified_date: new Date().toISOString()
                     });
