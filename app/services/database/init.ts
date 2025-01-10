@@ -39,6 +39,16 @@ import { InspectionSectionItems } from '@/app/database/models/InspectionSectionI
 import { QuotePageContent } from '@/app/database/models/QuotePageContent';
 import { QuotePageSection } from '@/app/database/models/QuotePageSection';
 import { QuotePagePriceSection } from '@/app/database/models/QuotePagePriceSection';
+import { PriceSection } from '@/app/database/models/PriceSection';
+import { PriceSectionDetail } from '@/app/database/models/PriceSectionDetail';
+import { AuthorizationPageContent } from '@/app/database/models/AuthorizationPageContent';
+import { AuthPagePriceSection } from '@/app/database/models/AuthPagePriceSection';
+import { AuthProductSelection } from '@/app/database/models/AuthProductSelection';
+import { AuthPrimarySigner } from '@/app/database/models/AuthPrimarySigner';
+import { TermConditionsPageContent } from '@/app/database/models/TermConditionsPageContent';
+import { InvoicePageContent } from '@/app/database/models/InvoicePageContent';
+import { CustomPageContent } from '@/app/database/models/CustomPageContent';
+import { MaterialPageContent } from '@/app/database/models/MaterialPageContent';
 
 // Create singleton database instance
 let dbInstance: SQLite.SQLiteDatabase | null = null;
@@ -127,6 +137,16 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                 await QuotePageContent.createTable();
                 await QuotePageSection.createTable();
                 await QuotePagePriceSection.createTable();
+                await PriceSection.createTable();
+                await PriceSectionDetail.createTable();
+                await AuthorizationPageContent.createTable();
+                await AuthPagePriceSection.createTable();
+                await AuthProductSelection.createTable();
+                await AuthPrimarySigner.createTable();
+                await TermConditionsPageContent.createTable();
+                await InvoicePageContent.createTable();
+                await CustomPageContent.createTable();
+                await MaterialPageContent.createTable();
 
                 // Only insert sample data if database is empty
                 if (shouldInitialize) {
@@ -871,6 +891,190 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                         quote_section_id: 2,
                         price_section_id: 1,
                         section_total: 1000.00,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample price sections
+                    await PriceSection.insert({
+                        id: 1,
+                        company_id: 1,
+                        item: 'Architectural Shingles',
+                        quantity: 50,
+                        price: 75.00,
+                        line_total: 3750.00,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    await PriceSection.insert({
+                        id: 2,
+                        company_id: 1,
+                        item: 'Labor - Installation',
+                        quantity: 40,
+                        price: 45.00,
+                        line_total: 1800.00,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample price section details
+                    await PriceSectionDetail.insert({
+                        id: 1,
+                        price_section_id: 1,
+                        name: 'Premium Shingles',
+                        description: 'High-quality architectural shingles',
+                        unit: 'sq ft',
+                        material: 45.00,
+                        line_total: 2250.00,
+                        labor: 30.00,
+                        margin: 15.00,
+                        price: 90.00,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    await PriceSectionDetail.insert({
+                        id: 2,
+                        price_section_id: 1,
+                        name: 'Underlayment',
+                        description: 'Synthetic underlayment material',
+                        unit: 'roll',
+                        material: 85.00,
+                        line_total: 425.00,
+                        labor: 25.00,
+                        margin: 10.00,
+                        price: 120.00,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample authorization page content
+                    await AuthorizationPageContent.insert({
+                        id: 1,
+                        page_id: 1,
+                        authorization_page_title: 'Project Authorization',
+                        disclaimer: 'By signing below, you agree to the terms and conditions outlined in this document.',
+                        section_title: 'Authorization Details',
+                        footer_notes: 'Please read all terms carefully before signing.',
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample auth page price sections
+                    await AuthPagePriceSection.insert({
+                        id: 1,
+                        authorization_page_id: 1,
+                        price_section_id: 1,
+                        section_total: 3750.00,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    await AuthPagePriceSection.insert({
+                        id: 2,
+                        authorization_page_id: 1,
+                        price_section_id: 2,
+                        section_total: 1800.00,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample auth product selections
+                    await AuthProductSelection.insert({
+                        id: 1,
+                        authorization_page_id: 1,
+                        item: 'Shingle Type',
+                        selection: 'Architectural Shingles',
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    await AuthProductSelection.insert({
+                        id: 2,
+                        authorization_page_id: 1,
+                        item: 'Underlayment',
+                        selection: 'Synthetic Underlayment',
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample auth primary signer
+                    await AuthPrimarySigner.insert({
+                        auth_p_signer_id: 1,
+                        authorization_page_id: 1,
+                        first_name: 'John',
+                        last_name: 'Smith',
+                        email_address: 'john.smith@example.com',
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample terms and conditions page content
+                    await TermConditionsPageContent.insert({
+                        id: 1,
+                        page_id: 1,
+                        tc_page_title: 'Terms and Conditions',
+                        is_acknowledged: false,
+                        is_summary: true,
+                        is_pdf: true,
+                        summary_content: 'This document outlines the terms and conditions for our services. Please read carefully before proceeding.',
+                        pdf_file_path: '/storage/terms/terms_and_conditions.pdf',
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample invoice page content
+                    await InvoicePageContent.insert({
+                        id: 1,
+                        page_id: 1,
+                        invoice_page_title: 'Project Invoice',
+                        invoice_terms: 'Net 30 - Payment is due within 30 days of invoice date',
+                        invoice_notes: 'Thank you for your business. Please make checks payable to Demo Company.',
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample custom page content
+                    await CustomPageContent.insert({
+                        id: 1,
+                        page_id: 1,
+                        custom_page_title: 'Additional Information',
+                        is_acknowledged: false,
+                        my_pdf: 'my_document.pdf',
+                        shared_pdf: 'shared_document.pdf',
+                        single_use: 'single_use_document.pdf',
+                        text_page_notes: 'Additional notes and information about the project.',
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample material page content
+                    await MaterialPageContent.insert({
+                        id: 1,
+                        page_id: 1,
+                        material_page_title: 'Project Materials',
+                        job_number: 'JOB-2024-001',
+                        start_date: new Date('2024-02-01').toISOString(),
+                        delivery_date: new Date('2024-02-15').toISOString(),
+                        address_line1: '789 Pine Street',
+                        city: 'San Diego',
+                        state: 'CA',
+                        zip: '92103',
                         is_active: true,
                         created_by: 1,
                         modified_by: 1
