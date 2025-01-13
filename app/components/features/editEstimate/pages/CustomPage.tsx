@@ -24,6 +24,7 @@ import { Button } from "../../../common/Button";
 import { FileUploader } from "@/app/components/common/FileUploader";
 import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
 import { useTheme } from "@/app/components/providers/ThemeProvider";
+import { CurrentRenderContext } from "@react-navigation/native";
 
 interface CustomPageProps {
   title: string;
@@ -133,16 +134,16 @@ const PDFContent = ({ title, pageId }: { title: string; pageId: number }) => {
           </View>
 
           <ScrollView horizontal={true} style={{ width: "100%" }}>
-              <FlatList
-                data={folders}
-                renderItem={renderFolder}
-                keyExtractor={(item) => item.id}
-                key={isGridView ? "g" : "t"}
-                numColumns={isGridView ? 2 : 1}
-                contentContainerStyle={
-                  isGridView ? styles.gridContainer : styles.tileContainer
-                }
-              />
+            <FlatList
+              data={folders}
+              renderItem={renderFolder}
+              keyExtractor={(item) => item.id}
+              key={isGridView ? "g" : "t"}
+              numColumns={isGridView ? 2 : 1}
+              contentContainerStyle={
+                isGridView ? styles.gridContainer : styles.tileContainer
+              }
+            />
           </ScrollView>
         </View>
       </View>
@@ -202,7 +203,7 @@ const SharedPDFsContent = ({
 
         {/* Files Section */}
         <View style={styles.filesSection}>
-        <View style={styles.row}>
+          <View style={styles.row}>
             <Text style={styles.filesSectionTitle}>Files /</Text>
             <View style={styles.viewToggleContainer}>
               <TouchableOpacity
@@ -229,16 +230,16 @@ const SharedPDFsContent = ({
           </View>
 
           <ScrollView horizontal={true} style={{ width: "100%" }}>
-              <FlatList
-                data={folders}
-                renderItem={renderFolder}
-                keyExtractor={(item) => item.id}
-                key={isGridView ? "g" : "t"}
-                numColumns={isGridView ? 2 : 1}
-                contentContainerStyle={
-                  isGridView ? styles.gridContainer : styles.tileContainer
-                }
-              />
+            <FlatList
+              data={folders}
+              renderItem={renderFolder}
+              keyExtractor={(item) => item.id}
+              key={isGridView ? "g" : "t"}
+              numColumns={isGridView ? 2 : 1}
+              contentContainerStyle={
+                isGridView ? styles.gridContainer : styles.tileContainer
+              }
+            />
           </ScrollView>
         </View>
       </View>
@@ -249,17 +250,27 @@ const SharedPDFsContent = ({
 const SingleUsePDFContent = ({
   title,
   pageId,
+  setUploadedPdfs,
 }: {
   title: string;
   pageId: number;
+  setUploadedPdfs: (pdfs: File | null) => void;
 }) => {
+  const [pdfs, setPdfs] = useState<File | null>(null);
+
+  useEffect(() => {
+    setUploadedPdfs(pdfs);
+    console.log("pdf", pdfs);
+  }, [pdfs]);
+
   return (
     <View style={styles.pdfContent}>
       <Text style={styles.sectionTitle}>{title}</Text>
       <FileUploader
         accept="pdf"
         height={300}
-        onUpload={() => console.log("Upload PDF")}
+        multiple={true}
+        onUpload={(file) => setPdfs(file || null)}
       />
     </View>
   );
@@ -381,6 +392,7 @@ const TextPageContent = ({
 
 export function CustomPage({ title }: CustomPageProps) {
   const { customPages, updateCustomPage } = useEstimatePageStore();
+  const [uploadedPdfs, setUploadedPdfs] = useState<File | null>(null);
   const pageData = customPages.find((page) => page.title === title);
   const theme = useTheme();
 
@@ -439,6 +451,11 @@ export function CustomPage({ title }: CustomPageProps) {
         title: pageState.pageTitle,
       });
     }
+    const customPageData = {
+      uploadedPdfs,
+    };
+    console.log("save changes", customPageData);
+    useEstimatePageStore.getState().setFormData(`${title}`, customPageData);
   };
 
   const renderPDFContent = () => {
@@ -467,6 +484,7 @@ export function CustomPage({ title }: CustomPageProps) {
             key={`single-${pageData.id}`}
             title="Single Use PDFs"
             pageId={pageData.id}
+            setUploadedPdfs={setUploadedPdfs}
           />
         );
       case "textPage":
