@@ -34,13 +34,7 @@
       "screenOrientation": "landscape"
     },
     "plugins": [
-      "expo-router",
-      [
-        "expo-screen-orientation",
-        {
-          "initialOrientation": "LANDSCAPE"
-        }
-      ]
+      "expo-router"
     ],
     "experiments": {
       "typedRoutes": true

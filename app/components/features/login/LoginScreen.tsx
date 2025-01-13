@@ -4,6 +4,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '@/app/constants/colors';
 import { useRouter } from 'expo-router';
+import { useAuth } from '@/app/hooks/useAuth';
 
 interface LoginScreenProps {
   onLogin: () => void;
@@ -17,6 +18,7 @@ interface ValidationErrors {
 
 export function LoginScreen({ onLogin, isDarkMode }: LoginScreenProps) {
   const router = useRouter();
+  const { login } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -46,16 +48,14 @@ export function LoginScreen({ onLogin, isDarkMode }: LoginScreenProps) {
     Keyboard.dismiss();
     if (validateForm()) {
       try {
-        const isAuthenticated = true;
+        const response = await login(username, password);
         
-        if (isAuthenticated) {
-          onLogin();
-          router.replace('/pin');
-          // router.replace('/switch-and-canvas');
+        if (response.success) {
+          router.replace('/setpin');
         } else {
           setErrors({
-            username: 'Invalid credentials',
-            password: 'Invalid credentials'
+            username: response.message,
+            password: response.message
           });
         }
       } catch (error) {
