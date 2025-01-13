@@ -259,8 +259,6 @@ const SingleUsePDFContent = ({
       <FileUploader
         accept="pdf"
         height={300}
-        subtitle="Drag and drop your file here or click to browse"
-        variant="dashed"
         onUpload={() => console.log("Upload PDF")}
       />
     </View>
