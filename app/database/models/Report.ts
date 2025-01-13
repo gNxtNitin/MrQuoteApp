@@ -79,6 +79,7 @@ export const Report = {
 
     try {
       await statement.executeAsync(values);
+      console.log('Report inserted');
     } finally {
       await statement.finalizeAsync();
     }

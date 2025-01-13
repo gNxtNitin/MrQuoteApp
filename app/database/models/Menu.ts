@@ -88,6 +88,7 @@ export const Menu = {
 
     try {
       await statement.executeAsync(values);
+      console.log('Menu inserted');
     } finally {
       await statement.finalizeAsync();
     }

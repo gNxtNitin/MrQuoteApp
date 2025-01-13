@@ -167,6 +167,7 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                     });
 
                     await Company.insert({
+                        id: 2,
                         company_name: 'Mr. Roofing',
                         company_phone_number: '0987654321',
                         company_email: 'contact@roofing.com',
@@ -442,48 +443,48 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                     });
 
                     // Add sample menu items
-                    await Menu.insert({
-                        id: 1,
-                        menu_name: 'Dashboard',
-                        area: 'Home',
-                        controller_name: 'HomeScreen',
-                        url: '/home',
-                        order_number: 1,
-                        is_active: true,
-                        created_by: 1,
-                        modified_by: 1
-                    });
+                    // await Menu.insert({
+                    //     id: 1,
+                    //     menu_name: 'Dashboard',
+                    //     area: 'Home',
+                    //     controller_name: 'HomeScreen',
+                    //     url: '/home',
+                    //     order_number: 1,
+                    //     is_active: true,
+                    //     created_by: 1,
+                    //     modified_by: 1
+                    // });
 
-                    await Menu.insert({
-                        id: 2,
-                        menu_name: 'Estimates',
-                        area: 'Estimates',
-                        controller_name: 'EstimateScreen',
-                        url: '/estimates',
-                        order_number: 2,
-                        is_active: true,
-                        created_by: 1,
-                        modified_by: 1
-                    });
+                    // await Menu.insert({
+                    //     id: 2,
+                    //     menu_name: 'Estimates',
+                    //     area: 'Estimates',
+                    //     controller_name: 'EstimateScreen',
+                    //     url: '/estimates',
+                    //     order_number: 2,
+                    //     is_active: true,
+                    //     created_by: 1,
+                    //     modified_by: 1
+                    // });
 
-                    // Add sample user menu access entries
-                    await UserMenuAccess.insert({
-                        id: 1,
-                        role_id: 1,
-                        menu_id: 1,
-                        is_active: true,
-                        created_by: 1,
-                        modified_by: 1
-                    });
+                    // // Add sample user menu access entries
+                    // await UserMenuAccess.insert({
+                    //     id: 1,
+                    //     role_id: 1,
+                    //     menu_id: 1,
+                    //     is_active: true,
+                    //     created_by: 1,
+                    //     modified_by: 1
+                    // });
 
-                    await UserMenuAccess.insert({
-                        id: 2,
-                        role_id: 1,
-                        menu_id: 2,
-                        is_active: true,
-                        created_by: 1,
-                        modified_by: 1
-                    });
+                    // await UserMenuAccess.insert({
+                    //     id: 2,
+                    //     role_id: 1,
+                    //     menu_id: 2,
+                    //     is_active: true,
+                    //     created_by: 1,
+                    //     modified_by: 1
+                    // });
 
                     // Add sample roof measurement data
                     await RoofMeasurementToken.insert({
@@ -590,11 +591,201 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                         modified_by: 1
                     });
 
+                    await Layouts.insert({
+                        id: 2,
+                        company_id: 1,
+                        layout_name: 'Default Report Layout 2',
+                        layout_type: 'Report',
+                        description: 'Standard report layout 2',
+                        is_shared: true,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    await Layouts.insert({
+                        id: 3,
+                        company_id: 1,
+                        layout_name: 'Default Report Layout 3',
+                        layout_type: 'Report',
+                        description: 'Standard report layout 3',
+                        is_shared: true,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    await Layouts.insert({
+                        id: 4,
+                        company_id: 1,
+                        layout_name: 'Default Report Layout 4',
+                        layout_type: 'Report',
+                        description: 'Standard report layout 4',
+                        is_shared: true,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    await Layouts.insert({
+                        id: 5,
+                        company_id: 1,
+                        layout_name: 'Default Report Layout Local 1',
+                        layout_type: 'Report',
+                        description: 'Standard report layout local 1',
+                        is_shared: false,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    await Layouts.insert({
+                        id: 6,
+                        company_id: 1,
+                        layout_name: 'Default Report Layout Local 2',
+                        layout_type: 'Report',
+                        description: 'Standard report layout local 2',
+                        is_shared: false,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    await Layouts.insert({
+                        id: 7,
+                        company_id: 1,
+                        layout_name: 'Default Report Layout Local 3',
+                        layout_type: 'Report',
+                        description: 'Standard report layout local 3',
+                        is_shared: false,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    }); 
+
+                    await Layouts.insert({
+                        id: 8,
+                        company_id: 1,
+                        layout_name: 'Default Report Layout Local 4',
+                        layout_type: 'Report',
+                        description: 'Standard report layout local 4',
+                        is_shared: false,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    await Layouts.insert({
+                        id: 9,
+                        company_id: 2,
+                        layout_name: 'Default Report Layout Local 5',
+                        layout_type: 'Report',
+                        description: 'Standard report layout local 5',
+                        is_shared: false,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    await Layouts.insert({
+                        id: 10,
+                        company_id: 2,
+                        layout_name: 'Default Report Layout 6',
+                        layout_type: 'Report',
+                        description: 'Standard report layout 6',
+                        is_shared: true,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+
                     // Add sample layout pages data
                     await LayoutPages.insert({
                         id: 1,
                         page_id: 1,
                         layout_id: 1,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    await LayoutPages.insert({
+                        id: 2,
+                        page_id: 1,
+                        layout_id: 2,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    await LayoutPages.insert({
+                        id: 3,
+                        page_id: 1,
+                        layout_id: 3,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    await LayoutPages.insert({
+                        id: 4,
+                        page_id: 1,
+                        layout_id: 4,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    await LayoutPages.insert({
+                        id: 5,
+                        page_id: 1,
+                        layout_id: 5,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    await LayoutPages.insert({
+                        id: 6,
+                        page_id: 1,
+                        layout_id: 6,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    await LayoutPages.insert({
+                        id: 7,
+                        page_id: 1,
+                        layout_id: 7,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    await LayoutPages.insert({
+                        id: 8,
+                        page_id: 1,
+                        layout_id: 8,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    await LayoutPages.insert({
+                        id: 9,
+                        page_id: 1,
+                        layout_id: 9,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    await LayoutPages.insert({
+                        id: 10,
+                        page_id: 1,
+                        layout_id: 10,
                         is_active: true,
                         created_by: 1,
                         modified_by: 1

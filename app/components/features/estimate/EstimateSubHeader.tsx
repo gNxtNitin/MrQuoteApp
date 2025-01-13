@@ -153,8 +153,7 @@ export function EstimateSubHeader({
       <ChangeLayoutDialog
         visible={showLayoutDialog}
         onClose={handleCloseLayoutDialog}
-        onSave={handleSaveLayout}
-      />
+        onSave={handleSaveLayout} />
     </View>
   );
 }

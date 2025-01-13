@@ -96,6 +96,7 @@ export const RoofingAccessories = {
 
     try {
       await statement.executeAsync(values);
+      console.log('RoofingAccessories inserted');
     } finally {
       await statement.finalizeAsync();
     }

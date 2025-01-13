@@ -71,6 +71,7 @@ export const RoofPitch = {
 
     try {
       await statement.executeAsync(values);
+      console.log('RoofPitch inserted');
     } finally {
       await statement.finalizeAsync();
     }

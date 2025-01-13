@@ -1,8 +1,10 @@
 import { View, Text, StyleSheet, Modal, Pressable, TouchableOpacity } from 'react-native';
 import { Colors } from '@/app/constants/colors';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTheme } from '@react-navigation/native';
+import { Layouts } from '@/app/database/models/Layouts';
+import { useHeaderStore } from '@/app/stores/headerStore';
 
 interface ChangeLayoutDialogProps {
   visible: boolean;
@@ -12,26 +14,79 @@ interface ChangeLayoutDialogProps {
 
 type TabType = 'my' | 'shared';
 
-const MY_LAYOUTS = [
-  'Default Layout',
-  'Residential Roofing Quote (Sample)',
-  'Change Order',
-  '(Sample) Insurance Contract',
-];
-
-const SHARED_LAYOUTS = [
-  'Malarkey Roofing Quote(Sample)',
-  '(Sample) James Hardie Siding',
-  '(Sample) Residential Cement Board Siding',
-  'Atlas Roofing Quote(Sample)',
-];
+interface LayoutItem {
+  id: number;
+  layout_name: string;
+  is_active: boolean;
+}
 
 export function ChangeLayoutDialog({ visible, onClose, onSave }: ChangeLayoutDialogProps) {
   const theme = useTheme();
+  const selectedCompanyId = useHeaderStore(state => state.selectedCompany);
+  const companyLayouts = useHeaderStore(state => state.companyLayouts);
+  const setCompanyLayout = useHeaderStore(state => state.setCompanyLayout);
+  
   const [activeTab, setActiveTab] = useState<TabType>('my');
-  const [selectedLayout, setSelectedLayout] = useState<string>('Default Layout');
+  const [selectedLayout, setSelectedLayout] = useState<LayoutItem | null>(null);
+  const [myLayouts, setMyLayouts] = useState<LayoutItem[]>([]);
+  const [sharedLayouts, setSharedLayouts] = useState<LayoutItem[]>([]);
 
-  const layouts = activeTab === 'my' ? MY_LAYOUTS : SHARED_LAYOUTS;
+  useEffect(() => {
+    loadLayouts();
+  }, [selectedCompanyId]);
+
+  const loadLayouts = async () => {
+    try {
+      const layouts = await Layouts.getByCompanyId(selectedCompanyId);
+      
+      // Filter active layouts and separate into my and shared
+      const activeLayouts = layouts.filter(layout => layout.is_active);
+      
+      const myLayoutsList = activeLayouts
+        .filter(layout => !layout.is_shared)
+        .map(layout => ({
+          id: layout.id!,
+          layout_name: layout.layout_name!,
+          is_active: layout.is_active!
+        }));
+
+      const sharedLayoutsList = activeLayouts
+        .filter(layout => layout.is_shared)
+        .map(layout => ({
+          id: layout.id!,
+          layout_name: layout.layout_name!,
+          is_active: layout.is_active!
+        }));
+
+      setMyLayouts(myLayoutsList);
+      setSharedLayouts(sharedLayoutsList);
+
+      // Set selected layout based on stored company layout
+      const savedLayout = companyLayouts[selectedCompanyId];
+      if (savedLayout) {
+        const layoutToSelect = [...myLayoutsList, ...sharedLayoutsList]
+          .find(l => l.id === savedLayout.layoutId);
+        if (layoutToSelect) {
+          setSelectedLayout(layoutToSelect);
+          setActiveTab(myLayoutsList.some(l => l.id === layoutToSelect.id) ? 'my' : 'shared');
+        }
+      } else if (activeLayouts.length > 0) {
+        // If no saved layout, select the first available layout
+        const firstLayout = myLayoutsList[0] || sharedLayoutsList[0];
+        setSelectedLayout(firstLayout);
+        setActiveTab(myLayoutsList.includes(firstLayout) ? 'my' : 'shared');
+      }
+    } catch (error) {
+      console.error('Error loading layouts:', error);
+    }
+  };
+
+  const handleLayoutSelect = (layout: LayoutItem) => {
+    setSelectedLayout(layout);
+    setCompanyLayout(selectedCompanyId, layout.id, layout.layout_name);
+  };
+
+  const layouts = activeTab === 'my' ? myLayouts : sharedLayouts;
 
   return (
     <Modal
@@ -63,7 +118,7 @@ export function ChangeLayoutDialog({ visible, onClose, onSave }: ChangeLayoutDia
               onPress={() => setActiveTab('my')}
             >
               <Text style={[styles.tabText, activeTab === 'my' && styles.activeTabText]}>
-                My Layouts
+                My Layouts ({myLayouts.length})
               </Text>
             </TouchableOpacity>
             <TouchableOpacity 
@@ -71,7 +126,7 @@ export function ChangeLayoutDialog({ visible, onClose, onSave }: ChangeLayoutDia
               onPress={() => setActiveTab('shared')}
             >
               <Text style={[styles.tabText, activeTab === 'shared' && styles.activeTabText]}>
-                Shared Layouts
+                Shared Layouts ({sharedLayouts.length})
               </Text>
             </TouchableOpacity>
           </View>
@@ -79,15 +134,15 @@ export function ChangeLayoutDialog({ visible, onClose, onSave }: ChangeLayoutDia
           <View style={styles.layoutList}>
             {layouts.map((layout) => (
               <TouchableOpacity 
-                key={layout}
+                key={layout.id}
                 style={[
                   styles.layoutItem,
-                  selectedLayout === layout && styles.selectedLayout
+                  selectedLayout?.id === layout.id && styles.selectedLayout
                 ]}
-                onPress={() => setSelectedLayout(layout)}
+                onPress={() => handleLayoutSelect(layout)}
               >
-                <Text style={styles.layoutName}>{layout}</Text>
-                {selectedLayout === layout && (
+                <Text style={styles.layoutName}>{layout.layout_name}</Text>
+                {selectedLayout?.id === layout.id && (
                   <MaterialIcons name="check-circle" size={24} color={Colors.primary} />
                 )}
               </TouchableOpacity>

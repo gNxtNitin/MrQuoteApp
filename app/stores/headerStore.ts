@@ -7,10 +7,12 @@ interface HeaderState {
   lastSelectedCompany: number | null;
   showSwitcher: boolean;
   companies: number[];
+  companyLayouts: Record<number, { layoutId: number; layoutName: string }>;
   setSelectedCompany: (id: number) => void;
   setLastSelectedCompany: (id: number) => void;
   setShowSwitcher: (show: boolean) => void;
   setCompanies: (companies: number[]) => void;
+  setCompanyLayout: (companyId: number, layoutId: number, layoutName: string) => void;
   clearCompanyState: () => void;
 }
 
@@ -19,6 +21,7 @@ const initialState = {
   lastSelectedCompany: null,
   showSwitcher: false,
   companies: [],
+  companyLayouts: {},
 };
 
 export const useHeaderStore = create<HeaderState>()(
@@ -29,22 +32,18 @@ export const useHeaderStore = create<HeaderState>()(
       setLastSelectedCompany: (id) => set({ lastSelectedCompany: id }),
       setShowSwitcher: (show) => set({ showSwitcher: show }),
       setCompanies: (companies) => set({ companies }),
+      setCompanyLayout: (companyId, layoutId, layoutName) => 
+        set((state) => ({
+          companyLayouts: {
+            ...state.companyLayouts,
+            [companyId]: { layoutId, layoutName }
+          }
+        })),
       clearCompanyState: () => set(initialState),
     }),
     {
       name: 'header-storage',
-      storage: createJSONStorage(() => ({
-        getItem: async (name: string) => {
-          const value = await AsyncStorage.getItem(name);
-          return value ? JSON.parse(value) : null;
-        },
-        setItem: async (name: string, value: any) => {
-          await AsyncStorage.setItem(name, JSON.stringify(value));
-        },
-        removeItem: async (name: string) => {
-          await AsyncStorage.removeItem(name);
-        },
-      })),
+      storage: createJSONStorage(() => AsyncStorage),
     }
   )
 ); 

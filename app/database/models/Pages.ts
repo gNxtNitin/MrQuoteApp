@@ -75,6 +75,7 @@ export const Pages = {
 
     try {
       await statement.executeAsync(values);
+      console.log('Pages inserted');
     } finally {
       await statement.finalizeAsync();
     }

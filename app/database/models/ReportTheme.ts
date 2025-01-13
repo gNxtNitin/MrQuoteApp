@@ -69,6 +69,7 @@ export const ReportTheme = {
 
     try {
       await statement.executeAsync(values);
+      console.log('ReportTheme inserted');
     } finally {
       await statement.finalizeAsync();
     }

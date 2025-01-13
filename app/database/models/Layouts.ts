@@ -82,6 +82,7 @@ export const Layouts = {
 
     try {
       await statement.executeAsync(values);
+      console.log('Layouts inserted');
     } finally {
       await statement.finalizeAsync();
     }

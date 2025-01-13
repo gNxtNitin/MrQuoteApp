@@ -97,6 +97,7 @@ export const RoofMeasurementToken = {
 
     try {
       await statement.executeAsync(values);
+      console.log('RoofMeasurementToken inserted');
     } finally {
       await statement.finalizeAsync();
     }
