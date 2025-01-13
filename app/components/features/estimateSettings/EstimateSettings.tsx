@@ -59,7 +59,7 @@ export function EstimateSettingsScreen({
         <MaterialIcons name="arrow-back" size={20} color={theme.primary} />
         <Text style={[styles.backText, { color: theme.primary }]}>Back</Text>
       </Pressable>
-      <ScrollView style={{flex:1}}>
+      <ScrollView style={{ flex: 1 }}>
         <View style={styles.container}>
           <View style={styles.tabBarContainer}>
             <Animated.View
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   tabBarContainer: {
     position: "relative",
     width: "100%",
-    marginBottom:10,
+    marginBottom: 10,
   },
   tabBar: {
     flexDirection: "row",
@@ -148,22 +148,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    width: "98%",
-    margin: 5,
-    borderRadius:10,
-    padding: 5,
-    paddingVertical: 10,
+    width: "100%",
+    padding: 10,
     backgroundColor: Colors.white,
     alignSelf: "center",
-    shadowColor: Colors.primary,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-
-    elevation: 5,
   },
   backText: { fontSize: 16, color: Colors.primary, fontWeight: "600" },
 });
