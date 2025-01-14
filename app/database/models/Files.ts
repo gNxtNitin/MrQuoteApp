@@ -102,7 +102,7 @@ export const Files = {
 
     try {
       const result = await statement.executeAsync([id]);
-      return await result.getFirstAsync() || null;
+      return await result.getFirstAsync() as FilesData | null;
     } finally {
       await statement.finalizeAsync();
     }

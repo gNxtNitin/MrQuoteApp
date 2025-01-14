@@ -267,7 +267,6 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                         sales_person: "Demo User",
                         email: "user@democompany.com",
                         phone: "0987654321",
-                        estimate_created_date: new Date().toISOString(),
                         estimate_revenue: "5000",
                         next_call_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days from now
                         image_url: "house-1.jpg",
@@ -302,7 +301,6 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                         sales_person: "Demo User",
                         email: "user@democompany.com",
                         phone: "0987654321",
-                        estimate_created_date: new Date().toISOString(),
                         estimate_revenue: "2500",
                         next_call_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days from now
                         image_url: "house-2.jpg",
@@ -337,7 +335,6 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                         sales_person: "Demo User",
                         email: "user@democompany.com",
                         phone: "0987654321",
-                        estimate_created_date: new Date().toISOString(),
                         estimate_revenue: "2500",
                         next_call_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days from now
                         image_url: "house-2.jpg",
@@ -372,7 +369,6 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                         sales_person: "Demo User",
                         email: "user@democompany.com",
                         phone: "0987654321",
-                        estimate_created_date: new Date().toISOString(),
                         estimate_revenue: "2500",
                         next_call_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days from now
                         image_url: "house-2.jpg",
@@ -407,7 +403,6 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                         sales_person: "Demo User",
                         email: "user@democompany.com",
                         phone: "0987654321",
-                        estimate_created_date: new Date().toISOString(),
                         estimate_revenue: "2500",
                         next_call_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days from now
                         image_url: "house-2.jpg",
@@ -421,26 +416,26 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                         modified_date: new Date().toISOString()
                     });
 
-                    // Add sample report themes
-                    await ReportTheme.insert({
-                        id: 1,
-                        theme_name: 'Default Theme',
-                        description: 'Default report theme',
-                        created_by: 1,
-                        modified_by: 1,
-                        created_date: new Date().toISOString(),
-                        modified_date: new Date().toISOString()
-                    });
+                    // // Add sample report themes
+                    // await ReportTheme.insert({
+                    //     id: 1,
+                    //     theme_name: 'Default Theme',
+                    //     description: 'Default report theme',
+                    //     created_by: 1,
+                    //     modified_by: 1,
+                    //     created_date: new Date().toISOString(),
+                    //     modified_date: new Date().toISOString()
+                    // });
 
-                    await ReportTheme.insert({
-                        id: 2,
-                        theme_name: 'Professional Theme',
-                        description: 'Professional looking report theme',
-                        created_by: 1,
-                        modified_by: 1,
-                        created_date: new Date().toISOString(),
-                        modified_date: new Date().toISOString()
-                    });
+                    // await ReportTheme.insert({
+                    //     id: 2,
+                    //     theme_name: 'Professional Theme',
+                    //     description: 'Professional looking report theme',
+                    //     created_by: 1,
+                    //     modified_by: 1,
+                    //     created_date: new Date().toISOString(),
+                    //     modified_date: new Date().toISOString()
+                    // });
 
                     // Add sample menu items
                     // await Menu.insert({
@@ -505,78 +500,196 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                     });
 
                     // Add sample roofing accessories data
-                    await RoofingAccessories.insert({
-                        id: 1,
-                        estimate_id: 1,
-                        vents_standard: '5',
-                        vents_turbine: '2',
-                        vents_phoenix: '1',
-                        exhaust_cap: '3',
-                        pipe_jacks: '4',
-                        bin_disposal_roofing: '1',
-                        skylights: '2',
-                        skylight_flashing_kits: '2',
-                        chimney_flashing_kits_average: '1',
-                        chimney_flashing_kits_large: '0',
-                        minimum_charge: 500,
-                        labor_hours: new Date().toISOString(),
-                        modified_by: 1
-                    });
+                    // await RoofingAccessories.insert({
+                    //     id: 1,
+                    //     estimate_id: 1,
+                    //     vents_standard: '5',
+                    //     vents_turbine: '2',
+                    //     vents_phoenix: '1',
+                    //     exhaust_cap: '3',
+                    //     pipe_jacks: '4',
+                    //     bin_disposal_roofing: '1',
+                    //     skylights: '2',
+                    //     skylight_flashing_kits: '2',
+                    //     chimney_flashing_kits_average: '1',
+                    //     chimney_flashing_kits_large: '0',
+                    //     minimum_charge: 500,
+                    //     labor_hours: new Date().toISOString(),
+                    //     modified_by: 1
+                    // });
 
-                    // Add sample roof pitch data
-                    await RoofPitch.insert({
-                        id: 1,
-                        estimate_id: 1,
-                        eight_by_twelve: '25',
-                        seven_by_twelve: '20',
-                        nine_by_twelve: '15',
-                        ten_by_twelve: '10',
-                        eleven_by_twelve: '5',
-                        twelve_by_twelve: '25'
-                    });
+                    // // Add sample roof pitch data
+                    // await RoofPitch.insert({
+                    //     id: 1,
+                    //     estimate_id: 1,
+                    //     eight_by_twelve: '25',
+                    //     seven_by_twelve: '20',
+                    //     nine_by_twelve: '15',
+                    //     ten_by_twelve: '10',
+                    //     eleven_by_twelve: '5',
+                    //     twelve_by_twelve: '25'
+                    // });
 
                     // Add sample residential metals data
-                    await ResidentialMetals.insert({
-                        id: 1,
-                        estimate_id: 1,
-                        gutters: 150,
-                        downspouts: '8'
-                    });
+                    // await ResidentialMetals.insert({
+                    //     id: 1,
+                    //     estimate_id: 1,
+                    //     gutters: 150,
+                    //     downspouts: '8'
+                    // });
 
                     // Add sample wall measurement data
-                    await WallMeasurementToken.insert({
-                        id: 1,
-                        estimate_id: 1,
-                        total_wall_area: 1800,
-                        north_wall_area: '500',
-                        east_wall_area: '400',
-                        south_wall_area: '500',
-                        west_wall_area: '400',
-                        bin_disposal_siding: '1'
-                    });
+                    // await WallMeasurementToken.insert({
+                    //     id: 1,
+                    //     estimate_id: 1,
+                    //     total_wall_area: 1800,
+                    //     north_wall_area: '500',
+                    //     east_wall_area: '400',
+                    //     south_wall_area: '500',
+                    //     west_wall_area: '400',
+                    //     bin_disposal_siding: '1'
+                    // });
 
                     // Add sample report data
-                    await Report.insert({
-                        id: 1,
-                        estimate_id: 1,
-                        report_name: 'Initial Report',
-                        description: 'First assessment report',
-                        report_status: 'DRAFT',
-                        is_active: true,
-                        created_by: 1,
-                        modified_by: 1
-                    });
+                    // await Report.insert({
+                    //     id: 1,
+                    //     estimate_id: 1,
+                    //     report_name: 'Initial Report',
+                    //     description: 'First assessment report',
+                    //     report_status: 'DRAFT',
+                    //     is_active: true,
+                    //     created_by: 1,
+                    //     modified_by: 1
+                    // });
 
                     // Add sample pages data
                     await Pages.insert({
                         id: 1,
-                        page_name: 'Title Page',
-                        description: 'Default title page template',
+                        page_name: 'Sample Page',
+                        description: 'Sample Pages for Layout',
                         is_template: true,
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1,
+                        created_date: new Date().toISOString(),
+                        modified_date: new Date().toISOString()
+                    });
+
+                    // Add sample title page content
+                    await TitlePageContent.insert({
+                        id: 1,
+                        page_id: 1,
+                        title_name: 'Title',
+                        report_type: 'Roofing System',
+                        primary_image: null,
+                        certification_logo: null,
+                        first_name: null,
+                        last_name: null,
+                        company_name: null,
+                        address: null,
+                        city: null,
+                        state: null,
+                        zip_code: null,
+                        created_by: 1,
+                        created_date: new Date().toISOString(),
+                        modified_by: 1,
+                        modified_date: new Date().toISOString()
+                    });
+
+                    // Add sample introduction page content
+                    await IntroductionPageContent.insert({
+                        id: 1,
+                        page_id: 1,
+                        introduction_name: 'Introduction',
+                        introduction_content: 'Welcome to our detailed project assessment report. This document provides a comprehensive overview of our findings and recommendations.',
                         is_active: true,
                         created_by: 1,
                         modified_by: 1
                     });
+
+                    //TODO: Inspection Page
+                    // Add sample inspection page content
+                    await InspectionPageContent.insert({
+                        id: 1,
+                        page_id: 1,
+                        inspection_title: 'Property Inspection Report',
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1,
+                        created_date: new Date().toISOString(),
+                        modified_date: new Date().toISOString()
+                    });
+
+                     // Add sample section styles
+                     await SectionStyle.insert({
+                        id: 1,
+                        style_name: 'Default Style',
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1,
+                        created_date: new Date().toISOString(),
+                        modified_date: new Date().toISOString()
+                    });
+
+                    await SectionStyle.insert({
+                        id: 2,
+                        style_name: 'Modern Style',
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1,
+                        created_date: new Date().toISOString(),
+                        modified_date: new Date().toISOString()
+                    });
+
+                    await SectionStyle.insert({
+                        id: 3,
+                        style_name: 'Classic Style',
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1,
+                        created_date: new Date().toISOString(),
+                        modified_date: new Date().toISOString()
+                    });
+
+                    // Add sample inspection page sections
+                    await InspectionPageSection.insert({
+                        id: 1,
+                        inspection_page_id: 1,
+                        section_style_id: 1,
+                        section_title: 'Roof Inspection',
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    await InspectionPageSection.insert({
+                        id: 2,
+                        inspection_page_id: 1,
+                        section_style_id: 2,
+                        section_title: 'Gutter Assessment',
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    // Add sample inspection section items
+                    await InspectionSectionItems.insert({
+                        id: 1,
+                        inspection_section_id: 1,
+                        inspection_file: 'roof-damage.jpg',
+                        inspection_content: 'Significant wear observed on the north-facing shingles. Multiple shingles showing signs of deterioration.',
+                        is_active: true,
+                        created_by: 1,
+                        modified_by: 1
+                    });
+
+                    //TODO: Layout Pages (Canvas)
+                    
+                    //TODO: Quote Page
+
+                    //TODO: Authorization Page
+
+                    //TODO: Terms and Conditions Page
 
                     // Add sample layouts data
                     await Layouts.insert({
@@ -587,8 +700,11 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                         description: 'Standard report layout',
                         is_shared: true,
                         is_active: true,
+                        is_default: true,
                         created_by: 1,
-                        modified_by: 1
+                        modified_by: 1,
+                        created_date: new Date().toISOString(),
+                        modified_date: new Date().toISOString()
                     });
 
                     await Layouts.insert({
@@ -599,6 +715,7 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                         description: 'Standard report layout 2',
                         is_shared: true,
                         is_active: true,
+                        is_default: false,
                         created_by: 1,
                         modified_by: 1
                     });
@@ -611,6 +728,7 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                         description: 'Standard report layout 3',
                         is_shared: true,
                         is_active: true,
+                        is_default: false,
                         created_by: 1,
                         modified_by: 1
                     });
@@ -623,6 +741,7 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                         description: 'Standard report layout 4',
                         is_shared: true,
                         is_active: true,
+                        is_default: false,
                         created_by: 1,
                         modified_by: 1
                     });
@@ -635,6 +754,7 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                         description: 'Standard report layout local 1',
                         is_shared: false,
                         is_active: true,
+                        is_default: false,
                         created_by: 1,
                         modified_by: 1
                     });
@@ -647,6 +767,7 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                         description: 'Standard report layout local 2',
                         is_shared: false,
                         is_active: true,
+                        is_default: false,
                         created_by: 1,
                         modified_by: 1
                     });
@@ -659,6 +780,7 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                         description: 'Standard report layout local 3',
                         is_shared: false,
                         is_active: true,
+                        is_default: false,
                         created_by: 1,
                         modified_by: 1
                     }); 
@@ -671,6 +793,7 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                         description: 'Standard report layout local 4',
                         is_shared: false,
                         is_active: true,
+                        is_default: false,
                         created_by: 1,
                         modified_by: 1
                     });
@@ -683,6 +806,7 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                         description: 'Standard report layout local 5',
                         is_shared: false,
                         is_active: true,
+                        is_default: true,
                         created_by: 1,
                         modified_by: 1
                     });
@@ -695,6 +819,7 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                         description: 'Standard report layout 6',
                         is_shared: true,
                         is_active: true,
+                        is_default: false,
                         created_by: 1,
                         modified_by: 1
                     });
@@ -786,45 +911,6 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                         id: 10,
                         page_id: 1,
                         layout_id: 10,
-                        is_active: true,
-                        created_by: 1,
-                        modified_by: 1
-                    });
-
-                    // Add sample title page content
-                    await TitlePageContent.insert({
-                        id: 1,
-                        page_id: 1,
-                        title_name: 'Project Report',
-                        report_type: 'Assessment',
-                        primary_image: 'default.jpg',
-                        certification_logo: 'cert.png',
-                        first_name: 'John',
-                        last_name: 'Doe',
-                        company_name: 'Demo Company',
-                        address: '123 Main St',
-                        city: 'San Diego',
-                        state: 'CA',
-                        zip_code: '92101',
-                        created_by: 1,
-                        modified_by: 1
-                    });
-
-                    // Add sample introduction page content
-                    await IntroductionPageContent.insert({
-                        id: 1,
-                        page_id: 1,
-                        introduction_content: 'Welcome to our detailed project assessment report. This document provides a comprehensive overview of our findings and recommendations.',
-                        is_active: true,
-                        created_by: 1,
-                        modified_by: 1
-                    });
-
-                    // Add sample inspection page content
-                    await InspectionPageContent.insert({
-                        id: 1,
-                        page_id: 1,
-                        inspection_title: 'Property Inspection Report',
                         is_active: true,
                         created_by: 1,
                         modified_by: 1
@@ -960,73 +1046,6 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                         tax_rate: 8.50,
                         is_required: true,
                         order_number: 1,
-                        is_active: true,
-                        created_by: 1,
-                        modified_by: 1
-                    });
-
-                    // Add sample section styles
-                    await SectionStyle.insert({
-                        id: 1,
-                        style_name: 'Default Style',
-                        is_active: true,
-                        created_by: 1,
-                        modified_by: 1
-                    });
-
-                    await SectionStyle.insert({
-                        id: 2,
-                        style_name: 'Modern Style',
-                        is_active: true,
-                        created_by: 1,
-                        modified_by: 1
-                    });
-
-                    await SectionStyle.insert({
-                        id: 3,
-                        style_name: 'Classic Style',
-                        is_active: true,
-                        created_by: 1,
-                        modified_by: 1
-                    });
-
-                    // Add sample inspection page sections
-                    await InspectionPageSection.insert({
-                        id: 1,
-                        inspection_page_id: 1,
-                        section_style_id: 1,
-                        section_title: 'Roof Inspection',
-                        is_active: true,
-                        created_by: 1,
-                        modified_by: 1
-                    });
-
-                    await InspectionPageSection.insert({
-                        id: 2,
-                        inspection_page_id: 1,
-                        section_style_id: 2,
-                        section_title: 'Gutter Assessment',
-                        is_active: true,
-                        created_by: 1,
-                        modified_by: 1
-                    });
-
-                    // Add sample inspection section items
-                    await InspectionSectionItems.insert({
-                        id: 1,
-                        inspection_section_id: 1,
-                        inspection_file: 'roof-damage.jpg',
-                        inspection_content: 'Significant wear observed on the north-facing shingles. Multiple shingles showing signs of deterioration.',
-                        is_active: true,
-                        created_by: 1,
-                        modified_by: 1
-                    });
-
-                    await InspectionSectionItems.insert({
-                        id: 2,
-                        inspection_section_id: 2,
-                        inspection_file: 'gutter-issue.jpg',
-                        inspection_content: 'Gutters showing signs of rust and improper drainage. Recommend replacement in affected areas.',
                         is_active: true,
                         created_by: 1,
                         modified_by: 1

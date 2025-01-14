@@ -10,6 +10,7 @@ interface ColumnDefinition {
 interface IntroductionPageContentColumns {
   id: ColumnDefinition;
   page_id: ColumnDefinition;
+  introduction_name: ColumnDefinition;
   introduction_content: ColumnDefinition;
   is_active: ColumnDefinition;
   created_by: ColumnDefinition;
@@ -21,7 +22,8 @@ interface IntroductionPageContentColumns {
 export interface IntroductionPageContentData {
   id?: number;
   page_id?: number;
-  introduction_content?: string;
+  introduction_name?: string;
+  introduction_content?: string | null;
   is_active?: boolean;
   created_by?: number;
   created_date?: string;
@@ -34,7 +36,8 @@ export const IntroductionPageContent = {
   columns: {
     id: { type: 'INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE' },
     page_id: { type: 'INTEGER' },
-    introduction_content: { type: 'TEXT' },
+    introduction_name: { type: 'TEXT' },
+    introduction_content: { type: 'TEXT NULL' },
     is_active: { type: 'BOOLEAN' },
     created_by: { type: 'INTEGER' },
     created_date: { type: 'DATETIME DEFAULT CURRENT_TIMESTAMP' },

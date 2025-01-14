@@ -13,6 +13,7 @@ interface LayoutsColumns {
   layout_name: ColumnDefinition;
   layout_type: ColumnDefinition;
   description: ColumnDefinition;
+  is_default: ColumnDefinition;
   is_shared: ColumnDefinition;
   is_active: ColumnDefinition;
   created_by: ColumnDefinition;
@@ -27,6 +28,7 @@ export interface LayoutsData {
   layout_name?: string;
   layout_type?: 'Report' | 'Order';
   description?: string;
+  is_default?: boolean;
   is_shared?: boolean;
   is_active?: boolean;
   created_by?: number;
@@ -43,6 +45,7 @@ export const Layouts = {
     layout_name: { type: 'TEXT' },
     layout_type: { type: "TEXT CHECK(layout_type IN ('Report', 'Order'))" },
     description: { type: 'TEXT' },
+    is_default: { type: 'BOOLEAN' },
     is_shared: { type: 'BOOLEAN' },
     is_active: { type: 'BOOLEAN' },
     created_by: { type: 'INTEGER' },

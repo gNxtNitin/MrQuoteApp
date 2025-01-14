@@ -34,7 +34,6 @@ export interface EstimateDetailData {
   estimate_id?: number;
   estimate_number?: number;
   sales_person?: string;
-  estimate_created_date?: string;
   estimate_revenue?: string;
   email?: string;
   phone?: string;
@@ -57,7 +56,6 @@ export const EstimateDetail = {
     estimate_id: { type: 'INTEGER' },
     estimate_number: { type: 'INTEGER' },
     sales_person: { type: 'TEXT' },
-    estimate_created_date: { type: 'DATETIME DEFAULT CURRENT_TIMESTAMP' },
     estimate_revenue: { type: 'TEXT' },
     email: { type: 'TEXT' },
     phone: { type: 'TEXT' },
@@ -92,52 +90,29 @@ export const EstimateDetail = {
     }
   },
 
-//   createTable: async () => {
-//     const query = `
-//       CREATE TABLE IF NOT EXISTS ${EstimateDetail.tableName} (
-//         id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-//         estimate_id INTEGER,
-//         estimate_number INTEGER,
-//         sales_person TEXT,
-//         estimate_created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-//         estimate_revenue TEXT,
-//         next_call_date DATETIME,
-//         image_url TEXT,
-//         address TEXT,
-//         state TEXT,
-//         zip_code TEXT,
-//         is_active BOOLEAN,
-//         created_by INTEGER,
-//         created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-//         modified_by INTEGER,
-//         modified_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-//         FOREIGN KEY (estimate_id) REFERENCES estimate(id) ON DELETE CASCADE ON UPDATE CASCADE,
-//         FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL ON UPDATE CASCADE,
-//         FOREIGN KEY (modified_by) REFERENCES users(id) ON DELETE SET NULL ON UPDATE CASCADE
-//       );
-//     `;
-
-//     try {
-//       await db.execAsync(query);
-//     } catch (error) {
-//       console.error('Error creating estimate details table:', error);
-//       throw error;
-//     }
-//   },
-
   insert: async (estimateDetailData: EstimateDetailData) => {
-    const keys = Object.keys(estimateDetailData);
-    const values = Object.values(estimateDetailData);
-    const placeholders = values.map(() => '?').join(',');
-
-    const statement = await db.prepareAsync(
-      `INSERT INTO ${EstimateDetail.tableName} (${keys.join(',')}) VALUES (${placeholders})`
-    );
-
+    const db = openDatabase();
+    
     try {
-      await statement.executeAsync(values);
-    } finally {
-      await statement.finalizeAsync();
+    //   await db.withTransactionAsync(async () => {
+        const keys = Object.keys(estimateDetailData);
+        const values = Object.values(estimateDetailData);
+        const placeholders = values.map(() => '?').join(',');
+
+        const statement = await db.prepareAsync(
+          `INSERT INTO ${EstimateDetail.tableName} (${keys.join(',')}) VALUES (${placeholders})`
+        );
+
+        try {
+          await statement.executeAsync(values);
+          console.log('Estimate detail inserted');
+        } finally {
+          await statement.finalizeAsync();
+        }
+    //   });
+    } catch (error) {
+      console.error('Error in EstimateDetail insert:', error);
+      throw error;
     }
   },
 
@@ -155,6 +130,7 @@ export const EstimateDetail = {
   },
 
   getByEstimateId: async (estimateId: number): Promise<EstimateDetailData | null> => {
+    EstimateDetail.logAllEstimateDetails();
     const statement = await db.prepareAsync(
       `SELECT * FROM ${EstimateDetail.tableName} 
        WHERE estimate_id = ? 
@@ -202,6 +178,22 @@ export const EstimateDetail = {
 
     try {
       await statement.executeAsync([id]);
+    } finally {
+      await statement.finalizeAsync();
+    }
+  },
+
+  logAllEstimateDetails: async () => {
+    const statement = await db.prepareAsync(
+      `SELECT * FROM ${EstimateDetail.tableName}`
+    );
+
+    try {
+      const result = await statement.executeAsync();
+      const details = await result.getAllAsync();
+      console.log('All Estimate Details:', details);
+    } catch (error) {
+      console.error('Error fetching all estimate details:', error);
     } finally {
       await statement.finalizeAsync();
     }

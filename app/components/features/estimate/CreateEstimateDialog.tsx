@@ -4,7 +4,7 @@ import { Card } from '@/app/components/common/Card';
 import { useEffect, useState } from 'react';
 import { useTheme } from '../../providers/ThemeProvider';
 import { Estimate } from '@/app/database/models/Estimate';
-import { EstimateDetail } from '@/app/database/models/EstimateDetail';
+import { EstimateDetail, EstimateDetailData } from '@/app/database/models/EstimateDetail';
 import { useAuth } from '@/app/hooks/useAuth';
 
 interface CreateEstimateDialogProps {
@@ -150,19 +150,23 @@ export function CreateEstimateDialog({ visible, onClose, onSave, companyId }: Cr
         modified_by: user.id
       };
 
-      await Estimate.insert(estimateData);
-      const { id: estimateId } = await Estimate.getLastInsertedId();
+      const estimateId = await Estimate.insert(estimateData);
+      // const estimateId: number = await Estimate.getLastInsertedId();
 
       if (!estimateId) {
         throw new Error('Failed to get estimate ID');
       }
 
       // Create estimate detail record
-      const estimateDetailData = {
+      const estimateDetailData: EstimateDetailData = {
         estimate_id: estimateId,
-        sales_person: `${user.first_name || ''} ${user.last_name || ''}`.trim(),
+        estimate_number: estimateId,
+        sales_person: `${formData.firstName || ''} ${formData.lastName || ''}`.trim(),
+        estimate_revenue: '0',
         email: formData.email,
         phone: formData.phoneNumber,
+        next_call_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days from now
+        image_url: 'house-1.jpg',
         address: `${formData.addressLine1}${formData.addressLine2 ? ` ${formData.addressLine2}` : ''}, ${formData.city}`,
         state: formData.state,
         zip_code: formData.zipCode,
@@ -170,6 +174,7 @@ export function CreateEstimateDialog({ visible, onClose, onSave, companyId }: Cr
         created_by: user.id,
         modified_by: user.id
       };
+      console.log('Estimate detail data:', estimateDetailData);
 
       await EstimateDetail.insert(estimateDetailData);
 

@@ -3,11 +3,8 @@ import { openDatabase } from '../../services/database/init';
 import * as SQLite from 'expo-sqlite';
 import { Report } from './Report';
 import { Pages } from './Pages';
-import { Layouts, LayoutsData } from './Layouts';
-import { LayoutPages, LayoutPagesData } from './LayoutPages';
-import { TitlePageContent, TitlePageContentData } from './TitlePageContent';
-import { IntroductionPageContent, IntroductionPageContentData } from './IntroductionPageContent';
-import { ReportPages } from './ReportPages';
+import { TitlePageContent } from './TitlePageContent';
+import { IntroductionPageContent } from './IntroductionPageContent';
 
 const db = openDatabase();
 
@@ -41,114 +38,6 @@ export interface EstimateData {
   created_date?: string;
   modified_by?: number;
   modified_date?: string;
-}
-
-export async function duplicateDefaultLayout(
-  companyId: number,
-  estimateName: string,
-  userId: number,
-  layout:LayoutsData | null,
-  db: SQLite.SQLiteDatabase
-): Promise<number | null> {
-  try {
-
-    if (!layout?.id) {
-      console.log('No default layout found for company:', companyId);
-      return null;
-    }
-
-    // Create new page
-    await Pages.insert({
-      page_name: estimateName,
-      description: `Page for estimate ${estimateName}`,
-      is_template: false,
-      is_active: true,
-      created_by: userId,
-      modified_by: userId
-    });
-
-    // Get the new page ID
-    const newPageResult = await db.getFirstAsync<{ id: number }>(
-      'SELECT last_insert_rowid() as id'
-    );
-    const newPageId = newPageResult?.id;
-    console.log('New page ID:', newPageId);
-
-    if (!newPageId) {
-      console.log('Failed to get new page ID');
-      return null;
-    }
-
-    // Find layout pages for default layout
-    const layoutPage = await db.getFirstAsync<LayoutPagesData>(
-      `SELECT * FROM ${LayoutPages.tableName} WHERE layout_id = ?`,
-      [layout.id]
-    );
-    console.log('Layout page:', layoutPage);
-    // for (const layoutPage of layoutPages) {
-      if (!layoutPage?.page_id) {
-        console.log('Layout page has no page_id:', layoutPage);
-        return null;
-      }
-
-      // Find and duplicate title page content
-      const titlePage = await db.getFirstAsync<TitlePageContentData>(
-        `SELECT * FROM ${TitlePageContent.tableName} WHERE page_id = ?`,
-        [layoutPage.page_id]
-      );
-      console.log('Title page:', titlePage);
-      if (titlePage) {
-        await TitlePageContent.insert({
-          id: undefined,
-          page_id: newPageId,
-          report_type: titlePage.report_type,
-          title_name: titlePage.title_name,
-          date: titlePage.date,
-          primary_image: titlePage.primary_image,
-          certification_logo: titlePage.certification_logo,
-          first_name: titlePage.first_name,
-          last_name: titlePage.last_name,
-          company_name: titlePage.company_name,
-          address: titlePage.address,
-          city: titlePage.city,
-          state: titlePage.state,
-          zip_code: titlePage.zip_code,
-          created_by: userId,
-          modified_by: userId,
-          created_date: new Date().toISOString(),
-          modified_date: new Date().toISOString()
-        });
-        console.log('Title page content duplicated');
-      }
-
-      // Find and duplicate introduction page content
-      const introPage = await db.getFirstAsync<IntroductionPageContentData>(
-        `SELECT * FROM ${IntroductionPageContent.tableName} WHERE page_id = ?`,
-        [layoutPage.page_id]
-      );
-      console.log('Introduction page:', introPage);
-
-      if (introPage) {
-        await IntroductionPageContent.insert({
-          id: undefined,
-          page_id: newPageId,
-          introduction_name: introPage.introduction_name,
-          introduction_content: introPage.introduction_content,
-          is_active: introPage.is_active,
-          created_by: userId,
-          modified_by: userId,
-          created_date: new Date().toISOString(),
-          modified_date: new Date().toISOString()
-        });
-        console.log('Introduction page content duplicated');
-      }
-    // }
-
-    return newPageId;
-  } catch (error) {
-    console.error('Error in duplicateDefaultLayout:', error);
-    throw error;
-  }
 }
 
 export const Estimate = {
@@ -186,8 +75,35 @@ export const Estimate = {
       throw error;
     }
   },
-  
-  insert: async (estimateData: EstimateData):Promise<number | null> => {
+
+//   createTable: async () => {
+//     const query = `
+//       CREATE TABLE IF NOT EXISTS ${Estimate.tableName} (
+//         id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+//         company_id INTEGER,
+//         estimate_name TEXT,
+//         description TEXT,
+//         estimate_status TEXT,
+//         is_active BOOLEAN,
+//         created_by INTEGER,
+//         created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+//         modified_by INTEGER,
+//         modified_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+//         FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE ON UPDATE CASCADE,
+//         FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL ON UPDATE CASCADE,
+//         FOREIGN KEY (modified_by) REFERENCES users(id) ON DELETE SET NULL ON UPDATE CASCADE
+//       );
+//     `;
+
+//     try {
+//       await db.execAsync(query);
+//     } catch (error) {
+//       console.error('Error creating estimate table:', error);
+//       throw error;
+//     }
+//   },
+
+  insert: async (estimateData: EstimateData) => {
     const db = openDatabase();
     
     try {
@@ -208,20 +124,13 @@ export const Estimate = {
         const result = await db.getFirstAsync<{ id: number }>(
           'SELECT last_insert_rowid() as id'
         );
-        const estimateId = result!.id;
+        const estimateId = result?.id;
         console.log('Estimate ID:', estimateId);
 
-        if (estimateId && estimateData.company_id) {
-                const defaultLayout: LayoutsData | null = await db.getFirstAsync<LayoutsData>(
-                    `SELECT * FROM ${Layouts.tableName} 
-                    WHERE company_id = ? AND is_default = true AND is_active = true 
-                    LIMIT 1`,
-                    [estimateData.company_id]
-                );
+        if (estimateId) {
           // Create corresponding Report
           await Report.insert({
             estimate_id: estimateId,
-            layout_id: defaultLayout?.id,
             report_name: estimateData.estimate_name,
             description: estimateData.description,
             report_status: 'Open',
@@ -230,39 +139,67 @@ export const Estimate = {
             modified_by: estimateData.modified_by
           });
           console.log('Report created successfully');
-          const reportId = await db.getFirstAsync<{ id: number }>(
+
+          // Create Pages
+          const pageResult = await Pages.insert({
+            page_name: estimateData.estimate_name,
+            description: `Default page for estimate ${estimateData.estimate_name}`,
+            is_template: false,
+            is_active: true,
+            created_by: estimateData.created_by,
+            created_date: new Date().toISOString(),
+            modified_by: estimateData.modified_by,
+            modified_date: new Date().toISOString()
+          });
+          console.log('Page created successfully');
+
+          // Get the inserted page ID
+          const pageId = await db.getFirstAsync<{ id: number }>(
             'SELECT last_insert_rowid() as id'
           );
-          // Duplicate layout and create pages
-          if (estimateData.estimate_name && estimateData.created_by) {
-            
-            const newPageId = await duplicateDefaultLayout(
-              estimateData.company_id,
-              estimateData.estimate_name,
-              estimateData.created_by,
-              defaultLayout,
-              db
-            );
-            console.log('New page created with ID:', newPageId);
-            if (newPageId) {
-              console.log('Report ID:', reportId);
-              await ReportPages.insert({
-                report_id: reportId?.id,
-                page_id: newPageId,
-                is_active: true,
-                created_by: estimateData.created_by,
-                modified_by: estimateData.modified_by
-              });
-              console.log('Report page created successfully');
-            }
+
+          if (pageId?.id) {
+            console.log('Page created successfully with ID:', pageId.id);
+
+            // Create Title Page Content
+            await TitlePageContent.insert({
+              page_id: pageId.id,
+              title_name: 'Title',
+              report_type: 'Estimate',
+              date: new Date().toISOString(),
+              primary_image: null,
+              certification_logo: null,
+              first_name: null,
+              last_name: null,
+              company_name: null,
+              address: null,
+              city: null,
+              state: null,
+              zip_code: null,
+              created_by: estimateData.created_by,
+              modified_by: estimateData.modified_by
+            });
+            console.log('Title page content created successfully');
+
+            // Create Introduction Page Content
+            await IntroductionPageContent.insert({
+              page_id: pageId.id,
+              introduction_name: 'Introduction',
+              introduction_content: null,
+              is_active: true,
+              created_by: estimateData.created_by,
+              created_date: new Date().toISOString(),
+              modified_by: estimateData.modified_by,
+              modified_date: new Date().toISOString()
+            });
+            console.log('Introduction page content created successfully');
           }
         }
-        return estimateId;
       } finally {
         await statement.finalizeAsync();
       }
     } catch (error) {
-      console.error('Error in Estimate insert:', error);
+      console.error('Error in Estimate insert transaction:', error);
       throw error;
     }
   },
@@ -341,13 +278,13 @@ export const Estimate = {
     }
   },
 
-  getLastInsertedId: async (): Promise<number> => {
+  getLastInsertedId: async (): Promise<{ id: number }> => {
     const statement = await db.prepareAsync(
       'SELECT last_insert_rowid() as id FROM estimate'
     );
     try {
       const result = await statement.executeAsync();
-      return await result.getFirstAsync() as number;
+      return await result.getFirstAsync() as { id: number };
     } finally {
       await statement.finalizeAsync();
     }

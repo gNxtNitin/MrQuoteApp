@@ -34,15 +34,15 @@ export interface TitlePageContentData {
   title_name?: string;
   report_type?: string;
   date?: string;
-  primary_image?: string;
-  certification_logo?: string;
-  first_name?: string;
-  last_name?: string;
-  company_name?: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  zip_code?: string;
+  primary_image?: string | null;
+  certification_logo?: string | null;
+  first_name?: string | null;
+  last_name?: string | null;
+  company_name?: string | null;
+  address?: string | null;
+  city?: string | null;
+  state?: string | null;
+  zip_code?: string | null;
   created_by?: number;
   created_date?: string;
   modified_by?: number;
@@ -57,15 +57,15 @@ export const TitlePageContent = {
     title_name: { type: 'TEXT' },
     report_type: { type: 'TEXT' },
     date: { type: 'DATETIME DEFAULT CURRENT_TIMESTAMP' },
-    primary_image: { type: 'TEXT' },
-    certification_logo: { type: 'TEXT' },
-    first_name: { type: 'TEXT' },
-    last_name: { type: 'TEXT' },
-    company_name: { type: 'TEXT' },
-    address: { type: 'TEXT' },
-    city: { type: 'TEXT' },
-    state: { type: 'TEXT' },
-    zip_code: { type: 'TEXT' },
+    primary_image: { type: 'TEXT NULL' },
+    certification_logo: { type: 'TEXT NULL' },
+    first_name: { type: 'TEXT NULL' },
+    last_name: { type: 'TEXT NULL' },
+    company_name: { type: 'TEXT NULL' },
+    address: { type: 'TEXT NULL' },
+    city: { type: 'TEXT NULL' },
+    state: { type: 'TEXT NULL' },
+    zip_code: { type: 'TEXT NULL' },
     created_by: { type: 'INTEGER' },
     created_date: { type: 'DATETIME DEFAULT CURRENT_TIMESTAMP' },
     modified_by: { type: 'INTEGER' },

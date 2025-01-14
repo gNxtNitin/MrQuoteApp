@@ -10,6 +10,7 @@ interface ColumnDefinition {
 interface ReportColumns {
   id: ColumnDefinition;
   estimate_id: ColumnDefinition;
+  layout_id: ColumnDefinition;
   report_name: ColumnDefinition;
   description: ColumnDefinition;
   report_status: ColumnDefinition;
@@ -23,6 +24,7 @@ interface ReportColumns {
 export interface ReportData {
   id?: number;
   estimate_id?: number;
+  layout_id?: number;
   report_name?: string;
   description?: string;
   report_status?: string;
@@ -38,6 +40,7 @@ export const Report = {
   columns: {
     id: { type: 'INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE' },
     estimate_id: { type: 'INTEGER' },
+    layout_id: { type: 'INTEGER' },
     report_name: { type: 'TEXT' },
     description: { type: 'TEXT' },
     report_status: { type: 'TEXT' },
@@ -55,6 +58,7 @@ export const Report = {
           .map(([key, value]) => `${key} ${value.type}`)
           .join(',\n')},
         FOREIGN KEY (estimate_id) REFERENCES estimate(id) ON DELETE CASCADE ON UPDATE CASCADE,
+        FOREIGN KEY (layout_id) REFERENCES layouts(id),
         FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL ON UPDATE CASCADE,
         FOREIGN KEY (modified_by) REFERENCES users(id) ON DELETE SET NULL ON UPDATE CASCADE
       );
