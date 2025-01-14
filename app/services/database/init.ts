@@ -263,7 +263,7 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                     await EstimateDetail.insert({
                         id: 1,
                         estimate_id: 1,
-                        estimate_number: 1001,
+                        estimate_number: 4573452677,
                         sales_person: "Demo User",
                         email: "user@democompany.com",
                         phone: "0987654321",
@@ -297,7 +297,7 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                     await EstimateDetail.insert({
                         id: 2,
                         estimate_id: 2,
-                        estimate_number: 1002,
+                        estimate_number: 234576654,
                         sales_person: "Demo User",
                         email: "user@democompany.com",
                         phone: "0987654321",
@@ -331,7 +331,7 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                     await EstimateDetail.insert({
                         id: 3,
                         estimate_id: 3,
-                        estimate_number: 1002,
+                        estimate_number: 876678987,
                         sales_person: "Demo User",
                         email: "user@democompany.com",
                         phone: "0987654321",
@@ -365,7 +365,7 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                     await EstimateDetail.insert({
                         id: 4,
                         estimate_id: 4,
-                        estimate_number: 1002,
+                        estimate_number: 657865432,
                         sales_person: "Demo User",
                         email: "user@democompany.com",
                         phone: "0987654321",
@@ -399,7 +399,7 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                     await EstimateDetail.insert({
                         id: 5,
                         estimate_id: 5,
-                        estimate_number: 1002,
+                        estimate_number: 765675342,
                         sales_person: "Demo User",
                         email: "user@democompany.com",
                         phone: "0987654321",

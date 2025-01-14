@@ -39,6 +39,7 @@ export function EstimatesList({ estimates }: EstimatesListProps) {
             key={item.estimate.id}
             estimate={{
               id: item.estimate.id?.toString() || '',
+              estimateNumber: item.detail.estimate_number?.toString() || '',
               customerName: `${item.estimate.estimate_name || 'Unknown'}`,
               address: `${item.detail.address || ''}, ${item.detail.state || ''} ${item.detail.zip_code || ''}`,
               date: `Created ${new Date(item.estimate.created_date || '').toLocaleDateString()}`,
@@ -64,7 +65,7 @@ const styles = StyleSheet.create({
   content: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'flex-start',
-    gap: 16,
+    justifyContent: 'space-between',
+    gap: 24,
   },
 }); 

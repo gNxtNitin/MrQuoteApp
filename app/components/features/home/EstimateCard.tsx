@@ -97,6 +97,12 @@ export function EstimateCard({ estimate, index, onStatusChange }: EstimateCardPr
 
         <View style={styles.content}>
           <View style={styles.infoRow}>
+            <MaterialIcons name="tag" size={18} color={theme.primary} />
+            <Text style={[styles.infoText, { color: theme.textSecondary }]} numberOfLines={1}>
+              {estimate.estimateNumber}
+            </Text>
+          </View>
+          <View style={styles.infoRow}>
             <MaterialIcons name="location-on" size={18} color={theme.primary} />
             <Text style={[styles.infoText, { color: theme.textSecondary }]} numberOfLines={2}>
               {estimate.address}
@@ -169,7 +175,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.white,
     borderRadius: 16,
-    width: '32%',
+    width: '48%',
     height: 420,
     shadowColor: Colors.black,
     shadowOffset: { width: 0, height: 8 },
