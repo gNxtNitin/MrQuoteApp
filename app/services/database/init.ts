@@ -102,7 +102,7 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
 
                     await UserDetail.insert({
                         id: 2,
-                        username: 'demouser',
+                        username: 'demo',
                         password_hash: 'demo123',
                         email: 'user@democompany.com',
                         first_name: 'Demo',
