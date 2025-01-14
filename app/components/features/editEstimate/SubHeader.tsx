@@ -98,7 +98,7 @@ export function SubHeader() {
                 Created by: {user?.first_name} {user?.last_name}
               </Text>
             </View>
-            <View style={styles.statusInfo}>
+            {/* <View style={styles.statusInfo}>
               <MaterialIcons 
                 name="circle" 
                 size={8} 
@@ -107,7 +107,7 @@ export function SubHeader() {
               <Text style={[styles.statusText, { color: theme.textSecondary }]}>
                 {user?.is_active ? 'Active' : 'Inactive'}
               </Text>
-            </View>
+            </View> */}
           </View>
         </View>
       </View>

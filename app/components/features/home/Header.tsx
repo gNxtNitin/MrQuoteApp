@@ -115,8 +115,20 @@ export function Header() {
 
   const logoToShow = currentCompany ? getCompanyLogo(currentCompany.id as number) : null;
 
+  const handleOverlayPress = () => {
+    if (showSwitcher) {
+      setShowSwitcher(false);
+    }
+  };
+
   return (
     <View style={[styles.header, { zIndex: 9999 }]}>
+      {showSwitcher && (
+        <Pressable 
+          style={styles.overlay}
+          onPress={handleOverlayPress}
+        />
+      )}
       <View style={styles.content}>
         <View style={styles.leftSection}>
           {showSidebarButton && (
@@ -266,5 +278,14 @@ const styles = StyleSheet.create({
   dynamicLogo:{
     height:30,
     width:50
-  }
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'transparent',
+    zIndex: 9998,
+  },
 });
