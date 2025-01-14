@@ -5,6 +5,11 @@ import { useState, useEffect } from 'react';
 import { useTheme } from '@react-navigation/native';
 import { Layouts } from '@/app/database/models/Layouts';
 import { useHeaderStore } from '@/app/stores/headerStore';
+import { useEstimateStore } from '@/app/stores/estimateStore';
+import { duplicateDefaultLayout } from '@/app/database/models/Estimate';
+import { openDatabase } from '@/app/services/database/init';
+import { useAuth } from '@/app/hooks/useAuth';
+import { Report } from '@/app/database/models/Report';
 
 interface ChangeLayoutDialogProps {
   visible: boolean;
@@ -22,9 +27,13 @@ interface LayoutItem {
 
 export function ChangeLayoutDialog({ visible, onClose, onSave }: ChangeLayoutDialogProps) {
   const theme = useTheme();
+  const { user } = useAuth();
   const selectedCompanyId = useHeaderStore(state => state.selectedCompany);
   const companyLayouts = useHeaderStore(state => state.companyLayouts);
+  const selectedLayoutId = useEstimateStore(state => state.selectedLayoutId);
+  const selectedEstimate = useEstimateStore(state => state.selectedEstimate);
   const setCompanyLayout = useHeaderStore(state => state.setCompanyLayout);
+  const fetchAndSetLayout = useEstimateStore(state => state.fetchAndSetLayout);
   
   const [activeTab, setActiveTab] = useState<TabType>('my');
   const [selectedLayout, setSelectedLayout] = useState<LayoutItem | null>(null);
@@ -60,17 +69,20 @@ export function ChangeLayoutDialog({ visible, onClose, onSave }: ChangeLayoutDia
 
       setMyLayouts(myLayoutsList);
       setSharedLayouts(sharedLayoutsList);
+      console.log("selectedLayoutId", selectedLayoutId);
 
       // Set selected layout based on stored company layout
-      const savedLayout = companyLayouts[selectedCompanyId];
-      if (savedLayout) {
+      // const savedLayout = companyLayouts[selectedCompanyId];
+      if (selectedLayoutId) {
         const layoutToSelect = [...myLayoutsList, ...sharedLayoutsList]
-          .find(l => l.id === savedLayout.layoutId);
+          .find(l => l.id === selectedLayoutId);
         if (layoutToSelect) {
+          console.log("layoutToSelect", layoutToSelect);
           setSelectedLayout(layoutToSelect);
           setActiveTab(myLayoutsList.some(l => l.id === layoutToSelect.id) ? 'my' : 'shared');
         }
       } else if (activeLayouts.length > 0) {
+        console.log("No saved layout, selecting first available layout");
         // If no saved layout, select the first available layout
         const firstLayout = myLayoutsList[0] || sharedLayoutsList[0];
         setSelectedLayout(firstLayout);
@@ -78,6 +90,61 @@ export function ChangeLayoutDialog({ visible, onClose, onSave }: ChangeLayoutDia
       }
     } catch (error) {
       console.error('Error loading layouts:', error);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      if (!selectedLayout || !user?.id || !selectedEstimate?.id || !selectedEstimate.estimate_name) {
+        console.error('Missing required data for save operation');
+        return;
+      }
+
+      const db = openDatabase();
+
+      // 1. Duplicate the layout
+      const newPageId = await duplicateDefaultLayout(
+        selectedCompanyId,
+        selectedEstimate.estimate_name,
+        user.id,
+        {
+          id: selectedLayout.id,
+          layout_name: selectedLayout.layout_name,
+          is_active: selectedLayout.is_active
+        },
+        db
+      );
+
+      if (!newPageId) {
+        console.error('Failed to duplicate layout');
+        return;
+      }
+
+      // 2. Update the report with the new layout ID
+      const reports = await Report.getByEstimateId(selectedEstimate.id);
+      if (reports && reports.length > 0) {
+        await Report.update(reports[0].id!, {
+          layout_id: selectedLayout.id,
+          modified_by: user.id,
+          modified_date: new Date().toISOString()
+        });
+      } else {
+        console.error('No report found for estimate:', selectedEstimate.id);
+        return;
+      }
+
+      // 3. Fetch and update the layout in estimate store
+      await fetchAndSetLayout(selectedEstimate.id);
+
+      // 4. Call the onSave prop
+      onSave();
+      
+      // 5. Close the dialog
+      onClose();
+
+    } catch (error) {
+      console.error('Error saving layout:', error);
+      // You might want to show an error message to the user here
     }
   };
 
@@ -157,8 +224,12 @@ export function ChangeLayoutDialog({ visible, onClose, onSave }: ChangeLayoutDia
               <Text style={styles.closeBtnText}>Close</Text>
             </TouchableOpacity>
             <TouchableOpacity 
-              style={styles.saveBtn}
-              onPress={onSave}
+              style={[
+                styles.saveBtn,
+                (!selectedLayout || !selectedEstimate?.id) && styles.saveBtnDisabled
+              ]}
+              onPress={handleSave}
+              disabled={!selectedLayout || !selectedEstimate?.id}
             >
               <Text style={styles.saveBtnText}>Save changes</Text>
             </TouchableOpacity>
@@ -276,5 +347,8 @@ const styles = StyleSheet.create({
     color: Colors.white,
     fontSize: 14,
     fontWeight: '600',
+  },
+  saveBtnDisabled: {
+    opacity: 0.5,
   },
 }); 

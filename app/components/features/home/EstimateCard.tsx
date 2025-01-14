@@ -6,19 +6,25 @@ import { router, useRouter } from 'expo-router';
 import { Estimate } from '@/app/types/estimate';
 import { getHouseImage } from '@/app/utils/houseImages';
 import { useTheme } from '@/app/components/providers/ThemeProvider';
-
+import { useEstimateStore } from '@/app/stores/estimateStore';
+import { EstimateData } from '@/app/database/models/Estimate';
+import { EstimateDetailData } from '@/app/database/models/EstimateDetail';
 interface EstimateCardProps {
   estimate: Estimate;
   index: number;
   onStatusChange?: (estimateId: string, newStatus: Estimate['estimateStatus']) => Promise<void>;
+  estimateData: EstimateData;
+  estimateDetail: EstimateDetailData;
 }
 
-export function EstimateCard({ estimate, index, onStatusChange }: EstimateCardProps) {
+export function EstimateCard({ estimate, index, onStatusChange, estimateData, estimateDetail }: EstimateCardProps) {
   const router = useRouter();
   const [isSyncing, setIsSyncing] = useState(false);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [currentStatus, setCurrentStatus] = useState<Estimate['estimateStatus']>(estimate.estimateStatus);
   const theme = useTheme();
+  const setSelectedEstimate = useEstimateStore(state => state.setSelectedEstimate);
+  const fetchAndSetLayout = useEstimateStore(state => state.fetchAndSetLayout);
 
   const houseImage = getHouseImage(estimate.id);
 
@@ -43,14 +49,28 @@ export function EstimateCard({ estimate, index, onStatusChange }: EstimateCardPr
     setIsSyncing(false);
   };
 
-  const handleCardPress = () => {
-    router.push({
-      pathname: '/estimate',
-      params: { 
-        estimateData: JSON.stringify(estimate),
-        estimateId: estimate.id
+  const handleCardPress = async () => {
+    try {
+      // First set the estimate and fetch layout
+      await setSelectedEstimate(estimateData, estimateDetail);
+      
+      // Ensure layout is fetched and set
+      if (estimateData.id) {
+        await fetchAndSetLayout(estimateData.id);
       }
-    });
+
+      // Then navigate
+      router.push({
+        pathname: '/estimate',
+        params: { 
+          estimateData: JSON.stringify(estimate),
+          estimateId: estimate.id
+        }
+      });
+    } catch (error) {
+      console.error('Error handling estimate selection:', error);
+      // You might want to show an error message to the user here
+    }
   };
 
   const getStatusTextColor = (status: Estimate['estimateStatus']) => {

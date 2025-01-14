@@ -44,12 +44,14 @@ export function EstimatesList({ estimates }: EstimatesListProps) {
               address: `${item.detail.address || ''}, ${item.detail.state || ''} ${item.detail.zip_code || ''}`,
               date: `Created ${new Date(item.estimate.created_date || '').toLocaleDateString()}`,
               estimateStatus: item.estimate.estimate_status as EstimateStatus || 'provided',
-              email: item.detail.email || '',  // Add if needed from detail
-              phone: item.detail.phone || '', // Add if needed from detail
+              email: item.detail.email || '',
+              phone: item.detail.phone || '',
               houseImage: item.detail.image_url ? require('@/assets/images/house-1.jpg') : require('@/assets/images/house-2.jpg'),
             }}
             index={index}
             onStatusChange={handleStatusChange}
+            estimateData={item.estimate}
+            estimateDetail={item.detail}
           />
         ))}
       </View>

@@ -229,6 +229,7 @@ export const Estimate = {
             created_by: estimateData.created_by,
             modified_by: estimateData.modified_by
           });
+          console.log("layout_id", defaultLayout?.id);
           console.log('Report created successfully');
           const reportId = await db.getFirstAsync<{ id: number }>(
             'SELECT last_insert_rowid() as id'
