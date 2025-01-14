@@ -79,13 +79,13 @@ export function CompanySwitcher({
               style={[
                 styles.companyIcon,
                 {
-                  backgroundColor: Colors.lightGreen,
+                  backgroundColor: Colors.gray[100],
                   marginStart: 14,
-                  borderColor: Colors.placeholderTextColor,
+                  borderColor: Colors.gradientPrimary,
                 },
               ]}
             >
-              <Image source={logoSource} style={styles.logo} resizeMode="center" />
+              <Image source={logoSource} style={styles.logo} resizeMode="contain" />
             </View>
             <Text style={[styles.companyName, { marginStart: 14 }]}>
               {company.company_name}
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
   companyIcon: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: 30,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 12,
