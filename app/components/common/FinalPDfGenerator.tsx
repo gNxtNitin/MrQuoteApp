@@ -3,7 +3,6 @@ import { Alert } from "react-native";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
-import { Button } from "./Button";
 import { ActionButton } from "./ActionButton";
 
 type FormData = Record<string, any>;
@@ -26,18 +25,21 @@ const FinalPdfGenerator: React.FC<FinalPdfGeneratorProps> = ({ formData }) => {
   const handleGeneratePdf = async () => {
     try {
       const pdfDoc = await PDFDocument.create();
-      const page = pdfDoc.addPage([595.28, 841.89]); // Standard A4 size
       const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-      const { width, height } = page.getSize();
       const fontSize = 12;
-
+  
+      // Standard A4 dimensions
+      const width = 595.28;
+      const height = 841.89;
+  
       const processData = async (data: FormData, page: any) => {
-        let cursorY = height - 40;
-
+        let cursorY = height - 40; // Starting Y position for the text
+  
         const addTextToPage = (text: string) => {
           if (cursorY < 40) {
+            // If there's no more space on the current page, create a new one
             const newPage = pdfDoc.addPage([width, height]);
-            cursorY = height - 40;
+            cursorY = height - 40; // Reset cursorY for the new page
             page = newPage;
           }
           page.drawText(text, {
@@ -47,9 +49,9 @@ const FinalPdfGenerator: React.FC<FinalPdfGeneratorProps> = ({ formData }) => {
             font,
             color: rgb(0, 0, 0),
           });
-          cursorY -= 20;
+          cursorY -= 20; // Move cursor down for the next line of text
         };
-
+  
         for (const [key, value] of Object.entries(data)) {
           if (value === null || value === undefined) {
             addTextToPage(`${key}: N/A`);
@@ -65,20 +67,21 @@ const FinalPdfGenerator: React.FC<FinalPdfGeneratorProps> = ({ formData }) => {
               );
               const image = await pdfDoc.embedJpg(imageBuffer);
               const scaledImage = image.scaleToFit(200, 200);
-
+  
               if (cursorY - scaledImage.height < 40) {
+                // Create a new page if there's not enough space for the image
                 const newPage = pdfDoc.addPage([width, height]);
-                cursorY = height - 40;
+                cursorY = height - 40; // Reset cursorY
                 page = newPage;
               }
-
+  
               page.drawImage(image, {
                 x: 40,
                 y: cursorY - scaledImage.height,
                 width: scaledImage.width,
                 height: scaledImage.height,
               });
-              cursorY -= scaledImage.height + 20;
+              cursorY -= scaledImage.height + 20; // Adjust cursorY after drawing the image
             } catch (error) {
               console.error(`Failed to process image for key: ${key}`, error);
             }
@@ -92,7 +95,7 @@ const FinalPdfGenerator: React.FC<FinalPdfGeneratorProps> = ({ formData }) => {
                 embeddedPdf,
                 embeddedPdf.getPageIndices()
               );
-
+  
               pdfPages.forEach((pdfPage) => pdfDoc.addPage(pdfPage));
             } catch (error) {
               console.error(`Failed to process PDF for key: ${key}`, error);
@@ -112,7 +115,7 @@ const FinalPdfGenerator: React.FC<FinalPdfGeneratorProps> = ({ formData }) => {
           }
         }
       };
-
+  
       for (const [pageKey, pageData] of Object.entries(formData)) {
         const page = pdfDoc.addPage([width, height]);
         page.drawText(`Page: ${pageKey}`, {
@@ -124,15 +127,15 @@ const FinalPdfGenerator: React.FC<FinalPdfGeneratorProps> = ({ formData }) => {
         });
         await processData(pageData, page);
       }
-
+  
       const pdfBytes = await pdfDoc.save();
       const pdfBase64 = uint8ArrayToBase64(pdfBytes);
       const pdfUri = `${FileSystem.documentDirectory}FinalReport.pdf`;
-
+  
       await FileSystem.writeAsStringAsync(pdfUri, pdfBase64, {
         encoding: FileSystem.EncodingType.Base64,
       });
-
+  
       if (await Sharing.isAvailableAsync()) {
         await Sharing.shareAsync(pdfUri);
       } else {
@@ -143,7 +146,7 @@ const FinalPdfGenerator: React.FC<FinalPdfGeneratorProps> = ({ formData }) => {
       Alert.alert("Error", "An error occurred while generating the PDF.");
     }
   };
-
+  
   return (
     <ActionButton
       icon="visibility"

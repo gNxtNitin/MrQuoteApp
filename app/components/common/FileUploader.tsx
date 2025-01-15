@@ -171,6 +171,7 @@ const styles = StyleSheet.create({
   },
   successText: {
     fontSize: 16,
+    width:'80%',
     color: Colors.black,
   },
   deleteBtn: {

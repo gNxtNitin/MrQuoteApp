@@ -1,9 +1,11 @@
-import React from "react";
-import { Alert } from "react-native";
+import React, { useState } from "react";
+import { Alert, ActivityIndicator, View, StyleSheet } from "react-native";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
+import * as ImageManipulator from "expo-image-manipulator";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { Button } from "./Button";
+import { Colors } from "@/app/constants/colors";
 
 type FormData = Record<string, any>;
 
@@ -22,29 +24,109 @@ const uint8ArrayToBase64 = (bytes: Uint8Array): string => {
 };
 
 const PdfGenerator: React.FC<PdfGeneratorProps> = ({ formData, pageKey }) => {
+
+  const [isLoading, setIsLoading] = useState(false); 
+
   const handleGeneratePdf = async () => {
+    setIsLoading(true); // Start the loader
+
     try {
       const pdfDoc = await PDFDocument.create();
-      const page = pdfDoc.addPage([595.28, 841.89]); // Standard A4 size
       const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-      const { width, height } = page.getSize();
-      const fontSize = 12;
 
-      let cursorY = height - 40; // Start near the top of the page
+      const pageWidth = 595.28; // A4 width
+      const pageHeight = 841.89; // A4 height
+      const fontSize = 12;
+      const margin = 40;
+      const maxImageSize = 200; // Max image dimension in pixels
+      let cursorY = pageHeight - margin;
+
+      let page = pdfDoc.addPage([pageWidth, pageHeight]);
 
       const addTextToPage = (text: string) => {
-        if (cursorY < 40) {
-          const newPage = pdfDoc.addPage([width, height]);
-          cursorY = height - 40;
+        if (cursorY < margin) {
+          page = pdfDoc.addPage([pageWidth, pageHeight]);
+          cursorY = pageHeight - margin;
         }
         page.drawText(text, {
-          x: 40,
+          x: margin,
           y: cursorY,
           size: fontSize,
           font,
           color: rgb(0, 0, 0),
         });
         cursorY -= 20;
+      };
+
+      const compressImage = async (uri: string): Promise<Uint8Array | null> => {
+        try {
+          const compressedImage = await ImageManipulator.manipulateAsync(
+            uri,
+            [{ resize: { width: maxImageSize, height: maxImageSize } }],
+            { compress: 0.2, format: ImageManipulator.SaveFormat.JPEG }
+          );
+
+          const imageBytes = await FileSystem.readAsStringAsync(
+            compressedImage.uri,
+            { encoding: FileSystem.EncodingType.Base64 }
+          );
+
+          return Uint8Array.from(atob(imageBytes), (c) => c.charCodeAt(0));
+        } catch (error) {
+          console.error("Error compressing image:", error);
+          return null;
+        }
+      };
+
+      const addCompressedImageToPage = async (uri: string) => {
+        try {
+          const compressedImageBytes = await compressImage(uri);
+          if (!compressedImageBytes) return;
+
+          const image = await pdfDoc.embedJpg(compressedImageBytes);
+          const { width: originalWidth, height: originalHeight } = image.scale(1);
+
+          const scaleFactor = Math.min(
+            maxImageSize / originalWidth,
+            maxImageSize / originalHeight,
+            1
+          );
+          const scaledWidth = originalWidth * scaleFactor;
+          const scaledHeight = originalHeight * scaleFactor;
+
+          if (cursorY - scaledHeight < margin) {
+            page = pdfDoc.addPage([pageWidth, pageHeight]);
+            cursorY = pageHeight - margin;
+          }
+
+          page.drawImage(image, {
+            x: margin,
+            y: cursorY - scaledHeight,
+            width: scaledWidth,
+            height: scaledHeight,
+          });
+          cursorY -= scaledHeight + 20;
+        } catch (error) {
+          console.error("Error embedding compressed image:", error);
+        }
+      };
+
+      const addPdfToPage = async (uri: string) => {
+        try {
+          const pdfBytes = await FileSystem.readAsStringAsync(uri, {
+            encoding: FileSystem.EncodingType.Base64,
+          });
+
+          const embeddedPdf = await PDFDocument.load(pdfBytes);
+          const pdfPages = await pdfDoc.copyPages(
+            embeddedPdf,
+            embeddedPdf.getPageIndices()
+          );
+
+          pdfPages.forEach((pdfPage) => pdfDoc.addPage(pdfPage));
+        } catch (error) {
+          console.error("Error embedding PDF:", error);
+        }
       };
 
       const processData = async (key: string, value: any) => {
@@ -54,55 +136,18 @@ const PdfGenerator: React.FC<PdfGeneratorProps> = ({ formData, pageKey }) => {
         }
 
         if (typeof value === "string") {
-          addTextToPage(`${key}: ${value}`);
+          // Check if the string is a valid URI pointing to an image
+          if (value.startsWith("file://") && /\.(jpg|jpeg|png|gif)$/i.test(value)) {
+            await addCompressedImageToPage(value);
+          } else if (value.startsWith("file://") && /\.(pdf)$/i.test(value)) {
+            await addPdfToPage(value); // Embed the PDF
+          } else {
+            addTextToPage(`${key}: ${value}`);
+          }
         } else if (value?.mimeType?.includes("image")) {
-          try {
-            const imageBytes = await FileSystem.readAsStringAsync(value.uri, {
-              encoding: FileSystem.EncodingType.Base64,
-            });
-            const imageBuffer = Uint8Array.from(atob(imageBytes), (c) =>
-              c.charCodeAt(0)
-            );
-            const image = await pdfDoc.embedJpg(imageBuffer);
-            const maxImageSize = 200;
-            const imageDims = image.scale(1);
-
-            const scaledWidth =
-              imageDims.width > maxImageSize ? maxImageSize : imageDims.width;
-            const scaledHeight =
-              imageDims.height > maxImageSize ? maxImageSize : imageDims.height;
-
-            if (cursorY - scaledHeight < 40) {
-              const newPage = pdfDoc.addPage([width, height]);
-              cursorY = height - 40;
-            }
-
-            page.drawImage(image, {
-              x: 40,
-              y: cursorY - scaledHeight,
-              width: scaledWidth,
-              height: scaledHeight,
-            });
-
-            cursorY -= scaledHeight + 20;
-          } catch (error) {
-            console.error(`Failed to process image for key: ${key}`, error);
-          }
+          await addCompressedImageToPage(value.uri);
         } else if (value?.mimeType?.includes("pdf")) {
-          try {
-            const pdfBytes = await FileSystem.readAsStringAsync(value.uri, {
-              encoding: FileSystem.EncodingType.Base64,
-            });
-            const embeddedPdf = await PDFDocument.load(pdfBytes);
-            const pdfPages = await pdfDoc.copyPages(
-              embeddedPdf,
-              embeddedPdf.getPageIndices()
-            );
-
-            pdfPages.forEach((pdfPage) => pdfDoc.addPage(pdfPage));
-          } catch (error) {
-            console.error(`Failed to process PDF for key: ${key}`, error);
-          }
+          await addPdfToPage(value.uri); // Embed the PDF
         } else if (Array.isArray(value)) {
           addTextToPage(`${key}: [Array]`);
           for (const item of value) {
@@ -114,11 +159,11 @@ const PdfGenerator: React.FC<PdfGeneratorProps> = ({ formData, pageKey }) => {
             await processData(nestedKey, nestedValue);
           }
         } else {
-          addTextToPage(`${key}: ${value || "N/A"}`);
+          addTextToPage(`${key}: ${value}`);
         }
       };
 
-      const pageData = formData[pageKey]; // Extract data for the specific page
+      const pageData = formData[pageKey]; 
       if (!pageData) {
         Alert.alert("Error", `No data found for page: ${pageKey}`);
         return;
@@ -143,19 +188,33 @@ const PdfGenerator: React.FC<PdfGeneratorProps> = ({ formData, pageKey }) => {
     } catch (error) {
       console.error("Error generating PDF:", error);
       Alert.alert("Error", "An error occurred while generating the PDF.");
+    } finally {
+      setIsLoading(false); // Stop the loader
     }
   };
 
   return (
-    <>
-      <Button
-        label="View Page"
-        onPress={handleGeneratePdf}
-        variant="primary"
-        size="medium"
-      />
-    </>
+    <View style={styles.container}>
+      {isLoading ? (
+        <ActivityIndicator size="large" color={Colors.primary} />
+      ) : (
+        <Button
+          label="View Page"
+          onPress={handleGeneratePdf}
+          variant="primary"
+          size="medium"
+        />
+      )}
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+  },
+});
 
 export default PdfGenerator;
