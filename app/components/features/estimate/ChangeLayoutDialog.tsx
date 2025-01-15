@@ -23,6 +23,7 @@ interface LayoutItem {
   id: number;
   layout_name: string;
   is_active: boolean;
+  is_default?: boolean;
 }
 
 export function ChangeLayoutDialog({ visible, onClose, onSave }: ChangeLayoutDialogProps) {
@@ -39,6 +40,7 @@ export function ChangeLayoutDialog({ visible, onClose, onSave }: ChangeLayoutDia
   const [selectedLayout, setSelectedLayout] = useState<LayoutItem | null>(null);
   const [myLayouts, setMyLayouts] = useState<LayoutItem[]>([]);
   const [sharedLayouts, setSharedLayouts] = useState<LayoutItem[]>([]);
+  const [defaultLayout, setDefaultLayout] = useState<LayoutItem | null>(null);
 
   useEffect(() => {
     loadLayouts();
@@ -56,7 +58,8 @@ export function ChangeLayoutDialog({ visible, onClose, onSave }: ChangeLayoutDia
         .map(layout => ({
           id: layout.id!,
           layout_name: layout.layout_name!,
-          is_active: layout.is_active!
+          is_active: layout.is_active!,
+          is_default: layout.is_default || false
         }));
 
       const sharedLayoutsList = activeLayouts
@@ -64,29 +67,28 @@ export function ChangeLayoutDialog({ visible, onClose, onSave }: ChangeLayoutDia
         .map(layout => ({
           id: layout.id!,
           layout_name: layout.layout_name!,
-          is_active: layout.is_active!
+          is_active: layout.is_active!,
+          is_default: layout.is_default || false
         }));
 
       setMyLayouts(myLayoutsList);
       setSharedLayouts(sharedLayoutsList);
-      console.log("selectedLayoutId", selectedLayoutId);
 
-      // Set selected layout based on stored company layout
-      // const savedLayout = companyLayouts[selectedCompanyId];
+      // Find and set default layout
+      const defaultLayout = [...myLayoutsList, ...sharedLayoutsList].find(l => l.is_default);
+      setDefaultLayout(defaultLayout || null);
+
+      // Set selected layout based on stored company layout or default
       if (selectedLayoutId) {
         const layoutToSelect = [...myLayoutsList, ...sharedLayoutsList]
           .find(l => l.id === selectedLayoutId);
         if (layoutToSelect) {
-          console.log("layoutToSelect", layoutToSelect);
           setSelectedLayout(layoutToSelect);
           setActiveTab(myLayoutsList.some(l => l.id === layoutToSelect.id) ? 'my' : 'shared');
         }
-      } else if (activeLayouts.length > 0) {
-        console.log("No saved layout, selecting first available layout");
-        // If no saved layout, select the first available layout
-        const firstLayout = myLayoutsList[0] || sharedLayoutsList[0];
-        setSelectedLayout(firstLayout);
-        setActiveTab(myLayoutsList.includes(firstLayout) ? 'my' : 'shared');
+      } else if (defaultLayout) {
+        setSelectedLayout(defaultLayout);
+        setActiveTab(myLayoutsList.some(l => l.id === defaultLayout.id) ? 'my' : 'shared');
       }
     } catch (error) {
       console.error('Error loading layouts:', error);
@@ -153,7 +155,28 @@ export function ChangeLayoutDialog({ visible, onClose, onSave }: ChangeLayoutDia
     setCompanyLayout(selectedCompanyId, layout.id, layout.layout_name);
   };
 
-  const layouts = activeTab === 'my' ? myLayouts : sharedLayouts;
+  const renderLayoutItem = (layout: LayoutItem) => (
+    <Pressable
+      key={layout.id}
+      style={[
+        styles.layoutItem,
+        selectedLayout?.id === layout.id && styles.selectedLayout
+      ]}
+      onPress={() => handleLayoutSelect(layout)}
+    >
+      <View style={styles.layoutItemContent}>
+        <Text style={styles.layoutName}>{layout.layout_name}</Text>
+        {layout.is_default && (
+          <View style={styles.defaultBadge}>
+            <Text style={styles.defaultText}>Default</Text>
+          </View>
+        )}
+      </View>
+      {selectedLayout?.id === layout.id && (
+        <MaterialIcons name="check" size={24} color={Colors.primary} />
+      )}
+    </Pressable>
+  );
 
   return (
     <Modal
@@ -180,40 +203,29 @@ export function ChangeLayoutDialog({ visible, onClose, onSave }: ChangeLayoutDia
           </View>
 
           <View style={styles.tabsContainer}>
-            <TouchableOpacity 
+            <Pressable
               style={[styles.tab, activeTab === 'my' && styles.activeTab]}
               onPress={() => setActiveTab('my')}
             >
               <Text style={[styles.tabText, activeTab === 'my' && styles.activeTabText]}>
-                My Layouts ({myLayouts.length})
+                My Layouts {defaultLayout && myLayouts.some(l => l.id === defaultLayout.id) && '(Default)'}
               </Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
+            </Pressable>
+            <Pressable
               style={[styles.tab, activeTab === 'shared' && styles.activeTab]}
               onPress={() => setActiveTab('shared')}
             >
               <Text style={[styles.tabText, activeTab === 'shared' && styles.activeTabText]}>
-                Shared Layouts ({sharedLayouts.length})
+                Shared Layouts {defaultLayout && sharedLayouts.some(l => l.id === defaultLayout.id) && '(Default)'}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           <View style={styles.layoutList}>
-            {layouts.map((layout) => (
-              <TouchableOpacity 
-                key={layout.id}
-                style={[
-                  styles.layoutItem,
-                  selectedLayout?.id === layout.id && styles.selectedLayout
-                ]}
-                onPress={() => handleLayoutSelect(layout)}
-              >
-                <Text style={styles.layoutName}>{layout.layout_name}</Text>
-                {selectedLayout?.id === layout.id && (
-                  <MaterialIcons name="check-circle" size={24} color={Colors.primary} />
-                )}
-              </TouchableOpacity>
-            ))}
+            {activeTab === 'my' ? 
+              myLayouts.map(renderLayoutItem) :
+              sharedLayouts.map(renderLayoutItem)
+            }
           </View>
 
           <View style={styles.footer}>
@@ -350,5 +362,22 @@ const styles = StyleSheet.create({
   },
   saveBtnDisabled: {
     opacity: 0.5,
+  },
+  layoutItemContent: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  defaultBadge: {
+    backgroundColor: Colors.primary + '15',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
+  },
+  defaultText: {
+    color: Colors.primary,
+    fontSize: 12,
+    fontWeight: '600',
   },
 }); 
