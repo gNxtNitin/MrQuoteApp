@@ -18,25 +18,10 @@ export function EstimateSubHeader({
   status, 
   date 
 }: EstimateSubHeaderProps) {
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showLayoutDialog, setShowLayoutDialog] = useState(false);
   const theme = useTheme();
 
   const handleBack = () => router.back();
-  
-  const handleNewQuote = () => {
-    router.push('/editEstimate');
-  };
-
-  const handleCloseDialog = () => {
-    setShowCreateDialog(false);
-  };
-
-  const handleSaveEstimate = (data: any) => {
-    // Handle the save action
-    console.log('Saving estimate:', data);
-    handleCloseDialog();
-  };
 
   const handleChangeLayout = () => {
     setShowLayoutDialog(true);
@@ -108,22 +93,18 @@ export function EstimateSubHeader({
             <View style={styles.iconGroup}>
               <Pressable 
                 style={[styles.iconButton, { backgroundColor: theme.background }]}
-                onPress={handleChangeLayout}
               >
-                <MaterialIcons name="view-agenda" size={18} color={theme.textPrimary} />
-              </Pressable>
-              <Pressable style={[styles.iconButton, { backgroundColor: theme.background }]}>
                 <MaterialIcons name="settings" size={18} color={theme.textPrimary} />
               </Pressable>
             </View>
             <View style={styles.buttonGroup}>
               <Pressable 
                 style={[styles.actionButton, styles.primaryButton]}
-                onPress={handleNewQuote}
+                onPress={handleChangeLayout}
               >
-                <MaterialIcons name="add" size={16} color={Colors.white} />
+                <MaterialIcons name="view-agenda" size={16} color={Colors.white} />
                 <Text style={[styles.actionButtonText, styles.primaryButtonText]}>
-                  New Quote
+                  Change Layout
                 </Text>
               </Pressable>
               <Pressable 
@@ -142,12 +123,6 @@ export function EstimateSubHeader({
         </View>
       </View>
       <View style={[styles.divider, { backgroundColor: theme.border }]} />
-
-      <CreateEstimateDialog
-        visible={showCreateDialog}
-        onClose={handleCloseDialog}
-        onSave={handleSaveEstimate}
-      />
 
       <ChangeLayoutDialog
         visible={showLayoutDialog}
