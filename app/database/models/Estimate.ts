@@ -8,6 +8,18 @@ import { LayoutPages, LayoutPagesData } from './LayoutPages';
 import { TitlePageContent, TitlePageContentData } from './TitlePageContent';
 import { IntroductionPageContent, IntroductionPageContentData } from './IntroductionPageContent';
 import { ReportPages } from './ReportPages';
+import { InspectionPageContent, InspectionPageContentData } from './InspectionPageContent';
+import { InspectionPageSection, InspectionPageSectionData } from './InspectionPageSection';
+import { InspectionSectionItems, InspectionSectionItemsData } from './InspectionSectionItems';
+import { Canvas } from './Canvas';
+import { QuotePageContent, QuotePageContentData } from './QuotePageContent';
+import { QuotePageSection, QuotePageSectionData } from './QuotePageSection';
+import { QuotePagePriceSection, QuotePagePriceSectionData } from './QuotePagePriceSection';
+import { AuthorizationPageContent, AuthorizationPageContentData } from './AuthorizationPageContent';
+import { AuthPagePriceSection, AuthPagePriceSectionData } from './AuthPagePriceSection';
+import { AuthPrimarySigner, AuthPrimarySignerData } from './AuthPrimarySigner';
+import { AuthProductSelection, AuthProductSelectionData } from './AuthProductSelection';
+import { TermConditionsPageContent, TermConditionsPageContentData } from './TermConditionsPageContent';
 
 const db = openDatabase();
 
@@ -141,6 +153,252 @@ export async function duplicateDefaultLayout(
           modified_date: new Date().toISOString()
         });
         console.log('Introduction page content duplicated');
+      }
+
+      // 3. Find and duplicate inspection page content
+      const inspectionPage = await db.getFirstAsync<InspectionPageContentData>(
+        `SELECT * FROM ${InspectionPageContent.tableName} WHERE page_id = ?`,
+        [layoutPage.page_id]
+      );
+      console.log('Inspection page:', inspectionPage);
+      if (inspectionPage) {
+        await InspectionPageContent.insert({
+          id: undefined,
+          page_id: newPageId,
+          inspection_title: inspectionPage.inspection_title,
+          is_active: true,
+          created_by: userId,
+          modified_by: userId,
+          created_date: new Date().toISOString(),
+          modified_date: new Date().toISOString()
+        });
+        console.log('Inspection page content duplicated');
+        const newInspectionPageId = await db.getFirstAsync<{ id: number }>(
+            'SELECT last_insert_rowid() as id'
+          );
+          console.log('New inspection page ID:', newInspectionPageId);
+        // 3a. Find and duplicate inspection sections
+        const inspectionSections = await db.getAllAsync<InspectionPageSectionData>(
+          `SELECT * FROM ${InspectionPageSection.tableName} WHERE inspection_page_id = ?`,
+          [inspectionPage.id!]
+        );
+        console.log('Inspection sections:', inspectionSections);
+        for (const section of inspectionSections) {
+           await InspectionPageSection.insert({
+            id: undefined,
+            inspection_page_id: newInspectionPageId!.id,
+            section_style_id: section.section_style_id,
+            section_title: section.section_title,
+            is_active: true,
+            created_by: userId,
+            modified_by: userId
+          });
+          console.log('Inspection section duplicated');
+          const newSectionId = await db.getFirstAsync<{ id: number }>(
+            'SELECT last_insert_rowid() as id'
+          );
+          console.log('New section ID:', newSectionId);
+          // 3b. Find and duplicate inspection items
+          const items = await db.getAllAsync<InspectionSectionItemsData>(
+            `SELECT * FROM ${InspectionSectionItems.tableName} WHERE inspection_section_id = ?`,
+            [section.id!]
+          );
+          console.log('Inspection items:', items);
+          for (const item of items) {
+            await InspectionSectionItems.insert({
+              id: undefined,
+              inspection_section_id: newSectionId!.id,
+              inspection_file: item.inspection_file,
+              inspection_content: item.inspection_content,
+              is_active: true,
+              created_by: userId,
+              modified_by: userId
+            });
+            console.log('Inspection item duplicated');
+          }
+        }
+      }
+
+      // 4. Create blank canvas
+      await Canvas.insert({
+        page_id: newPageId,
+        paths: '[]',
+        current_path: '',
+        description: '',
+        created_by: userId,
+        created_date: new Date().toISOString(),
+        is_active: true
+      });
+      console.log('Canvas created successfully');
+      // 5. Find and duplicate quote page content
+      const quotePage = await db.getFirstAsync<QuotePageContentData>(
+        `SELECT * FROM ${QuotePageContent.tableName} WHERE page_id = ?`,
+        [layoutPage.page_id]
+      );
+      console.log('Quote page:', quotePage);
+      if (quotePage) {
+        await QuotePageContent.insert({
+          id: undefined,
+          page_id: newPageId,
+          quote_page_title: quotePage.quote_page_title,
+          quote_subtotal: quotePage.quote_subtotal,
+          total: quotePage.total,
+          notes: quotePage.notes,
+          is_active: true,
+          created_by: userId,
+          modified_by: userId
+        });
+        console.log('Quote page content duplicated');
+        const newQuotePageId = await db.getFirstAsync<{ id: number }>(
+            'SELECT last_insert_rowid() as id'
+          );
+          console.log('New quote page ID:', newQuotePageId);
+        // 5a. Find and duplicate quote sections
+        const quoteSections = await db.getAllAsync<QuotePageSectionData>(
+          `SELECT * FROM ${QuotePageSection.tableName} WHERE quote_page_id = ?`,
+          [quotePage.id!]
+        );
+        console.log('Quote page section:', quoteSections);
+        for (const section of quoteSections) {
+          await QuotePageSection.insert({
+            id: undefined,
+            quote_page_id: newQuotePageId!.id,
+            section_title: section.section_title,
+            section_total: section.section_total,
+            is_active: true,
+            created_by: userId,
+            modified_by: userId
+          });
+          console.log('Quote page section duplicated');
+          const newSectionId = await db.getFirstAsync<{ id: number }>(
+            'SELECT last_insert_rowid() as id'
+          );
+          console.log('New section ID:', newSectionId);
+          // 5b. Find and duplicate quote price sections
+          const priceSections = await db.getAllAsync<QuotePagePriceSectionData>(
+            `SELECT * FROM ${QuotePagePriceSection.tableName} WHERE quote_section_id = ?`,
+            [section.id!]
+          );
+          console.log('Quote page price section:', priceSections);
+          for (const priceSection of priceSections) {
+            await QuotePagePriceSection.insert({
+              id: undefined,
+              quote_section_id: newSectionId!.id,
+              price_section_id: priceSection.price_section_id,
+              section_total: priceSection.section_total,
+              is_active: true,
+              created_by: userId,
+              modified_by: userId
+            });
+            console.log('Quote page price section duplicated');
+          }
+        }
+      }
+
+      // 6. Find and duplicate authorization page content
+      const authPage = await db.getFirstAsync<AuthorizationPageContentData>(
+        `SELECT * FROM ${AuthorizationPageContent.tableName} WHERE page_id = ?`,
+        [layoutPage.page_id]
+      );
+      console.log('Authorization page:', authPage);
+      if (authPage) {
+        await AuthorizationPageContent.insert({
+          id: undefined,
+          page_id: newPageId,
+          authorization_page_title: authPage.authorization_page_title,
+          disclaimer: authPage.disclaimer,
+          section_title: authPage.section_title,
+          footer_notes: authPage.footer_notes,
+          is_active: true,
+          created_by: userId,
+          modified_by: userId
+        });
+        console.log('Authorization page content duplicated');
+        const newAuthPageId = await db.getFirstAsync<{ id: number }>(
+            'SELECT last_insert_rowid() as id'
+          );
+        console.log('New authorization page ID:', newAuthPageId);
+        // 6a. Find and duplicate auth price sections
+        const authPriceSections = await db.getAllAsync<AuthPagePriceSectionData>(
+          `SELECT * FROM ${AuthPagePriceSection.tableName} WHERE authorization_page_id = ?`,
+          [authPage.id!]
+        );
+        console.log('Auth price section:', authPriceSections);
+        for (const priceSection of authPriceSections) {
+          await AuthPagePriceSection.insert({
+            id: undefined,
+            authorization_page_id: newAuthPageId!.id,
+            price_section_id: priceSection.price_section_id,
+            section_total: priceSection.section_total,
+            is_active: true,
+            created_by: userId,
+            modified_by: userId
+          });
+          console.log('Auth price section duplicated');
+        }
+
+        // 6b. Find and duplicate auth primary signer
+        const signer = await db.getFirstAsync<AuthPrimarySignerData>(
+          `SELECT * FROM ${AuthPrimarySigner.tableName} WHERE authorization_page_id = ?`,
+          [authPage.id!]
+        );
+        console.log('Auth primary signer:', signer);
+        if (signer) {
+          await AuthPrimarySigner.insert({
+            auth_p_signer_id: undefined,
+            authorization_page_id: newAuthPageId!.id,
+            first_name: signer.first_name,
+            last_name: signer.last_name,
+            email_address: signer.email_address,
+            is_active: true,
+            created_by: userId,
+            modified_by: userId
+          });
+          console.log('Auth primary signer duplicated');
+        }
+
+        // 6c. Find and duplicate auth product selections
+        const products = await db.getAllAsync<AuthProductSelectionData>(
+          `SELECT * FROM ${AuthProductSelection.tableName} WHERE authorization_page_id = ?`,
+          [authPage.id!]
+        );
+        console.log('Auth product selection:', products);
+        for (const product of products) {
+          await AuthProductSelection.insert({
+            id: undefined,
+            authorization_page_id: newAuthPageId!.id,
+            item: product.item,
+            selection: product.selection,
+            is_active: true,
+            created_by: userId,
+            modified_by: userId
+          });
+          console.log('Auth product selection duplicated');
+        }
+      }
+
+      // 7. Find and duplicate terms and conditions page content
+      const termsPage = await db.getFirstAsync<TermConditionsPageContentData>(
+        `SELECT * FROM ${TermConditionsPageContent.tableName} WHERE page_id = ?`,
+        [layoutPage.page_id]
+      );
+      console.log('Terms and conditions page:', termsPage);
+
+      if (termsPage) {
+        await TermConditionsPageContent.insert({
+          id: undefined,
+          page_id: newPageId,
+          tc_page_title: termsPage.tc_page_title,
+          is_acknowledged: termsPage.is_acknowledged,
+          is_summary: termsPage.is_summary,
+          is_pdf: termsPage.is_pdf,
+          summary_content: termsPage.summary_content,
+          pdf_file_path: termsPage.pdf_file_path,
+          is_active: true,
+          created_by: userId,
+          modified_by: userId
+        });
+        console.log('Terms and conditions page content duplicated');
       }
     // }
 

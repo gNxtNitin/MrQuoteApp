@@ -49,6 +49,7 @@ import { TermConditionsPageContent } from '@/app/database/models/TermConditionsP
 import { InvoicePageContent } from '@/app/database/models/InvoicePageContent';
 import { CustomPageContent } from '@/app/database/models/CustomPageContent';
 import { MaterialPageContent } from '@/app/database/models/MaterialPageContent';
+import { Canvas } from '@/app/database/models/Canvas';
 
 // Create singleton database instance
 let dbInstance: SQLite.SQLiteDatabase | null = null;
@@ -147,6 +148,7 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                 await InvoicePageContent.createTable();
                 await CustomPageContent.createTable();
                 await MaterialPageContent.createTable();
+                await Canvas.createTable();
 
                 // Only insert sample data if database is empty
                 if (shouldInitialize) {
@@ -1049,6 +1051,17 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                         is_active: true,
                         created_by: 1,
                         modified_by: 1
+                    });
+
+                    // Add sample canvas
+                    await Canvas.insert({
+                        id: 1,
+                        page_id: 1,
+                        paths: '[]',
+                        current_path: '',
+                        created_by: 1,
+                        created_date: new Date().toISOString(),
+                        is_active: true
                     });
 
                     // Add sample quote page content
