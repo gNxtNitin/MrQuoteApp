@@ -6,6 +6,7 @@ import { useTheme } from '../../providers/ThemeProvider';
 import { Estimate } from '@/app/database/models/Estimate';
 import { EstimateDetail, EstimateDetailData } from '@/app/database/models/EstimateDetail';
 import { useAuth } from '@/app/hooks/useAuth';
+import { generateRandom10DigitNumber } from '../../common/Utils';
 
 interface CreateEstimateDialogProps {
   visible: boolean;
@@ -160,7 +161,7 @@ export function CreateEstimateDialog({ visible, onClose, onSave, companyId }: Cr
       // Create estimate detail record
       const estimateDetailData: EstimateDetailData = {
         estimate_id: estimateId,
-        estimate_number: estimateId,
+        estimate_number: generateRandom10DigitNumber(),
         sales_person: `${formData.firstName || ''} ${formData.lastName || ''}`.trim(),
         estimate_revenue: '0',
         email: formData.email,

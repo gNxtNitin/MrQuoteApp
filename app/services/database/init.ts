@@ -265,7 +265,7 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                     await EstimateDetail.insert({
                         id: 1,
                         estimate_id: 1,
-                        estimate_number: 4573452677,
+                        estimate_number: '4573452677',
                         sales_person: "Demo User",
                         email: "user@democompany.com",
                         phone: "0987654321",
@@ -299,7 +299,7 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                     await EstimateDetail.insert({
                         id: 2,
                         estimate_id: 2,
-                        estimate_number: 234576654,
+                        estimate_number: '2234576654',
                         sales_person: "Demo User",
                         email: "user@democompany.com",
                         phone: "0987654321",
@@ -333,7 +333,7 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                     await EstimateDetail.insert({
                         id: 3,
                         estimate_id: 3,
-                        estimate_number: 876678987,
+                        estimate_number: '8766789879',
                         sales_person: "Demo User",
                         email: "user@democompany.com",
                         phone: "0987654321",
@@ -367,7 +367,7 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                     await EstimateDetail.insert({
                         id: 4,
                         estimate_id: 4,
-                        estimate_number: 657865432,
+                        estimate_number: '6578654320',
                         sales_person: "Demo User",
                         email: "user@democompany.com",
                         phone: "0987654321",
@@ -401,7 +401,7 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                     await EstimateDetail.insert({
                         id: 5,
                         estimate_id: 5,
-                        estimate_number: 765675342,
+                        estimate_number: '7656753420',
                         sales_person: "Demo User",
                         email: "user@democompany.com",
                         phone: "0987654321",

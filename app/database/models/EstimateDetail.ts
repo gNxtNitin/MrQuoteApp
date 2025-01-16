@@ -32,7 +32,7 @@ interface EstimateDetailColumns {
 export interface EstimateDetailData {
   id?: number;
   estimate_id?: number;
-  estimate_number?: number;
+  estimate_number?: string;
   sales_person?: string;
   estimate_revenue?: string;
   email?: string;
@@ -54,7 +54,7 @@ export const EstimateDetail = {
   columns: {
     id: { type: 'INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE' },
     estimate_id: { type: 'INTEGER' },
-    estimate_number: { type: 'INTEGER' },
+    estimate_number: { type: 'TEXT' },
     sales_person: { type: 'TEXT' },
     estimate_revenue: { type: 'TEXT' },
     email: { type: 'TEXT' },
@@ -94,7 +94,6 @@ export const EstimateDetail = {
     const db = openDatabase();
     
     try {
-    //   await db.withTransactionAsync(async () => {
         const keys = Object.keys(estimateDetailData);
         const values = Object.values(estimateDetailData);
         const placeholders = values.map(() => '?').join(',');
