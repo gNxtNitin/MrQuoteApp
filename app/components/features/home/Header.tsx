@@ -8,7 +8,7 @@ import {
   Pressable,
 } from "react-native";
 import { Colors } from "@/app/constants/colors";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CompanySwitcher } from "../company/CompanySwitcher";
 import { router } from "expo-router";
 import { create } from "zustand";
@@ -18,48 +18,70 @@ import { useThemeStore } from "@/app/stores/themeStore";
 import { usePathname } from "expo-router";
 import { useSidebarStore } from "@/app/stores/sidebarStore";
 import { useAuth } from '@/app/hooks/useAuth';
-
-interface HeaderState {
-  showSwitcher: boolean;
-  selectedCompany: string;
-  setShowSwitcher: (show: boolean) => void;
-  setSelectedCompany: (companyId: string) => void;
-}
-
-const useHeaderStore = create<HeaderState>((set) => ({
-  showSwitcher: false,
-  selectedCompany: "gutter",
-  setShowSwitcher: (show) => set({ showSwitcher: show }),
-  setSelectedCompany: (companyId) => set({ selectedCompany: companyId }),
-}));
+import { initialsName } from "../../common/Utils";
+import { Company, CompanyData } from "@/app/database/models/Company";
+import { useHeaderStore } from '@/app/stores/headerStore';
 
 export function Header() {
-  const { showSwitcher, selectedCompany, setShowSwitcher, setSelectedCompany } =
-    useHeaderStore();
+  const { 
+    showSwitcher, 
+    selectedCompany, 
+    setShowSwitcher, 
+    setSelectedCompany,
+    lastSelectedCompany,
+    setLastSelectedCompany 
+  } = useHeaderStore();
   const theme = useTheme();
   const { isDarkMode, toggleTheme } = useThemeStore();
   const pathname = usePathname();
   const showSidebarButton = pathname === "/editEstimate";
   const { open: openSidebar } = useSidebarStore();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
+  
+  const [companies, setCompanies] = useState<CompanyData[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  const companies = [
-    {
-      id: "gutter",
-      borderColor: "#0F5695",
-      name: "Mr. Gutter",
-      color: "#f3f4f6",
-    },
-    {
-      id: "roofing",
-      borderColor: "#ef4444",
-      name: "Mr. Roofing",
-      color: "#f3f4f6",
-    },
-  ];
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        if (user?.company_id) {
+          const companyIds = JSON.parse(user.company_id as string);
+          
+          const companyDetails = await Promise.all(
+            companyIds.map(async (id: number) => {
+              const company = await Company.getById(id);
+              return company;
+            })
+          );
 
-  const handleSelectCompany = (companyId: string) => {
+          const validCompanies = companyDetails.filter(Boolean);
+          setCompanies(validCompanies);
+          
+          // Only set company if not already initialized
+          if (!isInitialized) {
+            // If there's a last selected company and it's in the user's companies, use it
+            if (lastSelectedCompany && companyIds.includes(lastSelectedCompany)) {
+              setSelectedCompany(lastSelectedCompany);
+            }
+            // Otherwise, if no company is selected and we have companies, select the first one
+            else if ((!selectedCompany || !companyIds.includes(selectedCompany)) && validCompanies.length > 0) {
+              setSelectedCompany(validCompanies[0].id!);
+              setLastSelectedCompany(validCompanies[0].id!);
+            }
+            setIsInitialized(true);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching companies:', error);
+      }
+    };
+
+    fetchCompanies();
+  }, [user?.company_id, isInitialized]);
+
+  const handleSelectCompany = (companyId: number) => {
     setSelectedCompany(companyId);
+    setLastSelectedCompany(companyId);
     setShowSwitcher(false);
   };
 
@@ -80,13 +102,33 @@ export function Header() {
     openSidebar();
   };
 
-  const gutter = require("@/assets/images/gutter-logo.png");
-  const roofing = require("@/assets/images/roofing-logo.png");
+  const getCompanyLogo = (companyId: number) => {
+    switch (companyId) {
+      case 1:
+        return require("@/assets/images/gutter-logo.png");
+      case 2:
+        return require("@/assets/images/roofing-logo.png");
+      default:
+        return require("@/assets/images/gutter-logo.png");
+    }
+  };
 
-  const logoToShow = selectedCompany === "gutter" ? gutter : roofing;
+  const logoToShow = currentCompany ? getCompanyLogo(currentCompany.id as number) : null;
+
+  const handleOverlayPress = () => {
+    if (showSwitcher) {
+      setShowSwitcher(false);
+    }
+  };
 
   return (
     <View style={[styles.header, { zIndex: 9999 }]}>
+      {showSwitcher && (
+        <Pressable 
+          style={styles.overlay}
+          onPress={handleOverlayPress}
+        />
+      )}
       <View style={styles.content}>
         <View style={styles.leftSection}>
           {showSidebarButton && (
@@ -108,17 +150,19 @@ export function Header() {
           </Pressable>
         </View>
 
-        <View style={[styles.rightSection, { zIndex: 9999 }]}>
-          <Pressable onPress={toggleTheme} style={styles.themeButton}>
+        <View style={styles.rightSection}>
+          <Pressable style={styles.themeButton} onPress={toggleTheme}>
             <MaterialIcons
               name={isDarkMode ? "light-mode" : "dark-mode"}
               size={24}
               color={Colors.white}
             />
           </Pressable>
-          <Image source={logoToShow} resizeMode="contain" style={styles.dynamicLogo} />
+          {logoToShow && (
+            <Image source={logoToShow} resizeMode="contain" style={styles.dynamicLogo} />
+          )}
           <Text style={styles.companyName}>
-            {currentCompany?.name.toUpperCase()}
+            {currentCompany?.company_name?.toUpperCase()}
           </Text>
           <View>
             <Pressable
@@ -132,7 +176,7 @@ export function Header() {
                 ]}
               >
                 <Text style={[styles.initial, { color: Colors.primary }]}>
-                  {"AS"}
+                  {initialsName(`${user?.first_name || ''} ${user?.last_name || ''}`)}
                 </Text>
               </View>
             </Pressable>
@@ -234,5 +278,14 @@ const styles = StyleSheet.create({
   dynamicLogo:{
     height:30,
     width:50
-  }
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'transparent',
+    zIndex: 9998,
+  },
 });

@@ -6,23 +6,29 @@ import { router, useRouter } from 'expo-router';
 import { Estimate } from '@/app/types/estimate';
 import { getHouseImage } from '@/app/utils/houseImages';
 import { useTheme } from '@/app/components/providers/ThemeProvider';
-
+import { useEstimateStore } from '@/app/stores/estimateStore';
+import { EstimateData } from '@/app/database/models/Estimate';
+import { EstimateDetailData } from '@/app/database/models/EstimateDetail';
 interface EstimateCardProps {
   estimate: Estimate;
   index: number;
-  onStatusChange?: (estimateId: string, newStatus: Estimate['status']) => Promise<void>;
+  onStatusChange?: (estimateId: string, newStatus: Estimate['estimateStatus']) => Promise<void>;
+  estimateData: EstimateData;
+  estimateDetail: EstimateDetailData;
 }
 
-export function EstimateCard({ estimate, index, onStatusChange }: EstimateCardProps) {
+export function EstimateCard({ estimate, index, onStatusChange, estimateData, estimateDetail }: EstimateCardProps) {
   const router = useRouter();
   const [isSyncing, setIsSyncing] = useState(false);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
-  const [currentStatus, setCurrentStatus] = useState<Estimate['status']>(estimate.status);
+  const [currentStatus, setCurrentStatus] = useState<Estimate['estimateStatus']>(estimate.estimateStatus);
   const theme = useTheme();
+  const setSelectedEstimate = useEstimateStore(state => state.setSelectedEstimate);
+  const fetchAndSetLayout = useEstimateStore(state => state.fetchAndSetLayout);
 
   const houseImage = getHouseImage(estimate.id);
 
-  const handleStatusChange = async (newStatus: Estimate['status']) => {
+  const handleStatusChange = async (newStatus: Estimate['estimateStatus']) => {
     try {
       setIsSyncing(true);
       if (onStatusChange) {
@@ -43,17 +49,31 @@ export function EstimateCard({ estimate, index, onStatusChange }: EstimateCardPr
     setIsSyncing(false);
   };
 
-  const handleCardPress = () => {
-    router.push({
-      pathname: '/estimate',
-      params: { 
-        estimateData: JSON.stringify(estimate),
-        estimateId: estimate.id
+  const handleCardPress = async () => {
+    try {
+      // First set the estimate and fetch layout
+      await setSelectedEstimate(estimateData, estimateDetail);
+      
+      // Ensure layout is fetched and set
+      if (estimateData.id) {
+        await fetchAndSetLayout(estimateData.id);
       }
-    });
+
+      // Then navigate
+      router.push({
+        pathname: '/estimate',
+        params: { 
+          estimateData: JSON.stringify(estimate),
+          estimateId: estimate.id
+        }
+      });
+    } catch (error) {
+      console.error('Error handling estimate selection:', error);
+      // You might want to show an error message to the user here
+    }
   };
 
-  const getStatusTextColor = (status: Estimate['status']) => {
+  const getStatusTextColor = (status: Estimate['estimateStatus']) => {
     switch (status) {
       case 'provided':
         return '#B45309';
@@ -96,6 +116,12 @@ export function EstimateCard({ estimate, index, onStatusChange }: EstimateCardPr
         </View>
 
         <View style={styles.content}>
+          <View style={styles.infoRow}>
+            <MaterialIcons name="tag" size={18} color={theme.primary} />
+            <Text style={[styles.infoText, { color: theme.textSecondary }]} numberOfLines={1}>
+              {estimate.estimateNumber}
+            </Text>
+          </View>
           <View style={styles.infoRow}>
             <MaterialIcons name="location-on" size={18} color={theme.primary} />
             <Text style={[styles.infoText, { color: theme.textSecondary }]} numberOfLines={2}>
@@ -152,7 +178,7 @@ export function EstimateCard({ estimate, index, onStatusChange }: EstimateCardPr
             <TouchableOpacity 
               key={s}
               style={[styles.dropdownItem, currentStatus === s && styles.dropdownItemActive]}
-              onPress={() => handleStatusChange(s as Estimate['status'])}
+              onPress={() => handleStatusChange(s as Estimate['estimateStatus'])}
             >
               <Text style={[styles.dropdownText, currentStatus === s && styles.dropdownTextActive]}>
                 {s.replace('_', ' ').charAt(0).toUpperCase() + s.slice(1).replace('_', ' ')}
@@ -169,7 +195,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.white,
     borderRadius: 16,
-    width: '32%',
+    width: '48%',
     height: 420,
     shadowColor: Colors.black,
     shadowOffset: { width: 0, height: 8 },
@@ -186,6 +212,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 200,
     position: 'relative',
+    alignItems: 'flex-start',
   },
   houseImage: {
     width: '100%',

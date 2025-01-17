@@ -56,6 +56,7 @@ export const User = {
       );
     `;
     await db.execAsync(query);
+    console.log('User table created');
   },
 
   insert: async (userData: UserData) => {
@@ -68,6 +69,7 @@ export const User = {
     `;
 
     await db.runAsync(query, values);
+    console.log('User inserted');
   },
 
   getById: async (id: number): Promise<UserData | null> => {

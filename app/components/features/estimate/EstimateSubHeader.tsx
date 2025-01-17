@@ -10,24 +10,20 @@ import { useTheme } from "@/app/components/providers/ThemeProvider";
 
 type EstimateSubHeaderProps = Estimate;
 
-export function EstimateSubHeader({
-  customerName,
-  address,
-  phone,
-  email,
-  status,
-  date,
+export function EstimateSubHeader({ 
+  customerName, 
+  address, 
+  phone, 
+  email, 
+  estimateStatus, 
+  date 
 }: EstimateSubHeaderProps) {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showLayoutDialog, setShowLayoutDialog] = useState(false);
   const theme = useTheme();
 
   const handleBack = () => router.back();
-
-  const handleNewQuote = () => {
-    router.push("/editEstimate");
-  };
-
+  
   const handleCloseDialog = () => {
     setShowCreateDialog(false);
   };
@@ -71,11 +67,9 @@ export function EstimateSubHeader({
               <Text style={[styles.customerName, { color: theme.primary }]}>
                 {customerName}
               </Text>
-              <View style={[styles.badge, styles[`status_${status}`]]}>
-                <Text
-                  style={[styles.badgeText, styles[`statusText_${status}`]]}
-                >
-                  {status.toUpperCase()}
+              <View style={[styles.badge, styles[`status_${estimateStatus}`]]}>
+                <Text style={[styles.badgeText, styles[`statusText_${estimateStatus}`]]}>
+                  {estimateStatus.toUpperCase()}
                 </Text>
               </View>
             </View>
@@ -126,50 +120,17 @@ export function EstimateSubHeader({
         <View style={styles.rightSection}>
           <View style={styles.actionRows}>
             <View style={styles.iconGroup}>
-              {/* <Pressable 
-                style={[styles.iconButton, { backgroundColor: theme.background }]}
-                onPress={handleChangeLayout}
-              >
-                <MaterialIcons name="view-agenda" size={18} color={theme.textPrimary} />
-              </Pressable> */}
-
-              <Pressable
-                style={[
-                  styles.iconButton,
-                  { backgroundColor: theme.background },
-                ]}
-                onPress={handleEstimateSettings}
-              >
-                <MaterialIcons
-                  name="settings"
-                  size={18}
-                  color={theme.textPrimary}
-                />
+              <Pressable style={[styles.iconButton, { backgroundColor: theme.background }]} onPress={handleEstimateSettings}>
+                <MaterialIcons name="settings" size={18} color={theme.textPrimary} />
               </Pressable>
             </View>
             <View style={styles.buttonGroup}>
-              {/* <Pressable 
-                style={[styles.actionButton, styles.primaryButton]}
-                onPress={handleNewQuote}
-              >
-                <MaterialIcons name="add" size={16} color={Colors.white} />
-                <Text style={[styles.actionButtonText, styles.primaryButtonText]}>
-                  New Quote
-                </Text>
-              </Pressable> */}
-
-              <Pressable
+               <Pressable 
                 style={[styles.actionButton, styles.primaryButton]}
                 onPress={handleChangeLayout}
               >
-                <MaterialIcons
-                  name="view-agenda"
-                  size={16}
-                  color={Colors.white}
-                />
-                <Text
-                  style={[styles.actionButtonText, styles.primaryButtonText]}
-                >
+                <MaterialIcons name="view-agenda" size={16} color={Colors.white} />
+                <Text style={[styles.actionButtonText, styles.primaryButtonText]}>
                   Change Layout
                 </Text>
               </Pressable>
@@ -206,14 +167,14 @@ export function EstimateSubHeader({
       <CreateEstimateDialog
         visible={showCreateDialog}
         onClose={handleCloseDialog}
-        onSave={handleSaveEstimate}
-      />
+        onSave={() => {}} 
+        companyId={0}
+        />
 
       <ChangeLayoutDialog
         visible={showLayoutDialog}
         onClose={handleCloseLayoutDialog}
-        onSave={handleSaveLayout}
-      />
+        onSave={handleSaveLayout} />
     </View>
   );
 }

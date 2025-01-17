@@ -2,7 +2,6 @@ import { SQLiteVariadicBindParams } from 'expo-sqlite';
 import { openDatabase } from '../../services/database/init';
 import * as SQLite from 'expo-sqlite';
 
-// Get database instance
 const db = openDatabase();
 
 interface ColumnDefinition {
@@ -28,7 +27,7 @@ interface CompanyColumns {
   modified_date: ColumnDefinition;
 }
 
-interface CompanyData {
+export interface CompanyData {
   id?: number;
   parent_company_id?: number;
   company_name?: string;
@@ -69,14 +68,22 @@ export const Company = {
   } as CompanyColumns,
 
   createTable: async () => {
+    const columnDefinitions = Object.entries(Company.columns)
+      .map(([key, value]) => `${key} ${value.type}`)
+      .join(',\n');
+
     const query = `
       CREATE TABLE IF NOT EXISTS ${Company.tableName} (
-        ${Object.entries(Company.columns)
-          .map(([key, value]) => `${key} ${value.type}`)
-          .join(',\n')}
+        ${columnDefinitions}
       );
     `;
-    await db.execAsync(query);
+
+    try {
+      await db.execAsync(query);
+    } catch (error) {
+      console.error('Error creating company table:', error);
+      throw error;
+    }
   },
 
   insert: async (companyData: CompanyData) => {
@@ -107,6 +114,35 @@ export const Company = {
       await statement.finalizeAsync();
     }
   },
+
+  // // Add more methods as needed
+  // update: async (id: number, data: Partial<CompanyData>) => {
+  //   const keys = Object.keys(data);
+  //   const values = Object.values(data);
+  //   const setClause = keys.map(key => `${key} = ?`).join(', ');
+
+  //   const statement = await db.prepareAsync(
+  //     `UPDATE ${Company.tableName} SET ${setClause} WHERE id = ?`
+  //   );
+
+  //   try {
+  //     await statement.executeAsync([...values, id]);
+  //   } finally {
+  //     await statement.finalizeAsync();
+  //   }
+  // },
+
+  // delete: async (id: number) => {
+  //   const statement = await db.prepareAsync(
+  //     `DELETE FROM ${Company.tableName} WHERE id = ?`
+  //   );
+
+  //   try {
+  //     await statement.executeAsync([id]);
+  //   } finally {
+  //     await statement.finalizeAsync();
+  //   }
+  // },
 
   // Add more methods as needed
   update: async (id: number, data: Partial<CompanyData>) => {

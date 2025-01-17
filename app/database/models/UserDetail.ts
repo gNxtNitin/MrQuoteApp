@@ -29,7 +29,7 @@ interface UserDetailColumns {
 
 export interface UserDetailData {
   id?: number;
-  company_id?: number;
+  company_id?: string;
   first_name?: string;
   last_name?: string;
   username?: string;
@@ -50,7 +50,7 @@ export const UserDetail = {
   tableName: 'user_details',
   columns: {
     id: { type: 'INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE' },
-    company_id: { type: 'INTEGER' },
+    company_id: { type: 'TEXT' },
     first_name: { type: 'TEXT' },
     last_name: { type: 'TEXT' },
     username: { type: 'TEXT UNIQUE' },
@@ -72,23 +72,25 @@ export const UserDetail = {
       CREATE TABLE IF NOT EXISTS ${UserDetail.tableName} (
         ${Object.entries(UserDetail.columns)
           .map(([key, value]) => `${key} ${value.type}`)
-          .join(',\n')},
-        FOREIGN KEY (company_id) REFERENCES companies(id)
+          .join(',\n')}
       );
     `;
     await db.execAsync(query);
+    console.log('UserDetail table created');
   },
 
   insert: async (userDetailData: UserDetailData) => {
     const keys = Object.keys(userDetailData);
     const values = Object.values(userDetailData);
     const placeholders = values.map(() => '?').join(',');
+    console.log('UserDetail inserting...');
 
     const query = `
       INSERT INTO ${UserDetail.tableName} (${keys.join(',')})
       VALUES (${placeholders});
     `;
     await db.runAsync(query, values);
+    console.log('UserDetail inserted');
   },
 
   getById: async (id: number): Promise<UserDetailData | null> => {
@@ -141,6 +143,22 @@ export const UserDetail = {
 
     try {
       await statement.executeAsync([...values, id]);
+    } finally {
+      await statement.finalizeAsync();
+    }
+  },
+
+  findByPinAndId: async (pin: number, userId: number): Promise<UserDetailData | null> => {
+    const statement = await db.prepareAsync(
+      `SELECT * FROM ${UserDetail.tableName}
+       WHERE pin = ?
+       AND id = ?
+       AND is_active = true`
+    );
+
+    try {
+      const result = await statement.executeAsync([pin, userId]);
+      return await result.getFirstAsync() || null;
     } finally {
       await statement.finalizeAsync();
     }
