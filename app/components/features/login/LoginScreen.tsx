@@ -84,7 +84,13 @@ export function LoginScreen({ onLogin, isDarkMode }: LoginScreenProps) {
         const response = await login(username, password);
         
         if (response.success) {
-          router.replace('/setpin');
+          if (!response.hasPin) {
+            // User needs to set up PIN
+            router.replace('/setpin');
+          } else {
+            // User already has PIN, go to PIN screen
+            router.replace('/pin');
+          }
         } else {
           setErrors({
             username: response.message,

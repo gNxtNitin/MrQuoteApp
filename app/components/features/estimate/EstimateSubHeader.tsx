@@ -48,6 +48,10 @@ export function EstimateSubHeader({
     setShowLayoutDialog(false);
   };
 
+  const handleEstimateSettings =()=>{
+    router.push("/estimateSettings")
+  }
+
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.content}>
@@ -102,7 +106,7 @@ export function EstimateSubHeader({
         <View style={styles.rightSection}>
           <View style={styles.actionRows}>
             <View style={styles.iconGroup}>
-              <Pressable style={[styles.iconButton, { backgroundColor: theme.background }]}>
+              <Pressable style={[styles.iconButton, { backgroundColor: theme.background }]} onPress={handleEstimateSettings}>
                 <MaterialIcons name="settings" size={18} color={theme.textPrimary} />
               </Pressable>
             </View>

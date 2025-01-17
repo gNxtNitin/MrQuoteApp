@@ -16,21 +16,79 @@ interface LoginResponse {
   message: string;
   user?: UserDetailData;
   requiresPin?: boolean;
+  hasPin?: boolean;
 }
+
+async function performOfflineLogin(username: string, password: string, status: string, offlineUser: UserDetailData | null): Promise<LoginResponse> {
+  // const offlineUser = await UserDetail.findByCredentials(username, "4SD4gzWOX9OfEdba9/7fRg==");
+      
+  console.log('offlineUser', offlineUser);
+  // If user exists offline, return the user
+  if (offlineUser && offlineUser.id) {
+    console.log('User found in offline database');
+    const hasPin = offlineUser.pin != null && offlineUser.pin !== undefined;
+    console.log(`hasPin (${status}):`, hasPin);
+
+    await AsyncStorage.setItem(CURRENT_USER_KEY, offlineUser.id.toString());
+    await UserDetail.update(offlineUser.id, {
+      is_logged_in: true,
+      last_login_at: new Date().toISOString()
+    });
+
+    return {
+      success: true,
+      message: `Login successful (${status} Mode)`,
+      user: offlineUser,
+      hasPin
+    } as LoginResponse;
+  } else {
+    return {
+      success: false,
+      message: `User not found!`
+    } as LoginResponse;
+  }
+}
+
 
 export const authService = {
   login: async (username: string, password: string): Promise<LoginResponse> => {
     try {
-      const isOnline = await apiClient.isOnline();
+      // First try offline login
+      const offlineUser = await UserDetail.findByCredentials(username, "4SD4gzWOX9OfEdba9/7fRg==");
+      
+      console.log('offlineUser', offlineUser);
+      // If user exists offline, return the user
+      if (offlineUser && offlineUser.id) {
+        const response = await performOfflineLogin(username, password, 'offline', offlineUser);
+        return response;
+        // console.log('User found in offline database');
+        // const hasPin = offlineUser.pin != null && offlineUser.pin !== undefined;
+        // console.log('hasPin (offline):', hasPin);
 
-      console.log('isOnline', isOnline);
+        // await AsyncStorage.setItem(CURRENT_USER_KEY, offlineUser.id.toString());
+        // await UserDetail.update(offlineUser.id, {
+        //   is_logged_in: true,
+        //   last_login_at: new Date().toISOString()
+        // });
+
+        // return {
+        //   success: true,
+        //   message: 'Login successful (Offline Mode)',
+        //   user: offlineUser,
+        //   hasPin
+        // };
+      }
+
+      // If user not found offline, try online login
+      const isOnline = await apiClient.isOnline();
+      console.log('isOnline:', isOnline);
+
       if (isOnline) {
         console.log('Attempting online login...');
         const response = await apiClient.post<UserDetailData>(API_ENDPOINTS.LOGIN, {
           username: username,
           password: password,
         });
-        // console.log('response from login', response);
 
         if (response.success && response.dataResponse) {
           try {
@@ -41,42 +99,57 @@ export const authService = {
 
             // Sync the data from API response
             await syncService.syncLoginData(response.dataResponse);
-
-            // Get the user data
-            const user = response.data;
-            if (!user || !user.id) {
-              throw new Error('Invalid user data received');
+            const offlineUser = await UserDetail.findByCredentials(username, "4SD4gzWOX9OfEdba9/7fRg==");
+      
+            console.log('offlineUser', offlineUser);
+            // If user exists offline, return the user
+            if (offlineUser && offlineUser.id) {
+              const response = await performOfflineLogin(username, password, 'offline', offlineUser);
+              return response;
+            } else {
+              return {
+                success: false,
+                message: `User not found!`
+              } as LoginResponse;
             }
-
-            console.log('User data from API:', user);
+            // Get the user data
+            // const user = response.data;
+            // if (!user || !user.id) {
+            //   throw new Error('Invalid user data received');
+            // }
             
-            // Update local user state
-            await AsyncStorage.setItem(CURRENT_USER_KEY, user.id.toString());
-            await UserDetail.update(user.id, {
-              is_logged_in: true,
-              last_login_at: new Date().toISOString(),
-            });
+            // // Check if user has PIN set up
+            // const hasPin = user.pin != null && user.pin !== undefined;
+            // console.log('hasPin (online):', hasPin);
 
-            return {
-              success: true,
-              message: 'Login successful',
-              user,
-            };
+            // // Update local user state
+            // await AsyncStorage.setItem(CURRENT_USER_KEY, user.id.toString());
+            // await UserDetail.update(user.id, {
+            //   is_logged_in: true,
+            //   last_login_at: new Date().toISOString(),
+            // });
+
+            // return {
+            //   success: true,
+            //   message: 'Login successful',
+            //   user,
+            //   hasPin
+            // };
           } catch (syncError) {
             console.error('Error during data sync:', syncError);
-            // Fall back to offline login if sync fails
-            return await performOfflineLogin(username, password);
+            return {
+              success: false,
+              message: 'Failed to sync user data'
+            };
           }
-        } else {
-          console.log('Online login failed, trying offline login');
-          return await performOfflineLogin(username, password);
         }
-      } else {
-        console.log('Offline login checking user');
       }
 
-      // If offline, try offline login
-      return await performOfflineLogin(username, password);
+      // If we reach here, neither offline nor online login worked
+      return {
+        success: false,
+        message: 'Invalid credentials'
+      };
     } catch (error) {
       console.error('Login error:', error);
       return {
@@ -145,7 +218,23 @@ export const authService = {
 
   setupPin: async (userId: number, pin: number): Promise<boolean> => {
     try {
-      await UserDetail.update(userId, { pin });
+      // Update the user's PIN in the database
+      await UserDetail.update(userId, { 
+        pin: pin,
+        is_logged_in: true,
+        last_login_at: new Date().toISOString()
+      });
+      
+      // Store the current user ID in AsyncStorage
+      await AsyncStorage.setItem(CURRENT_USER_KEY, userId.toString());
+      
+      // Reset PIN attempts if any
+      await AsyncStorage.removeItem(PIN_ATTEMPTS_KEY);
+
+      // Check if user has PIN set up
+      const hasPin = await authService.checkPin(userId);
+      console.log('hasPin', hasPin);
+      
       return true;
     } catch (error) {
       console.error('PIN setup error:', error);
@@ -165,14 +254,22 @@ export const authService = {
     }
   },
 
-  logout: async () => {
+  logout: async (resetPin: boolean = false) => {
     try {
       const userId = await AsyncStorage.getItem(CURRENT_USER_KEY);
       if (userId) {
-        // Clear PIN and logged in status
-        await UserDetail.update(parseInt(userId), { 
+        const updates: Partial<UserDetailData> = {
           is_logged_in: false,
-        });
+        };
+
+        // If resetting PIN, set pin to null in the database
+        if (resetPin) {
+          updates.pin = undefined;
+        }
+
+        // Update user details
+        await UserDetail.update(parseInt(userId), updates);
+        
         // Remove stored user ID
         await AsyncStorage.removeItem(CURRENT_USER_KEY);
         // Remove PIN attempts
@@ -183,31 +280,15 @@ export const authService = {
       console.error('Logout error:', error);
       return false;
     }
+  },
+
+  checkPin: async (userId: number): Promise<boolean> => {
+    try {
+      const user = await UserDetail.getById(userId);
+      return user?.pin != null && user?.pin !== undefined;
+    } catch (error) {
+      console.error('Error checking PIN:', error);
+      return false;
+    }
   }
-};
-
-async function performOfflineLogin(username: string, password: string): Promise<LoginResponse> {
-  // const encryptedPassword = await encrypt(password);
-  // console.log('encryptedPassword', encryptedPassword);
-  const user = await UserDetail.findByCredentials(username, password);
-  console.log('Offline login attempt for user:', user);
-  
-  if (!user || !user.id) {
-    return {
-      success: false,
-      message: 'Invalid credentials (Offline Mode)'
-    };
-  }
-
-  await AsyncStorage.setItem(CURRENT_USER_KEY, user.id.toString());
-  await UserDetail.update(user.id, {
-    is_logged_in: true,
-    last_login_at: new Date().toISOString()
-  });
-
-  return {
-    success: true,
-    message: 'Login successful (Offline Mode)',
-    user
-  };
-} 
+}; 

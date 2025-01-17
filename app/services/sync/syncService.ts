@@ -143,10 +143,10 @@ interface LoginDataResponse {
 export const syncService = {
   syncLoginData: async (dataResponse: string) => {
     try {
-      console.log('dataResponse', dataResponse);
+      // console.log('dataResponse', dataResponse);
       const data: LoginDataResponse = JSON.parse(dataResponse);
-      console.log('data', data);
-      console.log('Syncing data...');
+      // console.log('data', data);
+      // console.log('Syncing data...');
       
       // Sync Companies
       for (const company of data.Company) {
@@ -170,7 +170,7 @@ export const syncService = {
             modified_by: company.ModifiedBy ?? '',
             modified_date: company.ModifiedDate ?? ''
           });
-          console.log('Company synced:', company.CompanyName);
+          // console.log('Company synced:', company.CompanyName);
         }
       }
 
@@ -188,7 +188,7 @@ export const syncService = {
             modified_by: role.ModifiedBy ?? -1,
             modified_date: role.ModifiedDate ?? ''
           });
-          console.log('Role synced:', role.RoleName);
+          // console.log('Role synced:', role.RoleName);
         }
       }
 
@@ -196,6 +196,7 @@ export const syncService = {
       for (const user of data.Users) {
         const existingUserDetail = await UserDetail.getById(user.UserId);
         if (!existingUserDetail) {
+          console.log('user', user);
           await UserDetail.insert({
             id: user.UserId,
             company_id: user.CompanyId,
@@ -211,7 +212,7 @@ export const syncService = {
             modified_by: user.ModifiedBy ?? -1,
             modified_date: user.ModifiedDate ?? ''
           });
-          console.log('UserDetail synced:', user.UserId);
+          // console.log('UserDetail synced:', user.UserId);
         }
         
 
@@ -225,7 +226,7 @@ export const syncService = {
             created_date: user.CreatedDate,
             modified_date: user.ModifiedDate ?? ''
           });
-          console.log('User synced:', user.Username);
+          // console.log('User synced:', user.Username);
         }
       }
 
@@ -239,17 +240,17 @@ export const syncService = {
             created_date: userRole.AssignedDate,
             modified_date: userRole.ModifiedDate ?? ''
           });
-          console.log('UserRole synced for user:', userRole.UserId);
+          // console.log('UserRole synced for user:', userRole.UserId);
         }
       }
 
       // Sync Layouts
       for (const layout of data.Layout) {
-        console.log('layout', layout);
+        // console.log('layout', layout);
         const existingLayout = await Layouts.getById(layout.LayoutID);
-        console.log('existingLayout', existingLayout);
+        // console.log('existingLayout', existingLayout);
         if (!existingLayout) {
-          console.log('layout not found. inserting...');
+          // console.log('layout not found. inserting...');
           await Layouts.insert({
             id: layout.LayoutID,
             company_id: layout.CompanyID,
@@ -264,19 +265,19 @@ export const syncService = {
             modified_by: layout.ModifiedBy ?? null,
             modified_date: layout.ModifiedDate ?? ''
           });
-          console.log('Layout synced:', layout.LayoutName);
+          // console.log('Layout synced:', layout.LayoutName);
         } else {
-          console.log('Layout already exists:', layout.LayoutName);
+          // console.log('Layout already exists:', layout.LayoutName);
         }
       }
 
       // Sync Pages
       for (const page of data.Pages) {
-        console.log('page', page);
+        // console.log('page', page);
         const existingPage = await Pages.getById(page.PageId);
         if (!existingPage) {
-          console.log('page.CreatedBy', page.CreatedBy);
-          console.log('page.modified_by', page.ModifiedBy);
+          // console.log('page.CreatedBy', page.CreatedBy);
+          // console.log('page.modified_by', page.ModifiedBy);
           await Pages.insert({
             id: page.PageId,
             page_name: page.PageName,
@@ -288,19 +289,19 @@ export const syncService = {
             modified_by: page.ModifiedBy ?? null,
             modified_date: page.ModifiedDate ?? ''
           });
-          console.log('Page synced:', page.PageName);
+          // console.log('Page synced:', page.PageName);
         } else {
-          console.log('Page already exists:', page.PageName);
+          // console.log('Page already exists:', page.PageName);
         }
       }
 
       // Sync LayoutPages
       for (const layoutPage of data.LayoutPages) {
-        console.log('layoutPage', layoutPage);
+        // console.log('layoutPage', layoutPage);
         const existingLayoutPage = await LayoutPages.getById(layoutPage.LayoutPageId);
-        console.log('existingLayoutPage', existingLayoutPage);
+        // console.log('existingLayoutPage', existingLayoutPage);
         if (!existingLayoutPage) {
-          console.log('layoutPage not found. inserting...');
+          // console.log('layoutPage not found. inserting...');
           await LayoutPages.insert({
             id: layoutPage.LayoutPageId,
             page_id: layoutPage.PageId,
@@ -311,18 +312,18 @@ export const syncService = {
             modified_by: layoutPage.ModifiedBy ?? null,
             modified_date: layoutPage.ModifiedDate ?? ''
           });
-          console.log('LayoutPage synced:', layoutPage.LayoutPageId);
+          // console.log('LayoutPage synced:', layoutPage.LayoutPageId);
         } else {
-          console.log('LayoutPage already exists:', layoutPage.LayoutPageId);
+          // console.log('LayoutPage already exists:', layoutPage.LayoutPageId);
         }
       }
 
       // Sync TitlePageContent
       for (const titlePage of data.TitlePageContent) {
-        console.log('titlePage', titlePage);
+        // console.log('titlePage', titlePage);
         const existingTitlePage = await TitlePageContent.getById(titlePage.TitlePageId);
         if (!existingTitlePage) {
-          console.log('TitlePageContent not found, inserting...');
+          // console.log('TitlePageContent not found, inserting...');
           await TitlePageContent.insert({
             id: titlePage.TitlePageId,
             page_id: titlePage.PageId,
@@ -344,19 +345,19 @@ export const syncService = {
             modified_by: titlePage.ModifiedBy ?? null,
             modified_date: titlePage.ModifiedDate ?? ''
           });
-          console.log('TitlePage synced:', titlePage.TitleName);
+          // console.log('TitlePage synced:', titlePage.TitleName);
         } else {
-          console.log('TitlePage already exists:', titlePage.TitleName);
+          // console.log('TitlePage already exists:', titlePage.TitleName);
         }
       }
 
       // Sync IntroductionPageContent
     //   for (const introPage of data.IntroductionPageContent) {
-    //     console.log('introPage', introPage);
+    //     // console.log('introPage', introPage);
     //     const existingIntroPage = await IntroductionPageContent.getById(introPage.IntroductionPageId);
-    //     console.log('existingIntroPage', existingIntroPage);
+    //     // console.log('existingIntroPage', existingIntroPage);
     //     if (!existingIntroPage) {
-    //       console.log('IntroductionPageContent not found, inserting...');
+    //       // console.log('IntroductionPageContent not found, inserting...');
     //       await IntroductionPageContent.insert({
     //         id: introPage.IntroductionPageId,
     //         page_id: introPage.PageId,
@@ -368,19 +369,19 @@ export const syncService = {
     //         modified_by: introPage.ModifiedBy ?? null,
     //         modified_date: introPage.ModifiedDate ?? ''
     //       });
-    //       console.log('IntroductionPage synced:', introPage.IntroductionTitle);
+    //       // console.log('IntroductionPage synced:', introPage.IntroductionTitle);
     //     } else {
-    //       console.log('IntroductionPage already exists:', introPage.IntroductionTitle);
+    //       // console.log('IntroductionPage already exists:', introPage.IntroductionTitle);
     //     }
     //   }
 
       // Sync UserCompany
       for (const userCompany of data.UserCompany) {
-        console.log('userCompany', userCompany);
+        // console.log('userCompany', userCompany);
         const existingUserCompany = await UserCompany.getById(userCompany.UserId, userCompany.CompanyId);
-        console.log('existingUserCompany', existingUserCompany);
+        // console.log('existingUserCompany', existingUserCompany);
         if (!existingUserCompany) {
-          console.log('UserCompany not found, inserting...');
+          // console.log('UserCompany not found, inserting...');
           await UserCompany.insert({
             user_id: userCompany.UserId,
             company_id: userCompany.CompanyId,
@@ -390,13 +391,13 @@ export const syncService = {
             modified_by: userCompany.ModifiedBy ?? null,
             modified_date: userCompany.ModifiedDate ?? ''
           });
-          console.log('UserCompany synced for user:', userCompany.UserId);
+          // console.log('UserCompany synced for user:', userCompany.UserId);
         } else {
-          console.log('UserCompany already exists for user:', userCompany.UserId);
+          // console.log('UserCompany already exists for user:', userCompany.UserId);
         }
       }
 
-      console.log('Data sync completed successfully');
+      // console.log('Data sync completed successfully');
       return true;
     } catch (error) {
       console.error('Error syncing data:', error);
