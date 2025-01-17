@@ -1,12 +1,11 @@
-import { View, Text, StyleSheet, Alert } from "react-native";
+import { View, Text, StyleSheet, Alert, Pressable } from "react-native";
 import { Colors } from "@/app/constants/colors";
-import { router } from "expo-router";
-import { Pressable } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Button } from "../../common/Button";
 import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
 import { useTheme } from "../../providers/ThemeProvider";
-import { useRouter } from 'expo-router';
+import { useRouter } from "expo-router";
+import PdfGenerator from "../../common/PDFGenerater";
 import { useAuth } from '@/app/hooks/useAuth';
 
 const DEFAULT_PAGES = [
@@ -20,11 +19,23 @@ const DEFAULT_PAGES = [
   "Warranty",
 ];
 
+// Utility function to convert a Uint8Array to a base64 string
+const uint8ArrayToBase64 = (uint8Array: Uint8Array): string => {
+  let binary = "";
+  const len = uint8Array.byteLength;
+  for (let i = 0; i < len; i++) {
+    binary += String.fromCharCode(uint8Array[i]);
+  }
+  return btoa(binary);
+};
+
 export function SubHeader() {
   const router = useRouter();
-  const { user } = useAuth();
-  const { currentPage, removeCustomPage, customPages, setCurrentPage } = useEstimatePageStore();
+  const formData = useEstimatePageStore((state) => state.formData);
+  const { currentPage, removeCustomPage, customPages, setCurrentPage } =
+    useEstimatePageStore();
   const theme = useTheme();
+  const { user } = useAuth();
 
   const handleBack = () => router.back();
   
@@ -56,13 +67,10 @@ export function SubHeader() {
                 ...customPages.map((cp) => cp.title),
               ];
 
-              // Find current page index
               const currentIndex = allPages.indexOf(currentPage);
 
-              // Remove the page
               removeCustomPage(currentCustomPage.id);
 
-              // Navigate to next page or previous if it's the last page
               const nextPage =
                 allPages[currentIndex + 1] ||
                 allPages[currentIndex - 1] ||
@@ -122,12 +130,7 @@ export function SubHeader() {
             />
           </View>
         )}
-        <Button
-          label="View Page"
-          onPress={handleViewPage}
-          variant="primary"
-          size="medium"
-        />
+        <PdfGenerator formData={formData} pageKey={currentPage} />
         <Pressable
           style={[
             styles.actionButton,
@@ -137,7 +140,7 @@ export function SubHeader() {
             },
           ]}
           onPress={() => {
-            router.push('/reviewandshare');
+            router.push("/reviewandshare");
           }}
         >
           <MaterialIcons name="ios-share" size={16} color={theme.textPrimary} />
@@ -192,7 +195,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
   },
-
   actionButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -204,7 +206,6 @@ const styles = StyleSheet.create({
     borderColor: Colors.primary,
     backgroundColor: Colors.white,
   },
-
   actionButtonText: { fontSize: 14, fontWeight: "600", color: Colors.primary },
 
   detailsRow: {

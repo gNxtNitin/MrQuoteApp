@@ -12,7 +12,7 @@ import { Button } from "../../../common/Button";
 import { Colors } from "@/app/constants/colors";
 import { Feather, MaterialIcons } from "@expo/vector-icons";
 import { FileUploader } from "@/app/components/common/FileUploader";
-import { UploadSuccess } from "@/app/components/common/uploadsuccess";
+import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
 
 export function TitlePage() {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -49,6 +49,7 @@ export function TitlePage() {
       postalCode,
     };
     console.log("Saving changes...", formData);
+    useEstimatePageStore.getState().setFormData("Title",formData);
   };
 
   return (
@@ -98,43 +99,23 @@ export function TitlePage() {
 
             {/* Image Upload Row */}
             <View style={styles.row}>
-              {primaryImage === null ? (
-                <FileUploader
-                  label="Primary Image"
-                  accept="image"
-                  onUpload={(file) => {
-                    console.log("File uploaded for Primary Image:", file); 
-                    setPrimaryImage(file);
-                  }}
-                />
-              ) : (
-                <UploadSuccess
-                  selectedImage={
-                    typeof primaryImage === "string"
-                      ? primaryImage
-                      : primaryImage?.uri
-                  }
-                />
-              )}
+              <FileUploader
+                label="Primary Image"
+                accept="both"
+                onUpload={(file) => {
+                  setPrimaryImage(file || null);
+                }}
+                height={180}
+              />
 
-              {certificateOrSecLogo === null ? (
-                <FileUploader
-                  label="Certification/Secondary Logo"
-                  accept="image"
-                  onUpload={(file) => {
-                    console.log("File uploaded for Certification/Logo:", file); 
-                    setCertificateOrSecLogo(file);
-                  }}
-                />
-              ) : (
-                <UploadSuccess
-                  selectedImage={
-                    typeof certificateOrSecLogo === "string"
-                      ? certificateOrSecLogo
-                      : certificateOrSecLogo?.uri
-                  }
-                />
-              )}
+              <FileUploader
+                label="Certification/Secondary Logo"
+                accept="both"
+                onUpload={(file) => {
+                  setCertificateOrSecLogo(file || null);
+                }}
+                height={180}
+              />
             </View>
 
             {/* Name Row */}
