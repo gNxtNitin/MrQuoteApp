@@ -24,56 +24,56 @@ export const authService = {
       const isOnline = await apiClient.isOnline();
 
       console.log('isOnline', isOnline);
-      // if (isOnline) {
-      //   console.log('Attempting online login...');
-      //   const response = await apiClient.post<UserDetailData>(API_ENDPOINTS.LOGIN, {
-      //     username: username,
-      //     password: password,
-      //   });
-      //   // console.log('response from login', response);
+      if (isOnline) {
+        console.log('Attempting online login...');
+        const response = await apiClient.post<UserDetailData>(API_ENDPOINTS.LOGIN, {
+          username: username,
+          password: password,
+        });
+        // console.log('response from login', response);
 
-      //   if (response.success && response.dataResponse) {
-      //     try {
-      //       // Store the auth token
-      //       if (response.token) {
-      //         await AsyncStorage.setItem('auth_token', response.token);
-      //       }
+        if (response.success && response.dataResponse) {
+          try {
+            // Store the auth token
+            if (response.token) {
+              await AsyncStorage.setItem('auth_token', response.token);
+            }
 
-      //       // Sync the data from API response
-      //       await syncService.syncLoginData(response.dataResponse);
+            // Sync the data from API response
+            await syncService.syncLoginData(response.dataResponse);
 
-      //       // Get the user data
-      //       const user = response.data;
-      //       if (!user || !user.id) {
-      //         throw new Error('Invalid user data received');
-      //       }
+            // Get the user data
+            const user = response.data;
+            if (!user || !user.id) {
+              throw new Error('Invalid user data received');
+            }
 
-      //       console.log('User data from API:', user);
+            console.log('User data from API:', user);
             
-      //       // Update local user state
-      //       await AsyncStorage.setItem(CURRENT_USER_KEY, user.id.toString());
-      //       await UserDetail.update(user.id, {
-      //         is_logged_in: true,
-      //         last_login_at: new Date().toISOString(),
-      //       });
+            // Update local user state
+            await AsyncStorage.setItem(CURRENT_USER_KEY, user.id.toString());
+            await UserDetail.update(user.id, {
+              is_logged_in: true,
+              last_login_at: new Date().toISOString(),
+            });
 
-      //       return {
-      //         success: true,
-      //         message: 'Login successful',
-      //         user,
-      //       };
-      //     } catch (syncError) {
-      //       console.error('Error during data sync:', syncError);
-      //       // Fall back to offline login if sync fails
-      //       return await performOfflineLogin(username, password);
-      //     }
-      //   } else {
-      //     console.log('Online login failed, trying offline login');
-      //     return await performOfflineLogin(username, password);
-      //   }
-      // } else {
-      //   console.log('Offline login checking user');
-      // }
+            return {
+              success: true,
+              message: 'Login successful',
+              user,
+            };
+          } catch (syncError) {
+            console.error('Error during data sync:', syncError);
+            // Fall back to offline login if sync fails
+            return await performOfflineLogin(username, password);
+          }
+        } else {
+          console.log('Online login failed, trying offline login');
+          return await performOfflineLogin(username, password);
+        }
+      } else {
+        console.log('Offline login checking user');
+      }
 
       // If offline, try offline login
       return await performOfflineLogin(username, password);
