@@ -43,9 +43,10 @@ export interface TitlePageContentData {
   city?: string | null;
   state?: string | null;
   zip_code?: string | null;
-  created_by?: number;
+  is_active?: boolean;
+  created_by?: number | null;
   created_date?: string;
-  modified_by?: number;
+  modified_by?: number | null;
   modified_date?: string;
 }
 
@@ -66,6 +67,7 @@ export const TitlePageContent = {
     city: { type: 'TEXT NULL' },
     state: { type: 'TEXT NULL' },
     zip_code: { type: 'TEXT NULL' },
+    is_active: { type: 'BOOLEAN DEFAULT TRUE' },
     created_by: { type: 'INTEGER' },
     created_date: { type: 'DATETIME DEFAULT CURRENT_TIMESTAMP' },
     modified_by: { type: 'INTEGER' },

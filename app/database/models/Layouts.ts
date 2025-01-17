@@ -26,14 +26,14 @@ export interface LayoutsData {
   id?: number;
   company_id?: number;
   layout_name?: string;
-  layout_type?: 'Report' | 'Order';
+  layout_type?: 'Quote' | 'Order';
   description?: string;
   is_default?: boolean;
   is_shared?: boolean;
   is_active?: boolean;
   created_by?: number;
   created_date?: string;
-  modified_by?: number;
+  modified_by?: number | null;
   modified_date?: string;
 }
 
@@ -43,7 +43,7 @@ export const Layouts = {
     id: { type: 'INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE' },
     company_id: { type: 'INTEGER' },
     layout_name: { type: 'TEXT' },
-    layout_type: { type: "TEXT CHECK(layout_type IN ('Report', 'Order'))" },
+    layout_type: { type: "TEXT CHECK(layout_type IN ('Quote', 'Order'))" },
     description: { type: 'TEXT' },
     is_default: { type: 'BOOLEAN' },
     is_shared: { type: 'BOOLEAN' },

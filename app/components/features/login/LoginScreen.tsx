@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, SafeAreaView, Image, Keyboard } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Pressable, StyleSheet, SafeAreaView, Image, Keyboard, ActivityIndicator } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '@/app/constants/colors';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/app/hooks/useAuth';
+import NetInfo from '@react-native-community/netinfo';
 
 interface LoginScreenProps {
   onLogin: () => void;
@@ -24,6 +25,37 @@ export function LoginScreen({ onLogin, isDarkMode }: LoginScreenProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [touched, setTouched] = useState({ username: false, password: false });
+  const [isOnline, setIsOnline] = useState(false);
+  const [isCheckingNetwork, setIsCheckingNetwork] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    checkNetworkStatus();
+
+    const intervalId = setInterval(checkNetworkStatus, 3000);
+
+    const unsubscribe = NetInfo.addEventListener(state => {
+      setIsOnline(!!state.isConnected);
+    });
+
+    return () => {
+      clearInterval(intervalId);
+      unsubscribe();
+    };
+  }, []);
+
+  const checkNetworkStatus = async () => {
+    try {
+      setIsCheckingNetwork(true);
+      const state = await NetInfo.fetch();
+      setIsOnline(!!state.isConnected);
+    } catch (error) {
+      console.error('Error checking network status:', error);
+      setIsOnline(false);
+    } finally {
+      setIsCheckingNetwork(false);
+    }
+  };
 
   const validateForm = (): boolean => {
     const newErrors: ValidationErrors = {};
@@ -48,6 +80,7 @@ export function LoginScreen({ onLogin, isDarkMode }: LoginScreenProps) {
     Keyboard.dismiss();
     if (validateForm()) {
       try {
+        setIsLoading(true);
         const response = await login(username, password);
         
         if (response.success) {
@@ -63,6 +96,8 @@ export function LoginScreen({ onLogin, isDarkMode }: LoginScreenProps) {
           username: 'Login failed. Please try again.',
           password: 'Login failed. Please try again.'
         });
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -95,6 +130,16 @@ export function LoginScreen({ onLogin, isDarkMode }: LoginScreenProps) {
                   style={styles.loginLogo}
                   resizeMode="contain"
                 />
+
+                <Text style={styles.connectionStatus}>
+                  {isCheckingNetwork ? (
+                    '🔄 Checking connection...'
+                  ) : isOnline ? (
+                    '🟢 Online Mode'
+                  ) : (
+                    '🔴 Offline Mode'
+                  )}
+                </Text>
 
                 <View style={styles.form}>
                   <View>
@@ -151,12 +196,19 @@ export function LoginScreen({ onLogin, isDarkMode }: LoginScreenProps) {
                     )}
                   </View>
 
-                  <Pressable 
-                    style={[styles.loginButton, (!username || !password) && styles.loginButtonDisabled]}
+                  <Pressable
+                    style={[
+                      styles.loginButton,
+                      (!username || !password) && styles.loginButtonDisabled
+                    ]}
                     onPress={handleLogin}
-                    disabled={!username || !password}
+                    disabled={!username || !password || isLoading}
                   >
-                    <Text style={styles.loginButtonText}>LOGIN</Text>
+                    {isLoading ? (
+                      <ActivityIndicator color={Colors.white} size="small" />
+                    ) : (
+                      <Text style={styles.loginButtonText}>Login</Text>
+                    )}
                   </Pressable>
                 </View>
               </View>
@@ -254,11 +306,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 16,
+    flexDirection: 'row',
+    paddingHorizontal: 24,
   },
   loginButtonText: {
     color: Colors.white,
     fontSize: 16,
     fontWeight: '600',
+    marginLeft: 8,
   },
   loginLogo: {
     width: 300,
@@ -278,5 +333,15 @@ const styles = StyleSheet.create({
   },
   loginButtonDisabled: {
     opacity: 0.6,
+  },
+  connectionStatus: {
+    fontSize: 14,
+    color: Colors.white,
+    textAlign: 'center',
+    marginBottom: 16,
+    opacity: 0.8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

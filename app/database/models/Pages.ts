@@ -27,7 +27,7 @@ export interface PagesData {
   is_active?: boolean;
   created_by?: number;
   created_date?: string;
-  modified_by?: number;
+  modified_by?: number | null;
   modified_date?: string;
 }
 

@@ -23,13 +23,15 @@ interface UserDetailColumns {
   is_first_login: ColumnDefinition;
   last_login_at: ColumnDefinition;
   is_active: ColumnDefinition;
+  created_by: ColumnDefinition; // Added created_by
+  modified_by: ColumnDefinition; // Added modified_by
   created_date: ColumnDefinition;
   modified_date: ColumnDefinition;
 }
 
 export interface UserDetailData {
   id?: number;
-  company_id?: string;
+  company_id?: number;
   first_name?: string;
   last_name?: string;
   username?: string;
@@ -42,6 +44,8 @@ export interface UserDetailData {
   is_first_login?: boolean;
   last_login_at?: string;
   is_active?: boolean;
+  created_by?: number; // Added created_by
+  modified_by?: number; // Added modified_by
   created_date?: string;
   modified_date?: string;
 }
@@ -50,7 +54,7 @@ export const UserDetail = {
   tableName: 'user_details',
   columns: {
     id: { type: 'INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE' },
-    company_id: { type: 'TEXT' },
+    company_id: { type: 'INTEGER' },
     first_name: { type: 'TEXT' },
     last_name: { type: 'TEXT' },
     username: { type: 'TEXT UNIQUE' },
@@ -63,6 +67,8 @@ export const UserDetail = {
     is_first_login: { type: 'BOOLEAN DEFAULT true' },
     last_login_at: { type: 'DATETIME' },
     is_active: { type: 'BOOLEAN DEFAULT true' },
+    created_by: { type: 'INTEGER' }, // Added created_by
+    modified_by: { type: 'INTEGER' }, // Added modified_by
     created_date: { type: 'DATETIME DEFAULT CURRENT_TIMESTAMP' },
     modified_date: { type: 'DATETIME DEFAULT CURRENT_TIMESTAMP' }
   } as UserDetailColumns,

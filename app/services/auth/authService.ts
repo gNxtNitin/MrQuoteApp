@@ -3,6 +3,9 @@ import { UserDetail, UserDetailData } from '../../database/models/UserDetail';
 import { User } from '../../database/models/User';
 import * as SQLite from 'expo-sqlite';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { apiClient } from '../api/client';
+import { API_ENDPOINTS } from '@/app/constants/api';
+import { syncService } from '../sync/syncService';
 
 const CURRENT_USER_KEY = '@user_id';
 const PIN_ATTEMPTS_KEY = '@pin_attempts';
@@ -18,29 +21,62 @@ interface LoginResponse {
 export const authService = {
   login: async (username: string, password: string): Promise<LoginResponse> => {
     try {
-      const user = await UserDetail.findByCredentials(username, password);
-      
-      if (!user || !user.id) {
-        return {
-          success: false,
-          message: 'Invalid username or password'
-        };
-      }
+      const isOnline = await apiClient.isOnline();
 
-      // Store current user ID for PIN verification
-      await AsyncStorage.setItem(CURRENT_USER_KEY, user.id.toString());
+      console.log('isOnline', isOnline);
+      // if (isOnline) {
+      //   console.log('Attempting online login...');
+      //   const response = await apiClient.post<UserDetailData>(API_ENDPOINTS.LOGIN, {
+      //     username: username,
+      //     password: password,
+      //   });
+      //   // console.log('response from login', response);
 
-      // Update login status
-      await UserDetail.update(user.id, {
-        is_logged_in: true,
-        last_login_at: new Date().toISOString()
-      });
+      //   if (response.success && response.dataResponse) {
+      //     try {
+      //       // Store the auth token
+      //       if (response.token) {
+      //         await AsyncStorage.setItem('auth_token', response.token);
+      //       }
 
-      return {
-        success: true,
-        message: 'Login successful',
-        user
-      };
+      //       // Sync the data from API response
+      //       await syncService.syncLoginData(response.dataResponse);
+
+      //       // Get the user data
+      //       const user = response.data;
+      //       if (!user || !user.id) {
+      //         throw new Error('Invalid user data received');
+      //       }
+
+      //       console.log('User data from API:', user);
+            
+      //       // Update local user state
+      //       await AsyncStorage.setItem(CURRENT_USER_KEY, user.id.toString());
+      //       await UserDetail.update(user.id, {
+      //         is_logged_in: true,
+      //         last_login_at: new Date().toISOString(),
+      //       });
+
+      //       return {
+      //         success: true,
+      //         message: 'Login successful',
+      //         user,
+      //       };
+      //     } catch (syncError) {
+      //       console.error('Error during data sync:', syncError);
+      //       // Fall back to offline login if sync fails
+      //       return await performOfflineLogin(username, password);
+      //     }
+      //   } else {
+      //     console.log('Online login failed, trying offline login');
+      //     return await performOfflineLogin(username, password);
+      //   }
+      // } else {
+      //   console.log('Offline login checking user');
+      // }
+
+      // If offline, try offline login
+      return await performOfflineLogin(username, password);
     } catch (error) {
       console.error('Login error:', error);
       return {
@@ -148,4 +184,30 @@ export const authService = {
       return false;
     }
   }
-}; 
+};
+
+async function performOfflineLogin(username: string, password: string): Promise<LoginResponse> {
+  // const encryptedPassword = await encrypt(password);
+  // console.log('encryptedPassword', encryptedPassword);
+  const user = await UserDetail.findByCredentials(username, password);
+  console.log('Offline login attempt for user:', user);
+  
+  if (!user || !user.id) {
+    return {
+      success: false,
+      message: 'Invalid credentials (Offline Mode)'
+    };
+  }
+
+  await AsyncStorage.setItem(CURRENT_USER_KEY, user.id.toString());
+  await UserDetail.update(user.id, {
+    is_logged_in: true,
+    last_login_at: new Date().toISOString()
+  });
+
+  return {
+    success: true,
+    message: 'Login successful (Offline Mode)',
+    user
+  };
+} 
