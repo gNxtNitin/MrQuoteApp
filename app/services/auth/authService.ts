@@ -5,7 +5,7 @@ import * as SQLite from 'expo-sqlite';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiClient } from '../api/client';
 import { API_ENDPOINTS } from '@/app/constants/api';
-import { syncService } from '../sync/syncService';
+import { syncEstimateData, syncService } from '../sync/syncService';
 
 const CURRENT_USER_KEY = '@user_id';
 const PIN_ATTEMPTS_KEY = '@pin_attempts';
@@ -60,6 +60,8 @@ export const authService = {
       // If user exists offline, return the user
       if (offlineUser && offlineUser.id) {
         const response = await performOfflineLogin(username, password, 'offline', offlineUser);
+      
+        await syncEstimateData.insertSampleEstimates();
         return response;
         // console.log('User found in offline database');
         // const hasPin = offlineUser.pin != null && offlineUser.pin !== undefined;
@@ -105,6 +107,7 @@ export const authService = {
             // If user exists offline, return the user
             if (offlineUser && offlineUser.id) {
               const response = await performOfflineLogin(username, password, 'offline', offlineUser);
+              await syncEstimateData.insertSampleEstimates();
               return response;
             } else {
               return {

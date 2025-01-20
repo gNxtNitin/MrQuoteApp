@@ -28,7 +28,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     { id: 5, title: 'Quote Details' },
     { id: 6, title: 'Authorize Page' },
     { id: 7, title: 'Terms and Conditions' },
-    // { id: 8, title: 'Warranty' },
+    { id: 8, title: 'Warranty' },
   ]);
 
   const theme = useTheme();

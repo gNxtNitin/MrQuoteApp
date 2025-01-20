@@ -9,6 +9,8 @@ import { TitlePageContent } from '@/app/database/models/TitlePageContent';
 import { IntroductionPageContent } from '@/app/database/models/IntroductionPageContent';
 import { User } from '@/app/database/models/User';
 import { UserCompany } from '@/app/database/models/UserCompany';
+import { Estimate } from '@/app/database/models/Estimate';
+import { EstimateDetail } from '@/app/database/models/EstimateDetail';
 
 interface LoginDataResponse {
   Users: Array<{
@@ -404,4 +406,88 @@ export const syncService = {
       return false;
     }
   }
+};
+
+export const syncEstimateData = {
+    insertSampleEstimates: async () => {
+        try {
+            // Delete existing estimates and estimate details
+            await Estimate.deleteAll(); // Assuming deleteAll() is a method to delete all records
+            await EstimateDetail.deleteAll(); // Assuming deleteAll() is a method to delete all records
+
+            // Insert new estimates
+            await Estimate.insert({
+                id: 1,
+                company_id: 1,
+                user_id: 1002,
+                estimate_name: "Gutter Installation Project",
+                description: "Complete gutter installation for residential property",
+                estimate_status: "provided",
+                is_active: true,
+                created_by: 1,
+                modified_by: 1,
+                created_date: new Date().toISOString(),
+                modified_date: new Date().toISOString()
+            });
+
+            await EstimateDetail.insert({
+                id: 1,
+                estimate_id: 1,
+                estimate_number: '4573452677',
+                sales_person: "Demo User",
+                email: "user@democompany.com",
+                phone: "0987654321",
+                estimate_revenue: "5000",
+                next_call_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days from now
+                image_url: "house-1.jpg",
+                address: "123 Main Street",
+                state: "California",
+                zip_code: "92101",
+                is_active: true,
+                created_by: 1,
+                modified_by: 1,
+                created_date: new Date().toISOString(),
+                modified_date: new Date().toISOString()
+            });
+
+            await Estimate.insert({
+                id: 2,
+                company_id: 1,
+                user_id: 1002,
+                estimate_name: "Gutter Repair Project",
+                description: "Emergency gutter repair and maintenance",
+                estimate_status: "provided",
+                is_active: true,
+                created_by: 1,
+                modified_by: 1,
+                created_date: new Date().toISOString(),
+                modified_date: new Date().toISOString()
+            });
+
+            await EstimateDetail.insert({
+                id: 2,
+                estimate_id: 2,
+                estimate_number: '2234576654',
+                sales_person: "Demo User",
+                email: "user@democompany.com",
+                phone: "0987654321",
+                estimate_revenue: "2500",
+                next_call_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days from now
+                image_url: "house-2.jpg",
+                address: "456 Oak Avenue",
+                state: "California",
+                zip_code: "92102",
+                is_active: true,
+                created_by: 1,
+                modified_by: 1,
+                created_date: new Date().toISOString(),
+                modified_date: new Date().toISOString()
+            });
+
+            console.log('Sample estimates inserted successfully');
+        } catch (error) {
+            console.error('Error inserting sample estimates:', error);
+            return false;
+        }
+    }
 };

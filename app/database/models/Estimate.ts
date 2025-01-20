@@ -600,6 +600,19 @@ export const Estimate = {
     }
   },
 
+  deleteAll: async () => {
+    const statement = await db.prepareAsync(
+      `DELETE FROM ${Estimate.tableName}`
+    );
+
+    try {
+      await statement.executeAsync();
+      console.log('All estimates deleted successfully');
+    } finally {
+      await statement.finalizeAsync();
+    }
+  },
+
   getLastInsertedId: async (): Promise<number> => {
     const statement = await db.prepareAsync(
       'SELECT last_insert_rowid() as id FROM estimate'
