@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,9 +10,15 @@ import { Input } from "../../../common/Input";
 import { Card } from "../../../common/Card";
 import { Button } from "../../../common/Button";
 import { Colors } from "@/app/constants/colors";
-import { Feather, MaterialIcons } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import { FileUploader } from "@/app/components/common/FileUploader";
-import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
+import {
+  TitlePageContent,
+  TitlePageContentData,
+} from "@/app/database/models/TitlePageContent";
+import { openDatabase } from "@/app/services/database/init";
+
+const db = openDatabase();
 
 export function TitlePage() {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -20,12 +26,12 @@ export function TitlePage() {
   const [reportType, setReportType] = useState("");
   const [date, setDate] = useState("");
   const [primaryImage, setPrimaryImage] = useState<
-    { uri: string } | string | null
+    { uri: string } | string | null | undefined
   >(null);
   const [certificateOrSecLogo, setCertificateOrSecLogo] = useState<
-    { uri: string } | string | null
+    { uri: string } | string | null | undefined
   >(null);
-  const [name, setFirstName] = useState("");
+  const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [address, setAddress] = useState("");
@@ -33,23 +39,62 @@ export function TitlePage() {
   const [state, setState] = useState("");
   const [postalCode, setPostalCode] = useState("");
 
-  const handleSave = () => {
-    const formData = {
-      title: "Title",
-      name,
-      reportType,
-      date,
-      primaryImage,
-      certificateOrSecLogo,
-      lastName,
-      companyName,
-      address,
-      city,
-      state,
-      postalCode,
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await TitlePageContent.getById(1);
+        if (data) {
+          console.log("Fetched Data:", data);
+          setTitle(data.title_name || "Title");
+          setReportType(data.report_type || "");
+          setDate(data.date ? new Date(data.date).toLocaleDateString() : "");
+          setPrimaryImage(data.primary_image || null);
+          setCertificateOrSecLogo(data.certification_logo || null);
+          setFirstName(data.first_name || "");
+          setLastName(data.last_name || "");
+          setCompanyName(data.company_name || "");
+          setAddress(data.address || "");
+          setCity(data.city || "");
+          setState(data.state || "");
+          setPostalCode(data.zip_code || "");
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     };
+
+    fetchData();
+  }, []);
+
+  const handleSave = async () => {
+    const formData = {
+      title_name: title,
+      report_type: reportType,
+      date: date,
+      primary_image:
+        typeof primaryImage === "object" && primaryImage !== null
+          ? primaryImage.uri
+          : primaryImage,
+      certification_logo:
+        typeof certificateOrSecLogo === "object" &&
+        certificateOrSecLogo !== null
+          ? certificateOrSecLogo.uri
+          : certificateOrSecLogo,
+      first_name: firstName,
+      last_name: lastName,
+      company_name: companyName,
+      address: address,
+      city: city,
+      state: state,
+      zip_code: postalCode,
+    };
+    try {
+      await TitlePageContent.update(1, formData);
+      console.log("Data updated successfully.");
+    } catch (error) {
+      console.error("Error updating data:", error);
+    }
     console.log("Saving changes...", formData);
-    useEstimatePageStore.getState().setFormData("Title",formData);
   };
 
   return (
@@ -87,13 +132,18 @@ export function TitlePage() {
               <View style={styles.column}>
                 <Text style={styles.label}>Report type</Text>
                 <Input
+                  value={reportType}
                   placeholder="Select report type"
                   onChangeText={setReportType}
                 />
               </View>
               <View style={styles.column}>
                 <Text style={styles.label}>Date</Text>
-                <Input placeholder="Select date" onChangeText={setDate} />
+                <Input
+                  placeholder="Select date"
+                  onChangeText={setDate}
+                  value={date}
+                />
               </View>
             </View>
 
@@ -125,6 +175,7 @@ export function TitlePage() {
                 <Input
                   placeholder="Enter first name"
                   onChangeText={setFirstName}
+                  value={firstName}
                 />
               </View>
               <View style={styles.column}>
@@ -132,6 +183,7 @@ export function TitlePage() {
                 <Input
                   placeholder="Enter last name"
                   onChangeText={setLastName}
+                  value={lastName}
                 />
               </View>
             </View>
@@ -143,11 +195,16 @@ export function TitlePage() {
                 <Input
                   placeholder="Enter company name"
                   onChangeText={setCompanyName}
+                  value={companyName}
                 />
               </View>
               <View style={styles.column}>
                 <Text style={styles.label}>Address</Text>
-                <Input placeholder="Enter address" onChangeText={setAddress} />
+                <Input
+                  placeholder="Enter address"
+                  onChangeText={setAddress}
+                  value={address}
+                />
               </View>
             </View>
 
@@ -155,7 +212,11 @@ export function TitlePage() {
             <View style={styles.row}>
               <View style={[styles.column, { flex: 0.5 }]}>
                 <Text style={styles.label}>City</Text>
-                <Input placeholder="Enter city" onChangeText={setCity} />
+                <Input
+                  placeholder="Enter city"
+                  onChangeText={setCity}
+                  value={city}
+                />
               </View>
               <View style={[styles.column, { flex: 0.5 }]}>
                 <View style={styles.row}>
@@ -164,6 +225,7 @@ export function TitlePage() {
                     <Input
                       placeholder="Enter state/province"
                       onChangeText={setState}
+                      value={state}
                     />
                   </View>
                   <View style={styles.column}>
@@ -171,6 +233,7 @@ export function TitlePage() {
                     <Input
                       placeholder="Enter zip/postal code"
                       onChangeText={setPostalCode}
+                      value={postalCode}
                     />
                   </View>
                 </View>

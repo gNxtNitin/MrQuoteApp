@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -19,6 +19,7 @@ import { Card } from "../../../common/Card";
 import { ViewTemplatesDialog } from "./ViewTemplatesDialog";
 import { useTheme } from "@/app/components/providers/ThemeProvider";
 import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
+import { IntroductionPageContent } from "@/app/database/models/IntroductionPageContent";
 
 interface Template {
   id: string;
@@ -43,10 +44,25 @@ export function IntroductionPage() {
   const tokenButtonRef = useRef<View>(null);
   const [showTemplatesDialog, setShowTemplatesDialog] = useState(false);
   const theme = useTheme();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await IntroductionPageContent.getById(2);
+        if (data) {
+          console.log("Fetched Introduction Data: " , data);
+        }
+      } catch (error) {
+        console.log("Error fetching data", error);
+      }
+    };
+    fetchData();
+  },[]);
+
   const handleSaveTemplate = () => {
     // Implement save template logic
     if (editorContent) {
-      const cleanedContent = editorContent.replace(/<\/?div>/g, ''); // Remove <div> and </div> tags
+      const cleanedContent = editorContent.replace(/<\/?div>/g, ""); // Remove <div> and </div> tags
       const newTemplate: Template = {
         id: Date.now().toString(),
         content: cleanedContent,
@@ -54,7 +70,7 @@ export function IntroductionPage() {
       };
       // Save to storage or state management
       console.log("Saving template:", newTemplate);
-      useEstimatePageStore.getState().setFormData("Introduction",newTemplate);
+      useEstimatePageStore.getState().setFormData("Introduction", newTemplate);
     }
   };
 
