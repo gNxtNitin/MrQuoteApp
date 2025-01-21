@@ -1,98 +1,122 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Card } from './Card';
-import { MaterialIcons, Feather } from '@expo/vector-icons';
-import { Colors } from '@/app/constants/colors';
-import * as MediaLibrary from 'expo-media-library';
-import * as FileSystem from 'expo-file-system';
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, StyleSheet, FlatList } from "react-native";
+import * as DocumentPicker from "expo-document-picker";
+import { Colors } from "@/app/constants/colors";
+import { Card } from "./Card";
+import { MaterialIcons, Feather } from "@expo/vector-icons";
+import { ScrollView } from "react-native-gesture-handler";
 
-interface FileUploaderProps {
-  label?: string;
-  subtitle?: string;
-  accept?: 'image' | 'pdf' | 'both';
-  height?: number;
-  onUpload?: (file: any) => void;
-  showBorder?: boolean;
-  variant?: 'solid' | 'dashed';
-}
-
-export function FileUploader({ 
-  label, 
-  subtitle,
-  accept = 'both',
+export function FileUploader({
+  label,
+  accept = "both",
   height = 180,
+  multiple = false,
   onUpload,
-  showBorder = true,
-  variant = 'dashed'
-}: FileUploaderProps) {
-  
+}: {
+  label?: string;
+  accept?: "image" | "pdf" | "both";
+  height?: number;
+  multiple?: boolean;
+  onUpload?: (files: any | any[]) => void;
+}) {
+  const [selectedFiles, setSelectedFiles] = useState<any[]>([]);
+
   const pickFile = async () => {
     try {
-      if (accept === 'image' || accept === 'both') {
-        const permission = await MediaLibrary.requestPermissionsAsync();
-        if (permission.granted) {
-          const result = await MediaLibrary.getAssetsAsync({
-            mediaType: MediaLibrary.MediaType.photo,
-            first: 1,
-          });
+      const result = await DocumentPicker.getDocumentAsync({
+        type: "*/*",
+        multiple: multiple, // Allow multiple selection only if `multiple` is true
+      });
 
-          if (result.assets && result.assets.length > 0) {
-            const image = result.assets[0];
-            onUpload?.(image);
-          }
+      if (!result.canceled) {
+        const files = result.assets || [result];
+
+        if (multiple) {
+          // For multiple files, append new files to the existing list
+          const updatedFiles = [...selectedFiles, ...files];
+          setSelectedFiles(updatedFiles);
+          onUpload?.(updatedFiles);
         } else {
-          console.log('Permission to access media library was denied');
-        }
-      } else if (accept === 'pdf') {
-        const res = await pickDocument();
-        if (res.uri) {
-          onUpload?.(res);
+          // For single file, replace the current file
+          const singleFile = files[0];
+          setSelectedFiles([singleFile]);
+          onUpload?.(singleFile);
         }
       }
     } catch (err) {
-      console.error('Error while picking file: ', err);
+      console.error("Error picking file:", err);
     }
   };
 
-  const pickDocument = async () => {
-    try {
-      const file = await FileSystem.readAsStringAsync(FileSystem.documentDirectory + 'sample.pdf');
-      return { uri: file };
-    } catch (err) {
-      console.error('Error reading document: ', err);
-      return { uri: '' };
+  const deleteFile = (index: number) => {
+    const updatedFiles = selectedFiles.filter((_, i) => i !== index);
+    setSelectedFiles(updatedFiles);
+
+    if (multiple) {
+      onUpload?.(updatedFiles);
+    } else {
+      onUpload?.(null); // Clear file when a single file is deleted
     }
   };
 
   const getIcon = () => {
-    if (accept === 'image') {
-      return <MaterialIcons name="image" size={24} color={Colors.primary} />;
-    } else if (accept === 'pdf') {
-      return <MaterialIcons name="picture-as-pdf" size={24} color={Colors.primary} />;
+    if (accept === "pdf") {
+      return (
+        <MaterialIcons name="picture-as-pdf" size={24} color={Colors.primary} />
+      );
     }
     return <Feather name="upload-cloud" size={24} color={Colors.primary} />;
   };
 
-  const getUploadText = () => {
-    if (accept === 'image') return 'Upload image';
-    if (accept === 'pdf') return 'Upload PDF';
-    return 'Upload file';
-  };
+  const renderFileItem = ({ item, index }: { item: any; index: number }) => (
+    <View style={styles.successContainer}>
+      <Text style={styles.successText}>{item.name || "File uploaded"}</Text>
+      <MaterialIcons name="check-circle" size={24} color={Colors.green} />
+      <TouchableOpacity onPress={() => deleteFile(index)} style={styles.deleteBtn}>
+        <MaterialIcons name="delete" size={24} color={Colors.gray[500]} />
+      </TouchableOpacity>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
       {label && <Text style={styles.label}>{label}</Text>}
-      <TouchableOpacity
-      //  onPress={pickFile}
-       style={styles.touchable}>
-        <View style={[styles.uploadContainer, showBorder && styles.border, variant === 'dashed' && styles.dashedBorder, { height }]}>
-          <Card variant="outlined" style={[styles.uploadCard, variant === 'dashed' && styles.dashedCard]}>
-            {getIcon()}
-            <Text style={styles.uploadText}>{getUploadText()}</Text>
-            {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
-          </Card>
+
+      {multiple || selectedFiles.length === 0 ? (
+        <TouchableOpacity onPress={pickFile} style={styles.touchable}>
+          <View style={[styles.uploadContainer, { height }]}>
+            <Card variant="outlined" style={[styles.uploadCard, styles.dashedCard]}>
+              {getIcon()}
+              <Text style={styles.uploadText}>
+                {accept === "pdf" ? "Upload PDF" : "Upload File"}
+              </Text>
+            </Card>
+          </View>
+        </TouchableOpacity>
+      ) : null}
+
+      {multiple && selectedFiles.length > 0 && (
+        <ScrollView horizontal={true} style={{width:'100%'}}>
+        <FlatList
+          data={selectedFiles}
+          renderItem={renderFileItem}
+          keyExtractor={(item, index) => `${item.uri}-${index}`}
+          contentContainerStyle={{ marginTop: 10 }}
+        />
+        </ScrollView>
+      )}
+
+      {!multiple && selectedFiles.length > 0 && (
+        <View style={styles.successContainer}>
+          <Text style={styles.successText}>
+            {selectedFiles[0].name || "File uploaded"}
+          </Text>
+          <MaterialIcons name="check-circle" size={24} color={Colors.green} />
+          <TouchableOpacity onPress={() => deleteFile(0)} style={styles.deleteBtn}>
+            <MaterialIcons name="delete" size={24} color={Colors.gray[500]} />
+          </TouchableOpacity>
         </View>
-      </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -103,9 +127,9 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
     marginBottom: 8,
-    color: '#333',
+    color: "#333",
   },
   touchable: {
     flex: 1,
@@ -113,38 +137,45 @@ const styles = StyleSheet.create({
   uploadContainer: {
     flex: 1,
     padding: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
     borderRadius: 14,
-  },
-  border: {
-    borderWidth: 1,
-    borderColor: Colors.gradientPrimary + '40',
-  },
-  dashedBorder: {
-    borderStyle: 'dashed',
   },
   uploadCard: {
     flex: 1,
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
   },
   dashedCard: {
-    borderStyle: 'dashed',
+    borderStyle: "dashed",
     borderColor: Colors.primary,
   },
   uploadText: {
-    color: '#666',
+    color: "#666",
     fontSize: 14,
     marginTop: 8,
   },
-  subtitle: {
-    color: Colors.gray[500],
-    fontSize: 12,
-    marginTop: 4,
-    textAlign: 'center',
-  }
+  successContainer: {
+    flexDirection: "row",
+    backgroundColor: Colors.white,
+    padding: 16,
+    borderRadius: 10,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: Colors.gray[200],
+    alignItems: "center",
+    gap: 20,
+  },
+  successText: {
+    fontSize: 16,
+    width:'80%',
+    color: Colors.black,
+  },
+  deleteBtn: {
+    marginLeft: "auto",
+    padding: 5,
+  },
 });

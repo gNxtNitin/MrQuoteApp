@@ -44,6 +44,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "column",
     // alignItems: "center",
+    marginVertical: 8,
     gap: 5,
   },
   label: {

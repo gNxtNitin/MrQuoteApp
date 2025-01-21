@@ -1,16 +1,26 @@
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, GestureResponderEvent, SectionList } from 'react-native';
-import { Card } from '../../../common/Card';
-import { Input } from '../../../common/Input';
-import { Colors } from '@/app/constants/colors';
-import { Feather } from '@expo/vector-icons';
-import { useState } from 'react';
-import { Button } from '../../../common/Button';
-import Slider from '@react-native-community/slider';
-import DraggableFlatList, { 
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+  GestureResponderEvent,
+  SectionList,
+} from "react-native";
+import { Card } from "../../../common/Card";
+import { Input } from "../../../common/Input";
+import { Colors } from "@/app/constants/colors";
+import { Feather } from "@expo/vector-icons";
+import { useState } from "react";
+import { Button } from "../../../common/Button";
+import Slider from "@react-native-community/slider";
+import DraggableFlatList, {
   ScaleDecorator,
   RenderItemParams,
-} from 'react-native-draggable-flatlist';
-import { ViewTemplatesDialog } from './ViewTemplatesDialog';
+} from "react-native-draggable-flatlist";
+import { ViewTemplatesDialog } from "./ViewTemplatesDialog";
+import { flattenObject } from "@/app/utils/flattenObj";
+import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
 
 interface LineItem {
   id: string;
@@ -34,29 +44,33 @@ interface Signer {
 
 export function AuthorizePage() {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const [title, setTitle] = useState('Authorize');
-  const [disclaimer, setDisclaimer] = useState('');
-  const [sectionTitle, setSectionTitle] = useState('');
-  const [lineItems, setLineItems] = useState<LineItem[]>([{
-    id: '1',
-    item: 'Labor',
-    quantity: '1',
-    price: '0'
-  }]);
+  const [title, setTitle] = useState("Authorize");
+  const [disclaimer, setDisclaimer] = useState("");
+  const [sectionTitle, setSectionTitle] = useState("");
+  const [lineItems, setLineItems] = useState<LineItem[]>([
+    {
+      id: "1",
+      item: "Labor",
+      quantity: "1",
+      price: "0",
+    },
+  ]);
   const [profitMargin, setProfitMargin] = useState(0);
-  const [productSelections, setProductSelections] = useState<ProductSelection[]>([
-    { id: '1', item: '', selection: '' },
-    { id: '2', item: '', selection: '' },
-    { id: '3', item: '', selection: '' },
+  const [productSelections, setProductSelections] = useState<
+    ProductSelection[]
+  >([
+    { id: "1", item: "", selection: "" },
+    { id: "2", item: "", selection: "" },
+    { id: "3", item: "", selection: "" },
   ]);
   const [isEditingProductTitle, setIsEditingProductTitle] = useState(false);
-  const [productTitle, setProductTitle] = useState('My Product Selections');
+  const [productTitle, setProductTitle] = useState("My Product Selections");
   const [signers, setSigners] = useState<Signer[]>([
-    { id: '1', firstName: '', lastName: '', email: '' },
+    { id: "1", firstName: "", lastName: "", email: "" },
   ]);
   const [isEditingFooterTitle, setIsEditingFooterTitle] = useState(false);
-  const [footerTitle, setFooterTitle] = useState('Footer notes');
-  const [footerNote, setFooterNote] = useState('');
+  const [footerTitle, setFooterTitle] = useState("Footer notes");
+  const [footerNote, setFooterNote] = useState("");
   const [showTemplatesDialog, setShowTemplatesDialog] = useState(false);
 
   const handleAddItem = () => {
@@ -64,20 +78,20 @@ export function AuthorizePage() {
       ...lineItems,
       {
         id: Date.now().toString(),
-        item: '',
-        quantity: '',
-        price: '',
+        item: "",
+        quantity: "",
+        price: "",
       },
     ]);
   };
 
   const handleDeleteItem = (id: string) => {
-    setLineItems(lineItems.filter(item => item.id !== id));
+    setLineItems(lineItems.filter((item) => item.id !== id));
   };
 
   const updateLineItem = (id: string, field: keyof LineItem, value: string) => {
     setLineItems(
-      lineItems.map(item =>
+      lineItems.map((item) =>
         item.id === id ? { ...item, [field]: value } : item
       )
     );
@@ -98,23 +112,37 @@ export function AuthorizePage() {
   };
 
   const handleSelectTemplate = (template: string) => {
-    console.log('Selected template:', template);
+    console.log("Selected template:", template);
     setShowTemplatesDialog(false);
   };
 
   const handleAddSigner = () => {
     setSigners([
       ...signers,
-      { id: Date.now().toString(), firstName: '', lastName: '', email: '' }
+      { id: Date.now().toString(), firstName: "", lastName: "", email: "" },
     ]);
   };
 
   const handleDeleteSigner = (id: string) => {
-    setSigners(signers.filter(signer => signer.id !== id));
+    setSigners(signers.filter((signer) => signer.id !== id));
   };
 
   const handleSave = () => {
-    console.log('Saving changes...');
+    const authorizeData = {
+      title,
+      disclaimer,
+      sectionTitle,
+      lineItems,
+      profitMargin,
+      productSelections,
+      productTitle,
+      signers,
+      footerTitle,
+      footerNote,
+    };
+    const flattenedData = flattenObject(authorizeData);
+    console.log("Saving changes...", flattenedData);
+    useEstimatePageStore.getState().setFormData("Authorize Page",flattenedData)
   };
 
   const renderItem = ({ item, drag, isActive }: RenderItemParams<LineItem>) => {
@@ -123,35 +151,29 @@ export function AuthorizePage() {
         <TouchableOpacity
           onLongPress={drag}
           disabled={isActive}
-          style={[
-            styles.tableRow,
-            isActive && styles.draggingRow
-          ]}
+          style={[styles.tableRow, isActive && styles.draggingRow]}
         >
-          <TouchableOpacity 
-            onPressIn={drag} 
-            style={styles.dragHandle}
-          >
+          <TouchableOpacity onPressIn={drag} style={styles.dragHandle}>
             <Feather name="menu" size={16} color={Colors.gray[400]} />
           </TouchableOpacity>
-          
+
           <TextInput
             style={[styles.cell, styles.itemCell]}
             value={item.item}
-            onChangeText={(value) => updateLineItem(item.id, 'item', value)}
+            onChangeText={(value) => updateLineItem(item.id, "item", value)}
             placeholder="Enter item"
           />
           <TextInput
             style={[styles.cell, styles.numberCell]}
             value={item.quantity}
-            onChangeText={(value) => updateLineItem(item.id, 'quantity', value)}
+            onChangeText={(value) => updateLineItem(item.id, "quantity", value)}
             keyboardType="numeric"
             placeholder="0"
           />
           <TextInput
             style={[styles.cell, styles.numberCell]}
             value={item.price}
-            onChangeText={(value) => updateLineItem(item.id, 'price', value)}
+            onChangeText={(value) => updateLineItem(item.id, "price", value)}
             keyboardType="numeric"
             placeholder="0.00"
           />
@@ -173,7 +195,7 @@ export function AuthorizePage() {
 
   const sections = [
     {
-      title: 'main',
+      title: "main",
       data: [{}], // We only need one item since we're rendering custom content
       renderItem: () => (
         <>
@@ -197,10 +219,13 @@ export function AuthorizePage() {
               )}
             </View>
             <Text style={styles.savedTemplatesText}>
-              Edit the estimate details below. You can store them for use in subsequent reports.
+              Edit the estimate details below. You can store them for use in
+              subsequent reports.
             </Text>
             <View style={styles.templatesRow}>
-              <Text style={styles.savedTemplatesText}>You have saved templates.</Text>
+              <Text style={styles.savedTemplatesText}>
+                You have saved templates.
+              </Text>
               <TouchableOpacity onPress={handleViewTemplates}>
                 <Text style={styles.link}>View templates</Text>
               </TouchableOpacity>
@@ -211,7 +236,8 @@ export function AuthorizePage() {
             <View style={styles.disclaimerHeader}>
               <Text style={styles.disclaimerTitle}>Disclaimer</Text>
               <Text style={styles.disclaimerSubtitle}>
-                For example, the terms of an estimate, or a direction to the insurer.
+                For example, the terms of an estimate, or a direction to the
+                insurer.
               </Text>
             </View>
             <TextInput
@@ -235,9 +261,15 @@ export function AuthorizePage() {
               <View style={styles.tableHeader}>
                 <View style={styles.dragHandle} />
                 <Text style={[styles.headerCell, styles.itemCell]}>Item</Text>
-                <Text style={[styles.headerCell, styles.numberCell]}>Quantity</Text>
-                <Text style={[styles.headerCell, styles.numberCell]}>Price</Text>
-                <Text style={[styles.headerCell, styles.numberCell]}>Line Total</Text>
+                <Text style={[styles.headerCell, styles.numberCell]}>
+                  Quantity
+                </Text>
+                <Text style={[styles.headerCell, styles.numberCell]}>
+                  Price
+                </Text>
+                <Text style={[styles.headerCell, styles.numberCell]}>
+                  Line Total
+                </Text>
                 <View style={styles.deleteCell} />
               </View>
 
@@ -262,7 +294,9 @@ export function AuthorizePage() {
             <View style={styles.divider} />
 
             <View style={styles.profitMarginSection}>
-              <Text style={styles.profitMarginTitle}>Profit margin for this quote</Text>
+              <Text style={styles.profitMarginTitle}>
+                Profit margin for this quote
+              </Text>
               <View style={styles.profitMarginContainer}>
                 <Slider
                   style={styles.slider}
@@ -275,11 +309,19 @@ export function AuthorizePage() {
                   thumbTintColor={Colors.primary[500]}
                 />
                 <View style={styles.profitMarginValue}>
-                  <Text style={styles.profitMarginNumber}>{Math.round(profitMargin)}</Text>
+                  <Text style={styles.profitMarginNumber}>
+                    {Math.round(profitMargin)}
+                  </Text>
                 </View>
               </View>
-              <TouchableOpacity onPress={() => {/* Handle calculation info */}}>
-                <Text style={styles.calculationLink}>How is this calculated?</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  /* Handle calculation info */
+                }}
+              >
+                <Text style={styles.calculationLink}>
+                  How is this calculated?
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -297,15 +339,18 @@ export function AuthorizePage() {
               ) : (
                 <>
                   <Text style={styles.sectionHeading}>{productTitle}</Text>
-                  <TouchableOpacity onPress={() => setIsEditingProductTitle(true)}>
+                  <TouchableOpacity
+                    onPress={() => setIsEditingProductTitle(true)}
+                  >
                     <Feather name="edit-2" size={16} color={Colors.primary} />
                   </TouchableOpacity>
                 </>
               )}
             </View>
-            
+
             <Text style={styles.productSelectionsSubtitle}>
-              Use this section to request project or product details on your authorization page.
+              Use this section to request project or product details on your
+              authorization page.
             </Text>
 
             <View style={styles.productSelectionHeaders}>
@@ -320,7 +365,7 @@ export function AuthorizePage() {
                   placeholder="Ex: Shingle color, etc"
                   value={selection.item}
                   onChangeText={(text) => {
-                    const updated = productSelections.map(s => 
+                    const updated = productSelections.map((s) =>
                       s.id === selection.id ? { ...s, item: text } : s
                     );
                     setProductSelections(updated);
@@ -331,7 +376,7 @@ export function AuthorizePage() {
                   placeholder="Can be left blank"
                   value={selection.selection}
                   onChangeText={(text) => {
-                    const updated = productSelections.map(s => 
+                    const updated = productSelections.map((s) =>
                       s.id === selection.id ? { ...s, selection: text } : s
                     );
                     setProductSelections(updated);
@@ -351,7 +396,7 @@ export function AuthorizePage() {
                     style={styles.signerInput}
                     value={signers[0].firstName}
                     onChangeText={(text) => {
-                      const updated = signers.map((s, i) => 
+                      const updated = signers.map((s, i) =>
                         i === 0 ? { ...s, firstName: text } : s
                       );
                       setSigners(updated);
@@ -364,7 +409,7 @@ export function AuthorizePage() {
                     style={styles.signerInput}
                     value={signers[0].lastName}
                     onChangeText={(text) => {
-                      const updated = signers.map((s, i) => 
+                      const updated = signers.map((s, i) =>
                         i === 0 ? { ...s, lastName: text } : s
                       );
                       setSigners(updated);
@@ -377,7 +422,7 @@ export function AuthorizePage() {
                     style={styles.signerInput}
                     value={signers[0].email}
                     onChangeText={(text) => {
-                      const updated = signers.map((s, i) => 
+                      const updated = signers.map((s, i) =>
                         i === 0 ? { ...s, email: text } : s
                       );
                       setSigners(updated);
@@ -399,7 +444,7 @@ export function AuthorizePage() {
                       style={styles.signerInput}
                       value={signer.firstName}
                       onChangeText={(text) => {
-                        const updated = signers.map((s) => 
+                        const updated = signers.map((s) =>
                           s.id === signer.id ? { ...s, firstName: text } : s
                         );
                         setSigners(updated);
@@ -412,7 +457,7 @@ export function AuthorizePage() {
                       style={styles.signerInput}
                       value={signer.lastName}
                       onChangeText={(text) => {
-                        const updated = signers.map((s) => 
+                        const updated = signers.map((s) =>
                           s.id === signer.id ? { ...s, lastName: text } : s
                         );
                         setSigners(updated);
@@ -427,7 +472,7 @@ export function AuthorizePage() {
                           style={[styles.signerInput, styles.emailInput]}
                           value={signer.email}
                           onChangeText={(text) => {
-                            const updated = signers.map((s) => 
+                            const updated = signers.map((s) =>
                               s.id === signer.id ? { ...s, email: text } : s
                             );
                             setSigners(updated);
@@ -437,11 +482,15 @@ export function AuthorizePage() {
                         />
                         <Text style={styles.requiredText}>Required</Text>
                       </View>
-                      <TouchableOpacity 
+                      <TouchableOpacity
                         style={styles.deleteButton}
                         onPress={() => handleDeleteSigner(signer.id)}
                       >
-                        <Feather name="trash-2" size={16} color={Colors.red[500]} />
+                        <Feather
+                          name="trash-2"
+                          size={16}
+                          color={Colors.red[500]}
+                        />
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -473,7 +522,9 @@ export function AuthorizePage() {
               ) : (
                 <>
                   <Text style={styles.sectionHeading}>{footerTitle}</Text>
-                  <TouchableOpacity onPress={() => setIsEditingFooterTitle(true)}>
+                  <TouchableOpacity
+                    onPress={() => setIsEditingFooterTitle(true)}
+                  >
                     <Feather name="edit-2" size={16} color={Colors.primary} />
                   </TouchableOpacity>
                 </>
@@ -492,7 +543,7 @@ export function AuthorizePage() {
           </View>
 
           <View style={styles.buttonContainer}>
-            <Button 
+            <Button
               label="Save Changes"
               onPress={handleSave}
               variant="primary"
@@ -500,8 +551,8 @@ export function AuthorizePage() {
             />
           </View>
         </>
-      )
-    }
+      ),
+    },
   ];
 
   return (
@@ -532,7 +583,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 24,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
   },
   mainCard: {
     padding: 12,
@@ -543,23 +594,23 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   titleText: {
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: "600",
     color: Colors.black,
   },
   titleInput: {
     flex: 1,
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   templatesRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
     marginBottom: 20,
   },
@@ -579,7 +630,7 @@ const styles = StyleSheet.create({
   },
   disclaimerTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
     color: Colors.black,
     marginBottom: 8,
   },
@@ -593,14 +644,14 @@ const styles = StyleSheet.create({
     borderColor: Colors.gray[200],
     borderRadius: 8,
     paddingHorizontal: 12,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   sectionContainer: {
     marginTop: 0,
   },
   sectionHeading: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     color: Colors.black,
     marginBottom: 8,
   },
@@ -610,11 +661,11 @@ const styles = StyleSheet.create({
     borderColor: Colors.gray[200],
     borderRadius: 8,
     paddingHorizontal: 12,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     marginBottom: 16,
   },
   tableHeader: {
-    flexDirection: 'row',
+    flexDirection: "row",
     borderBottomWidth: 1,
     borderColor: Colors.gray[200],
     paddingBottom: 8,
@@ -622,13 +673,13 @@ const styles = StyleSheet.create({
   },
   headerCell: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
     color: Colors.black,
   },
   tableRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: 8,
-    alignItems: 'center',
+    alignItems: "center",
   },
   cell: {
     height: 40,
@@ -636,7 +687,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.gray[200],
     borderRadius: 8,
     paddingHorizontal: 8,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     marginRight: 8,
   },
   itemCell: {
@@ -646,25 +697,25 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   lineTotalCell: {
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   lineTotalText: {
-    textAlign: 'left',
+    textAlign: "left",
   },
   deleteCell: {
     width: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   addButtonContainer: {
     marginTop: 16,
     marginBottom: 24,
-    alignItems: 'flex-start',
+    alignItems: "flex-start",
   },
   divider: {
     height: 1,
     backgroundColor: Colors.gray[200],
-    width: '100%',
+    width: "100%",
     marginBottom: 24,
   },
   scrollContainer: {
@@ -676,13 +727,13 @@ const styles = StyleSheet.create({
   },
   profitMarginTitle: {
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: "600",
     color: Colors.black,
     marginBottom: 16,
   },
   profitMarginContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 16,
     marginBottom: 8,
   },
@@ -696,9 +747,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.gray[200],
     borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'white',
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "white",
   },
   profitMarginNumber: {
     fontSize: 16,
@@ -706,7 +757,7 @@ const styles = StyleSheet.create({
   },
   calculationLink: {
     color: Colors.primary[500],
-    textDecorationLine: 'underline',
+    textDecorationLine: "underline",
     fontSize: 14,
   },
   section: {
@@ -720,8 +771,8 @@ const styles = StyleSheet.create({
     marginTop: 0,
   },
   sectionTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
     marginBottom: 8,
   },
@@ -731,17 +782,17 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   productSelectionHeaders: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: 16,
   },
   productHeaderText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     color: Colors.black,
     flex: 1,
   },
   productSelectionRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 16,
     marginBottom: 16,
   },
@@ -751,7 +802,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.gray[200],
     borderRadius: 8,
     paddingHorizontal: 12,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     flex: 1,
   },
   itemInput: {
@@ -763,7 +814,7 @@ const styles = StyleSheet.create({
   productTitleInput: {
     flex: 1,
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     height: 40,
     padding: 0,
   },
@@ -775,12 +826,12 @@ const styles = StyleSheet.create({
   },
   signerTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
     color: Colors.black,
     marginBottom: 16,
   },
   signerRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 16,
   },
   signerField: {
@@ -791,7 +842,7 @@ const styles = StyleSheet.create({
   },
   fieldLabel: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
     color: Colors.black,
     marginBottom: 8,
   },
@@ -801,22 +852,22 @@ const styles = StyleSheet.create({
     borderColor: Colors.gray[200],
     borderRadius: 8,
     paddingHorizontal: 12,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   emailFieldContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    alignItems: "flex-start",
     gap: 8,
   },
   emailInputContainer: {
     flex: 1,
-    position: 'relative',
+    position: "relative",
   },
   emailInput: {
-    width: '100%',
+    width: "100%",
   },
   requiredText: {
-    position: 'absolute',
+    position: "absolute",
     bottom: -20,
     left: 0,
     fontSize: 12,
@@ -825,16 +876,16 @@ const styles = StyleSheet.create({
   deleteButton: {
     height: 40,
     width: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     borderWidth: 1,
     borderColor: Colors.gray[200],
     borderRadius: 8,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     flexShrink: 0,
   },
   addSignerContainer: {
-    alignItems: 'flex-start',
+    alignItems: "flex-start",
   },
   footerSection: {
     marginTop: 0,
@@ -842,7 +893,7 @@ const styles = StyleSheet.create({
   footerTitleInput: {
     flex: 1,
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     height: 40,
     padding: 0,
   },
@@ -857,12 +908,12 @@ const styles = StyleSheet.create({
     borderColor: Colors.gray[200],
     borderRadius: 8,
     padding: 12,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     minHeight: 120,
-    textAlignVertical: 'top',
+    textAlignVertical: "top",
   },
   buttonContainer: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
     marginTop: 24,
     marginBottom: 24,
   },
@@ -872,12 +923,12 @@ const styles = StyleSheet.create({
   dragHandle: {
     width: 40,
     height: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   draggingRow: {
     backgroundColor: Colors.gray[50],
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,

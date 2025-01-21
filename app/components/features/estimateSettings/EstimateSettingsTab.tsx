@@ -9,7 +9,7 @@ import { Card } from "../../common/Card";
 import { CustomCollapsible } from "../../common/Collapsable";
 import { CustomDropdownRow } from "../../common/CustomRowDropdown";
 import { CustomInputRow } from "../../common/CustomRowInput";
-
+        
 export const EstimateDetailsTab = () => {
   const handleBack = () => router.back();
 

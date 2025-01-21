@@ -1,13 +1,25 @@
-import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { actions, RichEditor, RichToolbar } from 'react-native-pell-rich-editor';
-import { Feather, MaterialIcons } from '@expo/vector-icons';
-import { Colors } from '@/app/constants/colors';
-import { Input } from '../../../common/Input';
-import { Button } from '@/app/components/common/Button';
-import { Card } from '../../../common/Card';
-import { ViewTemplatesDialog } from './ViewTemplatesDialog';
-import { useTheme } from '@/app/components/providers/ThemeProvider';
+import React, { useState, useRef, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
+import {
+  actions,
+  RichEditor,
+  RichToolbar,
+} from "react-native-pell-rich-editor";
+import { Feather, MaterialIcons } from "@expo/vector-icons";
+import { Colors } from "@/app/constants/colors";
+import { Input } from "../../../common/Input";
+import { Button } from "@/app/components/common/Button";
+import { Card } from "../../../common/Card";
+import { ViewTemplatesDialog } from "./ViewTemplatesDialog";
+import { useTheme } from "@/app/components/providers/ThemeProvider";
+import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
+import { IntroductionPageContent } from "@/app/database/models/IntroductionPageContent";
 
 interface Template {
   id: string;
@@ -16,32 +28,49 @@ interface Template {
 }
 
 const TOKENS = [
-  { label: 'Customer Name', value: '{{CUSTOMER_NAME}}' },
-  { label: 'Project Address', value: '{{PROJECT_ADDRESS}}' },
-  { label: 'Quote Date', value: '{{QUOTE_DATE}}' },
-  { label: 'Quote Number', value: '{{QUOTE_NUMBER}}' },
-  { label: 'Total Amount', value: '{{TOTAL_AMOUNT}}' },
+  { label: "Customer Name", value: "{{CUSTOMER_NAME}}" },
+  { label: "Project Address", value: "{{PROJECT_ADDRESS}}" },
+  { label: "Quote Date", value: "{{QUOTE_DATE}}" },
+  { label: "Quote Number", value: "{{QUOTE_NUMBER}}" },
+  { label: "Total Amount", value: "{{TOTAL_AMOUNT}}" },
 ];
 
 export function IntroductionPage() {
-  const [editorContent, setEditorContent] = useState('');
+  const [editorContent, setEditorContent] = useState("");
   const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const [introTitle, setIntroTitle] = useState('Introduction');
+  const [introTitle, setIntroTitle] = useState("Introduction");
   const [showTokens, setShowTokens] = useState(false);
   const editorRef = useRef<RichEditor>(null);
   const tokenButtonRef = useRef<View>(null);
   const [showTemplatesDialog, setShowTemplatesDialog] = useState(false);
   const theme = useTheme();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await IntroductionPageContent.getById(2);
+        if (data) {
+          console.log("Fetched Introduction Data: " , data);
+        }
+      } catch (error) {
+        console.log("Error fetching data", error);
+      }
+    };
+    fetchData();
+  },[]);
+
   const handleSaveTemplate = () => {
     // Implement save template logic
     if (editorContent) {
+      const cleanedContent = editorContent.replace(/<\/?div>/g, ""); // Remove <div> and </div> tags
       const newTemplate: Template = {
         id: Date.now().toString(),
-        content: editorContent,
-        title: `Template ${Date.now()}`
+        content: cleanedContent,
+        title: `Template ${Date.now()}`,
       };
       // Save to storage or state management
-      console.log('Saving template:', newTemplate);
+      console.log("Saving template:", newTemplate);
+      useEstimatePageStore.getState().setFormData("Introduction", newTemplate);
     }
   };
 
@@ -55,7 +84,7 @@ export function IntroductionPage() {
 
   const handleSelectTemplate = (template: string) => {
     // Handle template selection
-    console.log('Selected template:', template);
+    console.log("Selected template:", template);
     setShowTemplatesDialog(false);
   };
 
@@ -93,7 +122,9 @@ export function IntroductionPage() {
           </View>
 
           <View style={styles.templatesRow}>
-            <Text style={styles.savedTemplatesText}>You have saved templates.</Text>
+            <Text style={styles.savedTemplatesText}>
+              You have saved templates.
+            </Text>
             <TouchableOpacity onPress={handleViewTemplates}>
               <Text style={styles.link}>View templates</Text>
             </TouchableOpacity>
@@ -102,14 +133,14 @@ export function IntroductionPage() {
           <View style={styles.editorContainer}>
             <View style={styles.toolbarContainer}>
               <View style={styles.tokenContainer} ref={tokenButtonRef}>
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={styles.tokenButton}
                   onPress={() => setShowTokens(!showTokens)}
                 >
-                  <MaterialIcons 
-                    name={showTokens ? "expand-less" : "expand-more"} 
-                    size={24} 
-                    color={Colors.black} 
+                  <MaterialIcons
+                    name={showTokens ? "expand-less" : "expand-more"}
+                    size={24}
+                    color={Colors.black}
                   />
                   <Text style={styles.tokenButtonText}>Insert Token</Text>
                 </TouchableOpacity>
@@ -136,7 +167,7 @@ export function IntroductionPage() {
                   actions.insertBulletsList,
                   actions.insertOrderedList,
                   actions.setStrikethrough,
-                  actions.blockquote
+                  actions.blockquote,
                 ]}
                 selectedIconTint={Colors.primary}
                 disabledTextTint={Colors.black}
@@ -145,7 +176,7 @@ export function IntroductionPage() {
                 iconContainerStyle={styles.toolbarIcon}
               />
             </View>
-            
+
             <RichEditor
               ref={editorRef}
               onChange={setEditorContent}
@@ -155,15 +186,15 @@ export function IntroductionPage() {
               useContainer={true}
               initialHeight={400}
               editorStyle={{
-                backgroundColor: '#fff',
-                contentCSSText: 'font-size: 16px; min-height: 200px;'
+                backgroundColor: "#fff",
+                contentCSSText: "font-size: 16px; min-height: 200px;",
               }}
               disabled={false}
             />
           </View>
 
           <View style={styles.buttonContainer}>
-            <Button 
+            <Button
               label="Save as template"
               onPress={handleSaveTemplate}
               variant="primary"
@@ -185,7 +216,7 @@ export function IntroductionPage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
     padding: 24,
   },
   mainCard: {
@@ -196,29 +227,29 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 12,
   },
   titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   titleText: {
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: "600",
     color: Colors.black,
   },
   titleInput: {
     flex: 1,
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   templatesRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
     marginBottom: 20,
   },
@@ -231,32 +262,32 @@ const styles = StyleSheet.create({
   editorContainer: {
     flex: 1,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: "#e5e7eb",
     borderRadius: 8,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   toolbarContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#f9fafb',
+    flexDirection: "row",
+    backgroundColor: "#f9fafb",
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: "#e5e7eb",
   },
   toolbar: {
     flex: 1,
-    backgroundColor: 'transparent',
-    alignItems: 'flex-start',
+    backgroundColor: "transparent",
+    alignItems: "flex-start",
   },
   toolbarIcon: {
-    justifyContent: 'flex-start',
+    justifyContent: "flex-start",
   },
   tokenContainer: {
     borderRightWidth: 1,
-    borderRightColor: '#e5e7eb',
-    position: 'relative',
+    borderRightColor: "#e5e7eb",
+    position: "relative",
   },
   tokenButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 8,
     gap: 4,
   },
@@ -265,16 +296,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   tokenDropdown: {
-    position: 'absolute',
-    top: '100%',
+    position: "absolute",
+    top: "100%",
     left: 0,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: "#e5e7eb",
     borderRadius: 4,
     width: 200,
     zIndex: 1000,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -286,7 +317,7 @@ const styles = StyleSheet.create({
   tokenItem: {
     padding: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: "#e5e7eb",
   },
   tokenText: {
     fontSize: 14,
@@ -298,7 +329,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 16,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-  }
+    flexDirection: "row",
+    justifyContent: "flex-end",
+  },
 });
