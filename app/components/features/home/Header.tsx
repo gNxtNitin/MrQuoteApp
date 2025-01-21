@@ -21,6 +21,7 @@ import { useAuth } from '@/app/hooks/useAuth';
 import { initialsName } from "../../common/Utils";
 import { Company, CompanyData } from "@/app/database/models/Company";
 import { useHeaderStore } from '@/app/stores/headerStore';
+import { UserCompany } from "@/app/database/models/UserCompany";
 
 export function Header() {
   const { 
@@ -44,27 +45,30 @@ export function Header() {
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        if (user?.company_id) {
-          const companyIds = JSON.parse(user.company_id as string);
+        if (user?.id) {
+          // Get user's companies from UserCompany table
+          const userCompanies = await UserCompany.getUserCompanies(user.id);
+          console.log('User companies:', userCompanies);
           
+          // Fetch full company details for each company
           const companyDetails = await Promise.all(
-            companyIds.map(async (id: number) => {
-              const company = await Company.getById(id);
+            userCompanies.map(async (uc) => {
+              const company = await Company.getById(uc.company_id);
               return company;
             })
           );
 
-          const validCompanies = companyDetails.filter(Boolean);
+          const validCompanies = companyDetails.filter(Boolean) as CompanyData[];
           setCompanies(validCompanies);
           
           // Only set company if not already initialized
           if (!isInitialized) {
-            // If there's a last selected company and it's in the user's companies, use it
-            if (lastSelectedCompany && companyIds.includes(lastSelectedCompany)) {
+            // If there's a last selected company and it's in the user's companies
+            if (lastSelectedCompany && userCompanies.some(uc => uc.company_id === lastSelectedCompany)) {
               setSelectedCompany(lastSelectedCompany);
             }
             // Otherwise, if no company is selected and we have companies, select the first one
-            else if ((!selectedCompany || !companyIds.includes(selectedCompany)) && validCompanies.length > 0) {
+            else if ((!selectedCompany || !userCompanies.some(uc => uc.company_id === selectedCompany)) && validCompanies.length > 0) {
               setSelectedCompany(validCompanies[0].id!);
               setLastSelectedCompany(validCompanies[0].id!);
             }
@@ -77,7 +81,7 @@ export function Header() {
     };
 
     fetchCompanies();
-  }, [user?.company_id, isInitialized]);
+  }, [user?.id, isInitialized]);
 
   const handleSelectCompany = (companyId: number) => {
     setSelectedCompany(companyId);

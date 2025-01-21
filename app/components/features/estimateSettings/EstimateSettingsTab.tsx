@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { CustomInputRow } from "../../common/CustomRowInput";
-import { CustomDropdownRow } from "../../common/CustomRowDropdown";
 import { Button } from "../../common/Button";
 import { Colors } from "@/app/constants/colors";
 import { FileUploader } from "../../common/FileUploader";
-import { CustomCollapsible } from "../../common/Collapsable";
 import { router } from "expo-router";
 import { UploadSuccess } from "../../common/uploadsuccess";
 import { Card } from "../../common/Card";
-
+import { CustomCollapsible } from "../../common/Collapsable";
+import { CustomDropdownRow } from "../../common/CustomRowDropdown";
+import { CustomInputRow } from "../../common/CustomRowInput";
+        
 export const EstimateDetailsTab = () => {
   const handleBack = () => router.back();
 
@@ -443,7 +443,7 @@ const styles = StyleSheet.create({
   tabContent: {
     marginTop: 25,
     flex: 1,
-    gap: 35,
+    gap: 10,
     backgroundColor: Colors.white,
     padding: 20,
   },

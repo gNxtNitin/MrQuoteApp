@@ -34,6 +34,7 @@ export function SetPinScreen() {
               resetPins();
             }
           } catch (error) {
+            console.error('Error setting PIN:', error);
             Alert.alert('Error', 'Failed to set PIN. Please try again.');
             resetPins();
           }

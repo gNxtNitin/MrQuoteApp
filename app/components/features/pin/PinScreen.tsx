@@ -73,7 +73,7 @@ export function PinScreen() {
           text: 'Reset',
           style: 'destructive',
           onPress: async () => {
-            await logout();
+            await logout(true);
             router.replace('/login');
           }
         }

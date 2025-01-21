@@ -108,10 +108,22 @@ export const EstimateDetail = {
         } finally {
           await statement.finalizeAsync();
         }
-    //   });
     } catch (error) {
       console.error('Error in EstimateDetail insert:', error);
       throw error;
+    }
+  },
+
+  deleteAll: async () => {
+    const statement = await db.prepareAsync(
+      `DELETE FROM ${EstimateDetail.tableName}`
+    );
+
+    try {
+      await statement.executeAsync([]);
+      console.log('All estimate details deleted');
+    } finally {
+      await statement.finalizeAsync();
     }
   },
 

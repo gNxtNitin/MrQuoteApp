@@ -5,6 +5,7 @@ import { useDatabase } from './hooks/useDatabase';
 import ErrorScreen from './components/ErrorScreen';
 import { useAuth } from './hooks/useAuth';
 import { useRouter } from 'expo-router';
+import { authService } from './services/auth/authService';
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -18,10 +19,11 @@ export default function App() {
       setIsLoading(false);
 
       if (user) {
-        if (user.pin) {
+        const hasPin = await authService.checkPin(user.id!);
+        if (hasPin) {
           router.replace('/pin');
         } else {
-          router.replace('/login');
+          router.replace('/setpin');
         }
       } else {
         router.replace('/login');

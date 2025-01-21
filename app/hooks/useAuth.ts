@@ -46,9 +46,9 @@ export function useAuth() {
     return success;
   };
 
-  const logout = async () => {
+  const logout = async (resetPin: boolean = false) => {
     try {
-      const success = await authService.logout();
+      const success = await authService.logout(resetPin);
       if (success) {
         setUser(null);
         router.replace('/login');
