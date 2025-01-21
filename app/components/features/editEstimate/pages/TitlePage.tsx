@@ -17,6 +17,7 @@ import {
   TitlePageContentData,
 } from "@/app/database/models/TitlePageContent";
 import { openDatabase } from "@/app/services/database/init";
+import { useEstimateStore } from "@/app/stores/estimateStore";
 
 const db = openDatabase();
 
@@ -38,11 +39,14 @@ export function TitlePage() {
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [postalCode, setPostalCode] = useState("");
+  const { selectedPageId } = useEstimateStore();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await TitlePageContent.getById(1);
+        console.log("selectedPageId", selectedPageId);
+        const data = await TitlePageContent.getById(selectedPageId!);
+        console.log("data", data);
         if (data) {
           console.log("Fetched Data:", data);
           setTitle(data.title_name || "Title");
@@ -89,7 +93,7 @@ export function TitlePage() {
       zip_code: postalCode,
     };
     try {
-      await TitlePageContent.update(1, formData);
+      await TitlePageContent.update(selectedPageId!, formData);
       console.log("Data updated successfully.");
     } catch (error) {
       console.error("Error updating data:", error);
