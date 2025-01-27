@@ -20,7 +20,7 @@ export function SubHeader({ onSync, onCreate }: SubHeaderProps) {
     }]}>
       <View style={styles.content}>
         <View style={styles.contentWrapper}>
-          <Text style={[styles.title, { color: theme.primary }]}>Estimate</Text>
+          <Text style={[styles.title, { color: theme.textPrimary }]}>Estimate</Text>
           <View style={styles.rightSection}>
             <View style={styles.searchContainer}>
               <SearchBar />

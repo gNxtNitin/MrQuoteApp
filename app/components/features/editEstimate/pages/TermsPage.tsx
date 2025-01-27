@@ -56,7 +56,7 @@ export function TermsPage() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Card style={styles.mainCard}>
+      <Card style={[styles.mainCard, { backgroundColor: theme.card }]}>
         <ScrollView
           style={styles.scrollView}
           showsVerticalScrollIndicator={false}
@@ -74,9 +74,15 @@ export function TermsPage() {
                 />
               ) : (
                 <>
-                  <Text style={styles.title}>{title}</Text>
+                  <Text style={[styles.title, { color: theme.textSecondary }]}>
+                    {title}
+                  </Text>
                   <TouchableOpacity onPress={() => setIsEditingTitle(true)}>
-                    <Feather name="edit-2" size={16} color={Colors.primary} />
+                    <Feather
+                      name="edit-2"
+                      size={16}
+                      color={theme.textSecondary}
+                    />
                   </TouchableOpacity>
                 </>
               )}
@@ -87,10 +93,20 @@ export function TermsPage() {
           <View style={styles.acknowledgmentContainer}>
             <View style={styles.acknowledgmentContent}>
               <View>
-                <Text style={styles.acknowledgmentTitle}>
+                <Text
+                  style={[
+                    styles.acknowledgmentTitle,
+                    { color: theme.textSecondary },
+                  ]}
+                >
                   Require customers to acknowledge this page
                 </Text>
-                <Text style={styles.acknowledgmentSubtitle}>
+                <Text
+                  style={[
+                    styles.acknowledgmentSubtitle,
+                    { color: theme.textSecondary },
+                  ]}
+                >
                   They will be asked during the signing process
                 </Text>
               </View>
@@ -151,8 +167,10 @@ export function TermsPage() {
                   actions.code,
                 ]}
                 style={styles.toolbarContainer}
-                iconTint="#666"
+                iconTint={theme.textSecondary}
                 selectedIconTint={Colors.primary}
+                disabledIconTint={theme.textSecondary}
+
               />
               <View style={styles.editorContent}>
                 <RichEditor
@@ -161,6 +179,16 @@ export function TermsPage() {
                   initialContentHTML="You may cancel this contract from the day you enter into the contract until 10 days after you receive a copy of the contract. You do not need a reason to cancel. If you do not receive the goods or services within 30 days of the date stated in the contract, you may cancel this contract within one year of the contract date..."
                   style={styles.editor}
                   placeholder="Start typing..."
+                  editorStyle={{
+                    backgroundColor: theme.card,
+                    contentCSSText: `
+                      font-size: 16px;
+                      min-height: 200px;
+                      padding: 12px;
+                    `,
+                    color: theme.textSecondary,
+                    placeholderColor: theme.placeholder,
+                  }}
                 />
               </View>
             </View>
@@ -233,7 +261,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "600",
-    color: Colors.black,
+    // color: Colors.black,
   },
   titleInput: {
     flex: 1,
@@ -252,7 +280,7 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
   },
   toolbarContainer: {
-    backgroundColor: "#f9fafb",
+    backgroundColor: "transparent",
     borderBottomWidth: 1,
     borderBottomColor: "#e5e7eb",
     flex: 1,
@@ -275,7 +303,7 @@ const styles = StyleSheet.create({
   acknowledgmentTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: Colors.black,
+    // color: Colors.black,
     marginBottom: 4,
   },
   acknowledgmentSubtitle: {
@@ -299,7 +327,7 @@ const styles = StyleSheet.create({
   },
   tabText: {
     fontSize: 16,
-    color: "#666",
+    color: Colors.gray[400],
   },
   activeTabText: {
     color: Colors.primary,

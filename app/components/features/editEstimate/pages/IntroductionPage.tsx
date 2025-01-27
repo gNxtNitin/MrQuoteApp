@@ -50,14 +50,14 @@ export function IntroductionPage() {
       try {
         const data = await IntroductionPageContent.getById(2);
         if (data) {
-          console.log("Fetched Introduction Data: " , data);
+          console.log("Fetched Introduction Data: ", data);
         }
       } catch (error) {
         console.log("Error fetching data", error);
       }
     };
     fetchData();
-  },[]);
+  }, []);
 
   const handleSaveTemplate = () => {
     // Implement save template logic
@@ -95,7 +95,7 @@ export function IntroductionPage() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Card style={styles.mainCard}>
+      <Card style={[styles.mainCard, { backgroundColor: theme.card }]}>
         <ScrollView
           style={styles.scrollView}
           showsVerticalScrollIndicator={false}
@@ -112,9 +112,17 @@ export function IntroductionPage() {
                 />
               ) : (
                 <>
-                  <Text style={styles.titleText}>{introTitle}</Text>
+                  <Text
+                    style={[styles.titleText, { color: theme.textSecondary }]}
+                  >
+                    {introTitle}
+                  </Text>
                   <TouchableOpacity onPress={() => setIsEditingTitle(true)}>
-                    <Feather name="edit-2" size={16} color={Colors.primary} />
+                    <Feather
+                      name="edit-2"
+                      size={16}
+                      color={theme.textSecondary}
+                    />
                   </TouchableOpacity>
                 </>
               )}
@@ -122,7 +130,7 @@ export function IntroductionPage() {
           </View>
 
           <View style={styles.templatesRow}>
-            <Text style={styles.savedTemplatesText}>
+            <Text style={{ color: theme.textSecondary }}>
               You have saved templates.
             </Text>
             <TouchableOpacity onPress={handleViewTemplates}>
@@ -140,19 +148,36 @@ export function IntroductionPage() {
                   <MaterialIcons
                     name={showTokens ? "expand-less" : "expand-more"}
                     size={24}
-                    color={Colors.black}
+                    color={theme.textSecondary}
                   />
-                  <Text style={styles.tokenButtonText}>Insert Token</Text>
+                  <Text
+                    style={[
+                      styles.tokenButtonText,
+                      { color: theme.textSecondary },
+                    ]}
+                  >
+                    Insert Token
+                  </Text>
                 </TouchableOpacity>
                 {showTokens && (
                   <View style={styles.tokenDropdown}>
                     {TOKENS.map((token, index) => (
                       <TouchableOpacity
                         key={index}
-                        style={styles.tokenItem}
+                        style={[
+                          styles.tokenItem,
+                          { backgroundColor: theme.card },
+                        ]}
                         onPress={() => insertToken(token.value)}
                       >
-                        <Text style={styles.tokenText}>{token.label}</Text>
+                        <Text
+                          style={[
+                            styles.tokenText,
+                            { color: theme.textSecondary },
+                          ]}
+                        >
+                          {token.label}
+                        </Text>
                       </TouchableOpacity>
                     ))}
                   </View>
@@ -170,8 +195,8 @@ export function IntroductionPage() {
                   actions.blockquote,
                 ]}
                 selectedIconTint={Colors.primary}
-                disabledTextTint={Colors.black}
-                iconTint={Colors.black}
+                disabledTextTint={theme.textSecondary}
+                iconTint={theme.textSecondary}
                 style={styles.toolbar}
                 iconContainerStyle={styles.toolbarIcon}
               />
@@ -186,8 +211,10 @@ export function IntroductionPage() {
               useContainer={true}
               initialHeight={400}
               editorStyle={{
-                backgroundColor: "#fff",
+                color: theme.textSecondary,
+                backgroundColor: theme.card,
                 contentCSSText: "font-size: 16px; min-height: 200px;",
+                placeholderColor: theme.placeholder,
               }}
               disabled={false}
             />
@@ -240,7 +267,6 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 20,
     fontWeight: "600",
-    color: Colors.black,
   },
   titleInput: {
     flex: 1,
@@ -252,9 +278,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
     marginBottom: 20,
-  },
-  savedTemplatesText: {
-    color: Colors.black,
   },
   link: {
     color: Colors.primary,
@@ -268,7 +291,6 @@ const styles = StyleSheet.create({
   },
   toolbarContainer: {
     flexDirection: "row",
-    backgroundColor: "#f9fafb",
     borderBottomWidth: 1,
     borderBottomColor: "#e5e7eb",
   },
@@ -292,7 +314,6 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   tokenButtonText: {
-    color: Colors.black,
     fontSize: 14,
   },
   tokenDropdown: {
@@ -321,7 +342,6 @@ const styles = StyleSheet.create({
   },
   tokenText: {
     fontSize: 14,
-    color: Colors.black,
   },
   editor: {
     flex: 1,

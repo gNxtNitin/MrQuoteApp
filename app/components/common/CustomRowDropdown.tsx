@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { Colors } from "@/app/constants/colors";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useTheme } from "../providers/ThemeProvider";
 
 interface CustomDropdownRowProps {
   label: string;
@@ -23,6 +24,8 @@ export const CustomDropdownRow: React.FC<CustomDropdownRowProps> = ({
   onValueChange,
   options,
 }) => {
+  const theme = useTheme()
+
   const [isDropdownVisible, setDropdownVisible] = useState(false);
 
   const handleOptionSelect = (option: string) => {
@@ -32,18 +35,17 @@ export const CustomDropdownRow: React.FC<CustomDropdownRowProps> = ({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>{label}</Text>
+      <Text style={[styles.label,{color:theme.textSecondary}]}>{label}</Text>
       <View
         style={[
-          styles.dropdownContainer,
-          value ? { borderColor: Colors.primary } : null,
+          styles.dropdownContainer
         ]}
       >
         <TouchableOpacity
           style={styles.selectedValueContainer}
           onPress={() => setDropdownVisible(!isDropdownVisible)}
         >
-          <Text style={styles.selectedValueText}>
+          <Text style={[styles.selectedValueText,{color:theme.placeholder}]}>
             {value || "Select an option"}
           </Text>
           <MaterialIcons
@@ -86,7 +88,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    color: Colors.black,
+    // color: Colors.black,
     fontWeight: "600",
   },
   dropdownContainer: {
@@ -102,12 +104,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: Colors.white,
+    // backgroundColor: Colors.white,
     borderRadius: 10,
   },
   selectedValueText: {
     fontSize: 16,
-    color: Colors.black,
+    // color: Colors.black,
   },
   dropdownMenu: {
     position: "absolute",

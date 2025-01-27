@@ -162,7 +162,7 @@ export function InspectionPage() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Card style={styles.mainCard}>
+      <Card style={[styles.mainCard, { backgroundColor: theme.card }]}>
         <ScrollView style={styles.scrollView}>
           <View style={styles.header}>
             <View style={styles.titleRow}>
@@ -176,9 +176,15 @@ export function InspectionPage() {
                 />
               ) : (
                 <>
-                  <Text style={styles.title}>{title}</Text>
+                  <Text style={[styles.title, { color: theme.textSecondary }]}>
+                    {title}
+                  </Text>
                   <TouchableOpacity onPress={() => setIsEditingTitle(true)}>
-                    <Feather name="edit-2" size={16} color={Colors.primary} />
+                    <Feather
+                      name="edit-2"
+                      size={16}
+                      color={theme.textPrimary}
+                    />
                   </TouchableOpacity>
                 </>
               )}
@@ -187,8 +193,12 @@ export function InspectionPage() {
 
           {/* Style Selector */}
           <View style={styles.styleSection}>
-            <Text style={styles.label}>Style:</Text>
-            <Text style={styles.styleText}>Standard</Text>
+            <Text style={[styles.label, { color: theme.textSecondary }]}>
+              Style:
+            </Text>
+            <Text style={[styles.styleText, { color: theme.textSecondary }]}>
+              Standard
+            </Text>
             <TouchableOpacity>
               <Text style={styles.changeLink}>Change</Text>
             </TouchableOpacity>
@@ -206,15 +216,29 @@ export function InspectionPage() {
                     }
                     onBlur={() => setEditingSectionId(null)}
                     autoFocus
-                    style={styles.sectionTitle}
+                    style={[
+                      styles.sectionTitle,
+                      { color: theme.textSecondary },
+                    ]}
                   />
                 ) : (
                   <>
-                    <Text style={styles.sectionTitle}>{section.title}</Text>
+                    <Text
+                      style={[
+                        styles.sectionTitle,
+                        { color: theme.textSecondary },
+                      ]}
+                    >
+                      {section.title}
+                    </Text>
                     <TouchableOpacity
                       onPress={() => setEditingSectionId(section.id)}
                     >
-                      <Feather name="edit-2" size={16} color={Colors.primary} />
+                      <Feather
+                        name="edit-2"
+                        size={16}
+                        color={theme.textPrimary}
+                      />
                     </TouchableOpacity>
                     <View style={{ flex: 1 }} />
                     <TouchableOpacity onPress={() => deleteSection(section.id)}>
@@ -229,7 +253,10 @@ export function InspectionPage() {
               </View>
 
               {section.items.map((item) => (
-                <Card key={item.id} style={styles.itemCard}>
+                <Card
+                  key={item.id}
+                  style={[styles.itemCard, { backgroundColor: theme.card }]}
+                >
                   <View style={styles.itemHeader}>
                     <TouchableOpacity
                       style={styles.deleteIcon}
@@ -245,7 +272,14 @@ export function InspectionPage() {
                   <View style={styles.cardContainer}>
                     {/* Left Side - Upload Section */}
                     <View style={[styles.leftSection, styles.sectionBorder]}>
-                      <Text style={styles.sectionHeader}>Upload Files</Text>
+                      <Text
+                        style={[
+                          styles.sectionHeader,
+                          { color: theme.textSecondary },
+                        ]}
+                      >
+                        Upload Files
+                      </Text>
 
                       {/* <TouchableOpacity style={styles.uploadSection}>
                         <MaterialIcons
@@ -257,7 +291,7 @@ export function InspectionPage() {
                       </TouchableOpacity> */}
 
                       <FileUploader
-                        label="File Upload"
+                        label="Upload file"
                         accept="both"
                         onUpload={(file) => {
                           setImage(file || null);
@@ -267,7 +301,14 @@ export function InspectionPage() {
 
                     {/* Right Side - Description Section */}
                     <View style={[styles.rightSection, styles.sectionBorder]}>
-                      <Text style={styles.sectionHeader}>Description</Text>
+                      <Text
+                        style={[
+                          styles.sectionHeader,
+                          { color: theme.textSecondary },
+                        ]}
+                      >
+                        Description
+                      </Text>
                       <View style={styles.editorSection}>
                         <RichToolbar
                           editor={editorRefs.current[item.id]}
@@ -283,8 +324,8 @@ export function InspectionPage() {
                             actions.redo,
                           ]}
                           selectedIconTint={Colors.primary}
-                          disabledIconTint={Colors.black}
-                          iconTint={Colors.black}
+                          disabledIconTint={theme.textSecondary}
+                          iconTint={theme.textSecondary}
                           style={[styles.editorTools]}
                           iconSize={18}
                         />
@@ -299,12 +340,14 @@ export function InspectionPage() {
                           useContainer={true}
                           initialFocus={false}
                           editorStyle={{
-                            backgroundColor: Colors.white,
+                            backgroundColor: theme.card,
                             contentCSSText: `
                               font-size: 16px;
                               min-height: 200px;
                               padding: 12px;
                             `,
+                            color: theme.textSecondary,
+                            placeholderColor: theme.placeholder,
                           }}
                           scrollEnabled={true}
                           containerStyle={{
@@ -374,7 +417,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "600",
-    color: Colors.black,
   },
   titleInput: {
     flex: 1,
@@ -392,12 +434,10 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    color: Colors.black,
   },
   styleText: {
     fontSize: 14,
     fontWeight: "500",
-    color: Colors.black,
   },
   changeLink: {
     color: Colors.primary,
@@ -411,7 +451,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: Colors.black,
   },
   actionIcons: {
     flexDirection: "row",
@@ -446,7 +485,6 @@ const styles = StyleSheet.create({
   sectionHeader: {
     fontSize: 16,
     fontWeight: "600",
-    color: Colors.black,
     marginBottom: 16,
   },
   uploadSection: {
@@ -469,7 +507,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   editorTools: {
-    backgroundColor: Colors.white,
+    backgroundColor: "transparent",
     borderWidth: 1,
     borderColor: Colors.gray[200],
     borderRadius: 8,

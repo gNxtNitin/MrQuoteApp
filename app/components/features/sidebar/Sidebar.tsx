@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E5',
+    borderBottomColor: Colors.gray[500],
   },
   titleContainer: {
     flexDirection: 'row',
@@ -243,10 +243,12 @@ const styles = StyleSheet.create({
   menuItemText: {
     fontSize: 16,
     color: '#000',
-    fontWeight: '500',
+    // fontWeight: '400',
   },
   menuItemTextSelected: {
     color: Colors.white,
+    fontSize:17,
+    fontWeight:'700'
   },
   menuItemTextContainer: {
     flex: 1,
@@ -265,7 +267,7 @@ const styles = StyleSheet.create({
   footer: {
     padding: 16,
     borderTopWidth: 1,
-    borderTopColor: '#E5E5E5',
+    borderTopColor: Colors.gray[500],
   },
   addButton: {
     flexDirection: 'row',

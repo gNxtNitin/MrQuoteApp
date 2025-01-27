@@ -1,17 +1,19 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { CustomInputRow } from "../../common/CustomRowInput";
+import { CustomDropdownRow } from "../../common/CustomRowDropdown";
 import { Button } from "../../common/Button";
 import { Colors } from "@/app/constants/colors";
 import { FileUploader } from "../../common/FileUploader";
+import { CustomCollapsible } from "../../common/Collapsable";
 import { router } from "expo-router";
 import { UploadSuccess } from "../../common/uploadsuccess";
 import { Card } from "../../common/Card";
-import { CustomCollapsible } from "../../common/Collapsable";
-import { CustomDropdownRow } from "../../common/CustomRowDropdown";
-import { CustomInputRow } from "../../common/CustomRowInput";
-        
+import { useTheme } from "../../providers/ThemeProvider";
+
 export const EstimateDetailsTab = () => {
   const handleBack = () => router.back();
+    const theme = useTheme();
 
   const [estimateNo, setEstimateNo] = useState("");
   const [salesPerson, setSalesPerson] = useState("");
@@ -20,7 +22,7 @@ export const EstimateDetailsTab = () => {
   const [nextCallback, setNextCallBack] = useState("");
 
   return (
-    <Card>
+    <Card style={{backgroundColor:theme.card}}>
       <View style={styles.tabContent}>
         {/* row 1 */}
         <View style={styles.row}>
@@ -89,6 +91,7 @@ export const EstimateDetailsTab = () => {
 
 export const CustomerDetailsTab = () => {
   const handleBack = () => router.back();
+  const theme = useTheme();
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setlastName] = useState("");
@@ -102,7 +105,7 @@ export const CustomerDetailsTab = () => {
   const [zipCode, setZipCode] = useState("");
 
   return (
-    <Card>
+    <Card style={{backgroundColor:theme.card}}>
     <View style={styles.tabContent}>
       {/* row 1 */}
       <View style={styles.row}>
@@ -226,6 +229,7 @@ export const CustomerDetailsTab = () => {
 
 export const PropertyMeasurementsTab = () => {
   const handleBack = () => router.back();
+  const theme = useTheme();
 
   const [ventsStandard, setVentsStandard] = useState("");
   const [ventsTurbne, setVentsTurbine] = useState("");
@@ -242,10 +246,10 @@ export const PropertyMeasurementsTab = () => {
   const [file, setFile] = useState<{ uri: string } | string | null>(null);
 
   return (
-    <Card>
+    <Card style={{backgroundColor:theme.card}}>
     <View style={styles.tabContent}>
       <View style={styles.row}>
-        <Text style={styles.heading}>Reports Available(0)</Text>
+        <Text style={[styles.heading,{color:theme.textSecondary}]}>Reports Available(0)</Text>
         {/* <Button label={"Upload File"} variant="primary" /> */}
         <View style={styles.file}>
           {file === null ? (
@@ -443,8 +447,7 @@ const styles = StyleSheet.create({
   tabContent: {
     marginTop: 25,
     flex: 1,
-    gap: 10,
-    backgroundColor: Colors.white,
+    gap: 35,
     padding: 20,
   },
   row: {

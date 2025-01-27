@@ -57,14 +57,14 @@ export function EstimateSubHeader({
       <View style={styles.content}>
         <View style={styles.leftSection}>
           <Pressable style={styles.backButton} onPress={handleBack}>
-            <MaterialIcons name="arrow-back" size={20} color={theme.primary} />
-            <Text style={[styles.backText, { color: theme.primary }]}>
+            <MaterialIcons name="arrow-back" size={20} color={theme.textPrimary} />
+            <Text style={[styles.backText, { color: theme.textPrimary }]}>
               Back
             </Text>
           </Pressable>
           <View style={styles.infoSection}>
             <View style={styles.customerHeader}>
-              <Text style={[styles.customerName, { color: theme.primary }]}>
+              <Text style={[styles.customerName, { color: theme.textPrimary }]}>
                 {customerName}
               </Text>
               <View style={[styles.badge, styles[`status_${estimateStatus}`]]}>
@@ -79,7 +79,7 @@ export function EstimateSubHeader({
                   <MaterialIcons
                     name="location-on"
                     size={14}
-                    color={theme.primary}
+                    color={theme.textPrimary}
                   />
                   <Text
                     style={[styles.detailText, { color: theme.textSecondary }]}
@@ -88,7 +88,7 @@ export function EstimateSubHeader({
                   </Text>
                 </View>
                 <View style={styles.detailsRow}>
-                  <MaterialIcons name="phone" size={14} color={theme.primary} />
+                  <MaterialIcons name="phone" size={14} color={theme.textPrimary} />
                   <Text
                     style={[styles.detailText, { color: theme.textSecondary }]}
                   >
@@ -98,7 +98,7 @@ export function EstimateSubHeader({
               </View>
               <View style={styles.detailsColumn}>
                 <View style={styles.detailsRow}>
-                  <MaterialIcons name="email" size={14} color={theme.primary} />
+                  <MaterialIcons name="email" size={14} color={theme.textPrimary} />
                   <Text
                     style={[styles.detailText, { color: theme.textSecondary }]}
                   >
@@ -106,7 +106,7 @@ export function EstimateSubHeader({
                   </Text>
                 </View>
                 <View style={styles.detailsRow}>
-                  <MaterialIcons name="event" size={14} color={theme.primary} />
+                  <MaterialIcons name="event" size={14} color={theme.textPrimary} />
                   <Text
                     style={[styles.detailText, { color: theme.textSecondary }]}
                   >

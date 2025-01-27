@@ -11,7 +11,7 @@ export function SearchBar() {
       styles.container, 
       { 
         backgroundColor: theme.background,
-        borderColor: theme.primary 
+        borderColor: theme.textPrimary 
       }
     ]}>
       <MaterialIcons name="search" size={24} color={theme.secondary} />

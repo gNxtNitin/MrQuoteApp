@@ -44,6 +44,7 @@ const TOKENS = [
 ];
 
 const PDFContent = ({ title, pageId }: { title: string; pageId: number }) => {
+  const theme = useTheme();
   const { customPages, updateCustomPage } = useEstimatePageStore();
   const pageData = customPages.find((page) => page.id === pageId);
   const [searchQuery, setSearchQuery] = useState("");
@@ -76,39 +77,47 @@ const PDFContent = ({ title, pageId }: { title: string; pageId: number }) => {
   const renderFolder = ({ item }: { item: { id: string; name: string } }) => (
     <TouchableOpacity
       style={[
-        styles.folderCard,
+        [styles.folderCard, { backgroundColor: theme.card }],
         isGridView ? styles.gridItem : styles.tileItem,
       ]}
     >
       <View style={styles.folderIcon}>
-        <Feather name="folder" size={24} color={Colors.primary} />
+        <Feather name="folder" size={24} color={theme.textPrimary} />
       </View>
-      <Text style={styles.folderName}>{item.name}</Text>
+      <Text style={[styles.folderName, { color: theme.textSecondary }]}>
+        {item.name}
+      </Text>
     </TouchableOpacity>
   );
 
   return (
     <View style={styles.pdfContent}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+      <Text style={[styles.sectionTitle, { color: theme.textSecondary }]}>
+        {title}
+      </Text>
 
       {/* Combined Search and Files Area */}
       <View style={styles.searchArea}>
         {/* Search Input */}
         <View style={styles.searchInputContainer}>
-          <Feather name="search" size={20} color={Colors.gray[400]} />
+          <Feather name="search" size={20} color={theme.placeholder} />
           <TextInput
-            style={styles.searchInput}
+            style={[styles.searchInput, { color: theme.textSecondary }]}
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholder="Search files and folders"
-            placeholderTextColor={Colors.gray[400]}
+            placeholderTextColor={theme.placeholder}
           />
         </View>
 
         {/* Files Section */}
         <View style={styles.filesSection}>
           <View style={styles.row}>
-            <Text style={styles.filesSectionTitle}>Files /</Text>
+            <Text
+              style={[styles.filesSectionTitle, { color: theme.textSecondary }]}
+            >
+              Files /
+            </Text>
             <View style={styles.viewToggleContainer}>
               <TouchableOpacity
                 onPress={toggleToGridView}
@@ -117,7 +126,7 @@ const PDFContent = ({ title, pageId }: { title: string; pageId: number }) => {
                 <MaterialIcons
                   name="grid-view"
                   size={24}
-                  color={isGridView ? Colors.primary : Colors.gray[500]}
+                  color={isGridView ? Colors.primary : theme.placeholder}
                 />
               </TouchableOpacity>
               <TouchableOpacity
@@ -127,7 +136,7 @@ const PDFContent = ({ title, pageId }: { title: string; pageId: number }) => {
                 <MaterialIcons
                   name="view-list"
                   size={24}
-                  color={!isGridView ? Colors.primary : Colors.gray[500]}
+                  color={!isGridView ? Colors.primary : theme.placeholder}
                 />
               </TouchableOpacity>
             </View>
@@ -158,6 +167,7 @@ const SharedPDFsContent = ({
   title: string;
   pageId: number;
 }) => {
+  const theme = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
   const [isGridView, setIsGridView] = useState(true);
 
@@ -172,39 +182,47 @@ const SharedPDFsContent = ({
   const renderFolder = ({ item }: { item: { id: string; name: string } }) => (
     <TouchableOpacity
       style={[
-        styles.folderCard,
+        [styles.folderCard, { backgroundColor: theme.card }],
         isGridView ? styles.gridItem : styles.tileItem,
       ]}
     >
       <View style={styles.folderIcon}>
-        <Feather name="folder" size={24} color={Colors.primary} />
+        <Feather name="folder" size={24} color={theme.textPrimary} />
       </View>
-      <Text style={styles.folderName}>{item.name}</Text>
+      <Text style={[styles.folderName, { color: theme.textSecondary }]}>
+        {item.name}
+      </Text>
     </TouchableOpacity>
   );
 
   return (
     <View style={styles.pdfContent}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+      <Text style={[styles.sectionTitle, { color: theme.textSecondary }]}>
+        {title}
+      </Text>
 
       {/* Combined Search and Files Area */}
       <View style={styles.searchArea}>
         {/* Search Input */}
         <View style={styles.searchInputContainer}>
-          <Feather name="search" size={20} color={Colors.gray[400]} />
+          <Feather name="search" size={20} color={theme.placeholder} />
           <TextInput
-            style={styles.searchInput}
+            style={[styles.searchInput, { color: theme.textSecondary }]}
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholder="Search files and folders"
-            placeholderTextColor={Colors.gray[400]}
+            placeholderTextColor={theme.placeholder}
           />
         </View>
 
         {/* Files Section */}
         <View style={styles.filesSection}>
           <View style={styles.row}>
-            <Text style={styles.filesSectionTitle}>Files /</Text>
+            <Text
+              style={[styles.filesSectionTitle, { color: theme.textSecondary }]}
+            >
+              Files /
+            </Text>
             <View style={styles.viewToggleContainer}>
               <TouchableOpacity
                 onPress={toggleToGridView}
@@ -213,7 +231,7 @@ const SharedPDFsContent = ({
                 <MaterialIcons
                   name="grid-view"
                   size={24}
-                  color={isGridView ? Colors.primary : Colors.gray[500]}
+                  color={isGridView ? Colors.primary : theme.placeholder}
                 />
               </TouchableOpacity>
               <TouchableOpacity
@@ -223,7 +241,7 @@ const SharedPDFsContent = ({
                 <MaterialIcons
                   name="view-list"
                   size={24}
-                  color={!isGridView ? Colors.primary : Colors.gray[500]}
+                  color={!isGridView ? Colors.primary : theme.placeholder}
                 />
               </TouchableOpacity>
             </View>
@@ -256,6 +274,7 @@ const SingleUsePDFContent = ({
   pageId: number;
   setUploadedPdfs: (pdfs: File | null) => void;
 }) => {
+  const theme = useTheme();
   const [pdfs, setPdfs] = useState<File | null>(null);
 
   useEffect(() => {
@@ -265,7 +284,9 @@ const SingleUsePDFContent = ({
 
   return (
     <View style={styles.pdfContent}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+      <Text style={[styles.sectionTitle, { color: theme.textSecondary }]}>
+        {title}
+      </Text>
       <FileUploader
         accept="pdf"
         height={300}
@@ -284,6 +305,7 @@ const TextPageContent = ({
   pageId: number;
 }) => {
   const { customPages, updateCustomPage } = useEstimatePageStore();
+  const theme = useTheme();
   const pageData = customPages.find((page) => page.id === pageId);
 
   const [editorContent, setEditorContent] = useState("");
@@ -327,7 +349,9 @@ const TextPageContent = ({
 
   return (
     <View style={styles.pdfContent}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+      <Text style={[styles.sectionTitle, { color: theme.textSecondary }]}>
+        {title}
+      </Text>
 
       <View style={styles.editorContainer}>
         <View style={styles.toolbarContainer}>
@@ -339,19 +363,27 @@ const TextPageContent = ({
               <MaterialIcons
                 name={showTokens ? "expand-less" : "expand-more"}
                 size={24}
-                color={Colors.black}
+                color={theme.textSecondary}
               />
-              <Text style={styles.tokenButtonText}>Insert Token</Text>
+              <Text
+                style={[styles.tokenButtonText, { color: theme.textSecondary }]}
+              >
+                Insert Token
+              </Text>
             </TouchableOpacity>
             {showTokens && (
               <View style={styles.tokenDropdown}>
                 {TOKENS.map((token, index) => (
                   <TouchableOpacity
                     key={index}
-                    style={styles.tokenItem}
+                    style={[styles.tokenItem, { backgroundColor: theme.card }]}
                     onPress={() => insertToken(token.value)}
                   >
-                    <Text style={styles.tokenText}>{token.label}</Text>
+                    <Text
+                      style={[styles.tokenText, { color: theme.textSecondary }]}
+                    >
+                      {token.label}
+                    </Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -369,9 +401,10 @@ const TextPageContent = ({
               actions.blockquote,
             ]}
             style={styles.toolbar}
-            iconTint={Colors.black}
+            iconTint={theme.textSecondary}
             selectedIconTint={Colors.primary}
             iconContainerStyle={styles.toolbarIcon}
+            disabledTextTint={theme.textSecondary}
           />
         </View>
         <View style={styles.editorContent}>
@@ -383,6 +416,12 @@ const TextPageContent = ({
             style={styles.editor}
             initialHeight={400}
             initialContentHTML={editorContent}
+            editorStyle={{
+              color: theme.textSecondary,
+              backgroundColor: theme.card,
+              contentCSSText: "font-size: 16px; min-height: 200px;",
+              placeholderColor: theme.placeholder,
+            }}
           />
         </View>
       </View>
@@ -502,7 +541,7 @@ export function CustomPage({ title }: CustomPageProps) {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Card style={styles.card}>
+      <Card style={[styles.card, { backgroundColor: theme.card }]}>
         <ScrollView>
           <View style={styles.header}>
             <View style={styles.titleRow}>
@@ -518,11 +557,17 @@ export function CustomPage({ title }: CustomPageProps) {
                 />
               ) : (
                 <>
-                  <Text style={styles.title}>{pageState.pageTitle}</Text>
+                  <Text style={[styles.title, { color: theme.textSecondary }]}>
+                    {pageState.pageTitle}
+                  </Text>
                   <TouchableOpacity
                     onPress={() => handleStateChange("isEditingTitle", true)}
                   >
-                    <Feather name="edit-2" size={16} color={Colors.primary} />
+                    <Feather
+                      name="edit-2"
+                      size={16}
+                      color={theme.textPrimary}
+                    />
                   </TouchableOpacity>
                 </>
               )}
@@ -532,10 +577,20 @@ export function CustomPage({ title }: CustomPageProps) {
           {/* Acknowledge Switch */}
           <View style={styles.acknowledgeContainer}>
             <View style={styles.acknowledgeContent}>
-              <Text style={styles.acknowledgeTitle}>
+              <Text
+                style={[
+                  styles.acknowledgeTitle,
+                  { color: theme.textSecondary },
+                ]}
+              >
                 Require customers to acknowledge this page
               </Text>
-              <Text style={styles.acknowledgeSubtitle}>
+              <Text
+                style={[
+                  styles.acknowledgeSubtitle,
+                  { color: theme.placeholder },
+                ]}
+              >
                 They will be asked during the signing process
               </Text>
             </View>
@@ -561,6 +616,7 @@ export function CustomPage({ title }: CustomPageProps) {
               <View
                 style={[
                   styles.radio,
+                  { borderColor: theme.textSecondary },
                   pageState.selectedType === "myPDFs" && styles.selectedRadio,
                 ]}
               >
@@ -575,6 +631,7 @@ export function CustomPage({ title }: CustomPageProps) {
               <Text
                 style={[
                   styles.typeText,
+                  { color: theme.textSecondary },
                   pageState.selectedType === "myPDFs" &&
                     styles.selectedTypeText,
                 ]}
@@ -593,6 +650,7 @@ export function CustomPage({ title }: CustomPageProps) {
               <View
                 style={[
                   styles.radio,
+                  { borderColor: theme.textSecondary },
                   pageState.selectedType === "sharedPDFs" &&
                     styles.selectedRadio,
                 ]}
@@ -608,6 +666,7 @@ export function CustomPage({ title }: CustomPageProps) {
               <Text
                 style={[
                   styles.typeText,
+                  { color: theme.textSecondary },
                   pageState.selectedType === "sharedPDFs" &&
                     styles.selectedTypeText,
                 ]}
@@ -627,6 +686,7 @@ export function CustomPage({ title }: CustomPageProps) {
               <View
                 style={[
                   styles.radio,
+                  { borderColor: theme.textSecondary },
                   pageState.selectedType === "singleUsePDFs" &&
                     styles.selectedRadio,
                 ]}
@@ -642,6 +702,7 @@ export function CustomPage({ title }: CustomPageProps) {
               <Text
                 style={[
                   styles.typeText,
+                  { color: theme.textSecondary },
                   pageState.selectedType === "singleUsePDFs" &&
                     styles.selectedTypeText,
                 ]}
@@ -660,6 +721,7 @@ export function CustomPage({ title }: CustomPageProps) {
               <View
                 style={[
                   styles.radio,
+                  { borderColor: theme.textSecondary },
                   pageState.selectedType === "textPage" && styles.selectedRadio,
                 ]}
               >
@@ -674,6 +736,7 @@ export function CustomPage({ title }: CustomPageProps) {
               <Text
                 style={[
                   styles.typeText,
+                  { color: theme.textSecondary },
                   pageState.selectedType === "textPage" &&
                     styles.selectedTypeText,
                 ]}
@@ -717,14 +780,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "600",
-    color: Colors.black,
+    // color: Colors.black,
   },
   acknowledgeContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     padding: 16,
-    backgroundColor: "white",
+    // backgroundColor: "white",
     borderWidth: 1,
     borderColor: Colors.gray[200],
     borderRadius: 8,
@@ -737,12 +800,12 @@ const styles = StyleSheet.create({
   acknowledgeTitle: {
     fontSize: 16,
     fontWeight: "500",
-    color: Colors.black,
+    // color: Colors.black,
     marginBottom: 4,
   },
   acknowledgeSubtitle: {
     fontSize: 14,
-    color: Colors.gray[500],
+    // color: Colors.gray[500],
   },
   typeContainer: {
     flexDirection: "row",
@@ -757,7 +820,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.gray[200],
     borderRadius: 8,
-    backgroundColor: "white",
+    // backgroundColor: "white",
     minWidth: 120,
   },
   selectedType: {
@@ -769,7 +832,7 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: Colors.gray[400],
+    // borderColor: Colors.gray[400],
     marginRight: 8,
     alignItems: "center",
     justifyContent: "center",
@@ -785,7 +848,7 @@ const styles = StyleSheet.create({
   },
   typeText: {
     fontSize: 14,
-    color: Colors.gray[500],
+    // color: Colors.gray[500],
   },
   selectedTypeText: {
     color: Colors.primary,
@@ -809,12 +872,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: Colors.black,
+    // color: Colors.black,
     marginBottom: 16,
   },
   searchArea: {
     flex: 1,
-    backgroundColor: "white",
+    // backgroundColor: "white",
     borderWidth: 1,
     borderColor: Colors.gray[200],
     borderRadius: 8,
@@ -826,7 +889,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 12,
     height: 40,
-    backgroundColor: Colors.gray[50],
+    // backgroundColor: Colors.gray[50],
     borderRadius: 8,
     borderWidth: 1,
     borderColor: Colors.gray[200],
@@ -836,7 +899,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 8,
     fontSize: 14,
-    color: Colors.black,
+    // color: Colors.black,
     height: "100%",
   },
   filesSection: {
@@ -845,7 +908,7 @@ const styles = StyleSheet.create({
   filesSectionTitle: {
     fontSize: 16,
     fontWeight: "500",
-    color: Colors.black,
+    // color: Colors.black,
     marginBottom: 16,
   },
   foldersContainer: {
@@ -855,7 +918,7 @@ const styles = StyleSheet.create({
   folderCard: {
     width: 155,
     padding: 12,
-    backgroundColor: Colors.gray[50],
+    // backgroundColor: Colors.gray[50],
     borderWidth: 1,
     borderColor: Colors.gray[200],
     borderRadius: 8,
@@ -869,7 +932,7 @@ const styles = StyleSheet.create({
   },
   folderName: {
     fontSize: 14,
-    color: Colors.black,
+    // color: Colors.black,
     textAlign: "center",
   },
   uploadContainer: {
@@ -929,11 +992,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.gray[200],
     borderRadius: 8,
-    backgroundColor: "white",
+    // backgroundColor: "white",
   },
   toolbarContainer: {
     flexDirection: "row",
-    backgroundColor: "#f9fafb",
     borderBottomWidth: 1,
     borderBottomColor: Colors.gray[200],
     borderTopLeftRadius: 8,
@@ -959,7 +1021,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   tokenButtonText: {
-    color: Colors.black,
+    // color: Colors.black,
     fontSize: 14,
   },
   tokenDropdown: {
@@ -988,7 +1050,7 @@ const styles = StyleSheet.create({
   },
   tokenText: {
     fontSize: 14,
-    color: Colors.black,
+    // color: Colors.black,
   },
   editorContent: {
     flex: 1,
@@ -1020,7 +1082,7 @@ const styles = StyleSheet.create({
   gridItem: {
     width: 140,
     padding: 12,
-    backgroundColor: Colors.gray[50],
+    // backgroundColor: Colors.gray[50],
     borderWidth: 1,
     borderColor: Colors.gray[200],
     borderRadius: 8,
