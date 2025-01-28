@@ -63,6 +63,7 @@ export const UserRole = {
 
     try {
       await statement.executeAsync(values);
+      console.log('UserRole inserted');
     } finally {
       await statement.finalizeAsync();
     }

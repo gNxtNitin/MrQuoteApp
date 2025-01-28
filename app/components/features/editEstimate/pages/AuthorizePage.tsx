@@ -22,6 +22,7 @@ import { ViewTemplatesDialog } from "./ViewTemplatesDialog";
 import { flattenObject } from "@/app/utils/flattenObj";
 import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
 import { useTheme } from "@/app/components/providers/ThemeProvider";
+import { useEstimateStore } from "@/app/stores/estimateStore";
 
 interface LineItem {
   id: string;
@@ -49,6 +50,7 @@ export function AuthorizePage() {
   const [title, setTitle] = useState("Authorize");
   const [disclaimer, setDisclaimer] = useState("");
   const [sectionTitle, setSectionTitle] = useState("");
+  const { selectedPageId } = useEstimateStore();
   const [lineItems, setLineItems] = useState<LineItem[]>([
     {
       id: "1",

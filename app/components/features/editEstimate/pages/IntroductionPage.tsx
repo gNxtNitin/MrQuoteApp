@@ -20,6 +20,7 @@ import { ViewTemplatesDialog } from "./ViewTemplatesDialog";
 import { useTheme } from "@/app/components/providers/ThemeProvider";
 import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
 import { IntroductionPageContent } from "@/app/database/models/IntroductionPageContent";
+import { useEstimateStore } from "@/app/stores/estimateStore";
 
 interface Template {
   id: string;
@@ -44,13 +45,20 @@ export function IntroductionPage() {
   const tokenButtonRef = useRef<View>(null);
   const [showTemplatesDialog, setShowTemplatesDialog] = useState(false);
   const theme = useTheme();
+  const { selectedPageId } = useEstimateStore();
+  const [id, setId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await IntroductionPageContent.getById(2);
+        const id = await IntroductionPageContent.getIdByPageId(selectedPageId!);
+        setId(id);  
+        console.log("ID Intro Page: ", id);
+        const data = await IntroductionPageContent.getById(id!);
         if (data) {
           console.log("Fetched Introduction Data: ", data);
+          setEditorContent(data.introduction_content || "");
+          setIntroTitle(data.introduction_name || "Introduction");
         }
       } catch (error) {
         console.log("Error fetching data", error);
@@ -59,7 +67,7 @@ export function IntroductionPage() {
     fetchData();
   }, []);
 
-  const handleSaveTemplate = () => {
+  const handleSaveTemplate = async () => {
     // Implement save template logic
     if (editorContent) {
       const cleanedContent = editorContent.replace(/<\/?div>/g, ""); // Remove <div> and </div> tags
@@ -71,6 +79,15 @@ export function IntroductionPage() {
       // Save to storage or state management
       console.log("Saving template:", newTemplate);
       useEstimatePageStore.getState().setFormData("Introduction", newTemplate);
+    }
+    try {
+      await IntroductionPageContent.update(id!, {
+        introduction_content: editorContent,
+        introduction_name: introTitle,
+      });
+      console.log("Data updated successfully.");
+    } catch (error) {
+      console.log("Error updating content", error);
     }
   };
 

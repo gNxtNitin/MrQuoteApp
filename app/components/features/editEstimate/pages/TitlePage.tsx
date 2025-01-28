@@ -44,12 +44,15 @@ export function TitlePage() {
   const [state, setState] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const { selectedPageId } = useEstimateStore();
+  const [id, setId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log("selectedPageId", selectedPageId);
-        const data = await TitlePageContent.getById(selectedPageId!);
+        const id = await TitlePageContent.getIdByPageId(selectedPageId!);
+        setId(id);
+        console.log("id Title Page: ", id, "selectedPageId: ", selectedPageId);
+        const data = await TitlePageContent.getById(id!);
         console.log("data", data);
         if (data) {
           console.log("Fetched Data:", data);
@@ -97,7 +100,7 @@ export function TitlePage() {
       zip_code: postalCode,
     };
     try {
-      await TitlePageContent.update(selectedPageId!, formData);
+      await TitlePageContent.update(id!, formData);
       console.log("Data updated successfully.");
     } catch (error) {
       console.error("Error updating data:", error);

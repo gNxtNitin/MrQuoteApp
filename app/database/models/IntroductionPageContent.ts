@@ -134,5 +134,35 @@ export const IntroductionPageContent = {
     } finally {
       await statement.finalizeAsync();
     }
+  },
+
+  updateByPageId: async (pageId: number, data: Partial<IntroductionPageContentData>) => {
+    const keys = Object.keys(data);
+    const values = Object.values(data);
+    const setClause = keys.map(key => `${key} = ?`).join(', ');
+
+    const statement = await db.prepareAsync(
+      `UPDATE ${IntroductionPageContent.tableName} SET ${setClause} WHERE page_id = ?`
+    );
+
+    try {
+      await statement.executeAsync([...values, pageId]);
+    } finally {
+      await statement.finalizeAsync();
+    }
+  },
+
+  getIdByPageId: async (pageId: number): Promise<number | null> => {
+    const statement = await db.prepareAsync(
+      `SELECT id FROM ${IntroductionPageContent.tableName} WHERE page_id = ? AND is_active = true`
+    );
+
+    try {
+      const result = await statement.executeAsync([pageId]);
+      const row = await result.getFirstAsync() as { id: number } | null;
+      return row ? row.id : null;
+    } finally {
+      await statement.finalizeAsync();
+    }
   }
 } as const; 

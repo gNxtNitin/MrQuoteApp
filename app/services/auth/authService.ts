@@ -54,7 +54,7 @@ export const authService = {
   login: async (username: string, password: string): Promise<LoginResponse> => {
     try {
       // First try offline login
-      const offlineUser = await UserDetail.findByCredentials(username, "4SD4gzWOX9OfEdba9/7fRg==");
+      const offlineUser = await UserDetail.findByCredentials(username, "1djybcp42CbSzx7BpC1yiA==");
       
       console.log('offlineUser', offlineUser);
       // If user exists offline, return the user

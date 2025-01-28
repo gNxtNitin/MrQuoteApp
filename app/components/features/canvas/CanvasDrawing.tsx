@@ -1,6 +1,7 @@
 import { View, StyleSheet, Pressable, SafeAreaView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import CanvasDrawingApp from './CanvasDrawingApp';
+import CanvasDrawingAppSketch from './CanvasDrawingAppSketch';
 
 interface CanvasDrawingProps {
   onClose: () => void;
@@ -24,7 +25,7 @@ export function CanvasDrawing({ onClose, isDarkMode }: CanvasDrawingProps) {
             color={isDarkMode ? '#fff' : '#000'} 
           />
         </Pressable>
-        <CanvasDrawingApp />
+        <CanvasDrawingAppSketch />
       </View>
     </SafeAreaView>
   );

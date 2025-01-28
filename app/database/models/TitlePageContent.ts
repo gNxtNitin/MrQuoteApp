@@ -162,5 +162,19 @@ export const TitlePageContent = {
     } finally {
       await statement.finalizeAsync();
     }
+  },
+
+  getIdByPageId: async (pageId: number): Promise<number | null> => {
+    const statement = await db.prepareAsync(
+      `SELECT id FROM ${TitlePageContent.tableName} WHERE page_id = ? AND is_active = true`
+    );
+
+    try {
+      const result = await statement.executeAsync([pageId]);
+      const row = await result.getFirstAsync() as { id: number } | null;
+      return row ? row.id : null;
+    } finally {
+      await statement.finalizeAsync();
+    }
   }
 } as const; 
