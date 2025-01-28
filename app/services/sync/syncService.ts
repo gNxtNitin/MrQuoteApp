@@ -354,28 +354,28 @@ export const syncService = {
       }
 
       // Sync IntroductionPageContent
-    //   for (const introPage of data.IntroductionPageContent) {
-    //     // console.log('introPage', introPage);
-    //     const existingIntroPage = await IntroductionPageContent.getById(introPage.IntroductionPageId);
-    //     // console.log('existingIntroPage', existingIntroPage);
-    //     if (!existingIntroPage) {
-    //       // console.log('IntroductionPageContent not found, inserting...');
-    //       await IntroductionPageContent.insert({
-    //         id: introPage.IntroductionPageId,
-    //         page_id: introPage.PageId,
-    //         introduction_name: introPage.IntroductionTitle,
-    //         introduction_content: introPage.IntroductionContent,
-    //         is_active: introPage.IsActive,
-    //         created_by: introPage.CreatedBy,
-    //         created_date: introPage.CreatedDate,
-    //         modified_by: introPage.ModifiedBy ?? null,
-    //         modified_date: introPage.ModifiedDate ?? ''
-    //       });
-    //       // console.log('IntroductionPage synced:', introPage.IntroductionTitle);
-    //     } else {
-    //       // console.log('IntroductionPage already exists:', introPage.IntroductionTitle);
-    //     }
-    //   }
+      for (const introPage of data.IntroductionPageContent) {
+        console.log('introPage', introPage);
+        const existingIntroPage = await IntroductionPageContent.getById(introPage.IntroductionPageId);
+        console.log('existingIntroPage', existingIntroPage);
+        if (!existingIntroPage) {
+          console.log('IntroductionPageContent not found, inserting...');
+          await IntroductionPageContent.insert({
+            id: introPage.IntroductionPageId,
+            page_id: introPage.PageId,
+            introduction_name: introPage.IntroductionTitle,
+            introduction_content: introPage.IntroductionContent,
+            is_active: introPage.IsActive,
+            created_by: introPage.CreatedBy,
+            created_date: introPage.CreatedDate,
+            modified_by: introPage.ModifiedBy ?? null,
+            modified_date: introPage.ModifiedDate ?? ''
+          });
+          console.log('IntroductionPageInserted synced:', introPage.IntroductionPageId);
+        } else {
+          console.log('IntroductionPage already exists:', introPage.IntroductionTitle);
+        }
+      }
 
       // Sync UserCompany
       for (const userCompany of data.UserCompany) {

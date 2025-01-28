@@ -222,6 +222,7 @@ export function IntroductionPage() {
             <RichEditor
               ref={editorRef}
               onChange={setEditorContent}
+              initialContentHTML={editorContent}
               placeholder="Start typing your introduction..."
               style={styles.editor}
               initialFocus={false}
