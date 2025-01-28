@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   leftSection: { flex: 1, gap: 12 },
-  backButton: { flexDirection: "row", alignItems: "center", gap: 6 },
+  backButton: { flexDirection: "row", alignItems: "center", gap: 6,width:100 },
   backText: { fontSize: 16, color: Colors.primary, fontWeight: "600" },
   infoSection: { gap: 12 },
   customerHeader: { flexDirection: "row", alignItems: "center", gap: 8 },

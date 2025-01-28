@@ -2,9 +2,10 @@ import React from "react";
 import { View, Text, Pressable, StyleSheet, Image } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/app/constants/colors";
-import { useAuth } from '@/app/hooks/useAuth';
+import { useAuth } from "@/app/hooks/useAuth";
 import { initialsName } from "../../common/Utils";
 import { CompanyData } from "@/app/database/models/Company";
+import { useTheme } from "../../providers/ThemeProvider";
 const gutter = require("@/assets/images/gutter-logo.png");
 const roofing = require("@/assets/images/roofing-logo.png");
 
@@ -30,6 +31,7 @@ export function CompanySwitcher({
   onLogout,
 }: CompanySwitcherProps) {
   const { logout, user } = useAuth();
+  const theme = useTheme();
 
   const handleLogout = async () => {
     await logout();
@@ -37,26 +39,28 @@ export function CompanySwitcher({
   };
 
   return (
-    <View style={[styles.container, { zIndex: 9999 }]}>
+    <View
+      style={[styles.container, { backgroundColor: theme.card }, { zIndex: 9999 }]}
+    >
       <View style={styles.userInfo}>
         <View style={styles.userIcon}>
-          <Text style={styles.userInitials}>
-            {initialsName(`${user?.first_name || ''} ${user?.last_name || ''}`)}
+          <Text style={[styles.userInitials,{color:theme.textSecondary}]}>
+            {initialsName(`${user?.first_name || ""} ${user?.last_name || ""}`)}
           </Text>
         </View>
         <View>
-          <Text style={styles.userName}>
-            {`${user?.first_name || ''} ${user?.last_name || ''}`}
+          <Text style={[styles.userName,{color:theme.textSecondary}]}>
+            {`${user?.first_name || ""} ${user?.last_name || ""}`}
           </Text>
-          <Text style={styles.userStatus}>
-            {user?.is_active ? 'Active' : 'Inactive'}
+          <Text style={[styles.userStatus,{color:theme.placeholder}]}>
+            {user?.is_active ? "Active" : "Inactive"}
           </Text>
         </View>
       </View>
 
-      <View style={styles.divider} />
+      <View style={[styles.divider,{backgroundColor:theme.placeholder}]} />
 
-      <Text style={styles.title}>Switch Company</Text>
+      {/* <Text style={styles.title}>Switch Company</Text>
 
       <View style={styles.divider} />
 
@@ -101,11 +105,11 @@ export function CompanySwitcher({
             )}
           </Pressable>
         );
-      })}
+      })} */}
 
       <Pressable style={styles.logoutRow} onPress={handleLogout}>
-        <Text style={styles.logoutText}>Logout</Text>
-        <MaterialIcons name="logout" size={24} color="#666" />
+        <Text style={[styles.logoutText,{color:theme.textSecondary}]}>Logout</Text>
+        <MaterialIcons name="logout" size={24} color={theme.textSecondary} />
       </Pressable>
     </View>
   );
@@ -113,7 +117,6 @@ export function CompanySwitcher({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.white,
     borderRadius: 16,
     padding: 16,
     width: 300,
@@ -133,7 +136,6 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: "#e0e0e0",
     justifyContent: "center",
     alignItems: "center",
     marginRight: 12,
@@ -143,16 +145,13 @@ const styles = StyleSheet.create({
   userInitials: {
     fontSize: 24,
     fontWeight: "600",
-    color: Colors.black,
   },
   userName: {
     fontSize: 16,
     fontWeight: "600",
-    color: Colors.black,
   },
   userStatus: {
     fontSize: 14,
-    color: "#666",
   },
   title: {
     fontSize: 18,
@@ -163,7 +162,6 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: "#f0f0f0",
   },
   companyRow: {
     flexDirection: "row",
@@ -205,17 +203,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginTop: 4,
     paddingTop: 6,
-    borderTopWidth: 1,
     borderTopColor: "#f0f0f0",
   },
   logoutText: {
     fontSize: 16,
-    color: "#666",
   },
   logo: {
     width: 30,
     height: 30,
     borderRadius: 15,
-    
   },
 });

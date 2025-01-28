@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     marginStart: 20,
     paddingVertical: 5,
   },
-  backButton: { flexDirection: "row", alignItems: "center", gap: 6 },
+  backButton: { flexDirection: "row", alignItems: "center", gap: 6,width:100 },
 
   backText: { fontSize: 16, color: Colors.primary, fontWeight: "600" },
 });

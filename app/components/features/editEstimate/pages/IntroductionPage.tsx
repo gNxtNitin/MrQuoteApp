@@ -48,9 +48,11 @@ export function IntroductionPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await IntroductionPageContent.getById(2);
+        const data = await IntroductionPageContent.getById(1);
         if (data) {
           console.log("Fetched Introduction Data: ", data);
+          setIntroTitle(data?.introduction_name || "Introduction");
+          setEditorContent(data?.introduction_content || "");
         }
       } catch (error) {
         console.log("Error fetching data", error);
@@ -59,18 +61,26 @@ export function IntroductionPage() {
     fetchData();
   }, []);
 
-  const handleSaveTemplate = () => {
-    // Implement save template logic
+  const handleSaveTemplate = async () => {
     if (editorContent) {
-      const cleanedContent = editorContent.replace(/<\/?div>/g, ""); // Remove <div> and </div> tags
+      const cleanedContent = editorContent.replace(/<\/?div>/g, "");
       const newTemplate: Template = {
         id: Date.now().toString(),
         content: cleanedContent,
         title: `Template ${Date.now()}`,
       };
-      // Save to storage or state management
+
       console.log("Saving template:", newTemplate);
       useEstimatePageStore.getState().setFormData("Introduction", newTemplate);
+    }
+    try {
+      await IntroductionPageContent.update(1, {
+        introduction_content: editorContent,
+        introduction_name: introTitle,
+      });
+      console.log("Data updated successfully.");
+    } catch (error) {
+      console.log("Error updating content", error);
     }
   };
 
@@ -206,6 +216,7 @@ export function IntroductionPage() {
               ref={editorRef}
               onChange={setEditorContent}
               placeholder="Start typing your introduction..."
+              initialContentHTML={editorContent} 
               style={styles.editor}
               initialFocus={false}
               useContainer={true}

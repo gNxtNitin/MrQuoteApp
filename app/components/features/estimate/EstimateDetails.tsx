@@ -59,11 +59,11 @@ export function EstimateDetails({
               onPress={handleViewEstimate}
             /> */}
             <FinalPdfGenerator formData={finalEstimate} />
-            <ActionButton
+            {/* <ActionButton
               icon="content-copy"
               label="Duplicate"
               onPress={onDuplicate}
-            />
+            /> */}
             <ActionButton
               icon="delete"
               label="Delete"

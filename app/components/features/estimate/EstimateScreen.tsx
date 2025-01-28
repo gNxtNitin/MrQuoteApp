@@ -11,7 +11,8 @@ interface EstimateScreenProps {
   estimateData: Estimate;
 }
 
-export function EstimateScreen({ estimateData }: EstimateScreenProps) {
+export function EstimateScreen({ 
+  estimateData }: EstimateScreenProps) {
   const theme = useTheme();
   
   const handleEditEstimate = () => {
