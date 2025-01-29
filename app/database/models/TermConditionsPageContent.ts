@@ -27,7 +27,7 @@ export interface TermConditionsPageContentData {
   id?: number;
   page_id: number;
   tc_page_title?: string;
-  is_acknowledged?: boolean;
+  is_acknowledged?: number;
   is_summary?: boolean;
   is_pdf?: boolean;
   summary_content?: string;
@@ -45,7 +45,7 @@ export const TermConditionsPageContent = {
     id: { type: 'INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE' },
     page_id: { type: 'INTEGER NOT NULL' },
     tc_page_title: { type: 'TEXT' },
-    is_acknowledged: { type: 'BOOLEAN' },
+    is_acknowledged: { type: 'INTEGER' },
     is_summary: { type: 'BOOLEAN' },
     is_pdf: { type: 'BOOLEAN' },
     summary_content: { type: 'TEXT' },
@@ -109,12 +109,17 @@ export const TermConditionsPageContent = {
   getByPageId: async (pageId: number): Promise<TermConditionsPageContentData | null> => {
     const statement = await db.prepareAsync(
       `SELECT * FROM ${TermConditionsPageContent.tableName} 
-       WHERE page_id = ? AND is_active = true`
+       WHERE page_id = ? AND is_active = true 
+       ORDER BY created_date DESC
+       LIMIT 1`
     );
 
     try {
       const result = await statement.executeAsync([pageId]);
       return await result.getFirstAsync() as TermConditionsPageContentData | null;
+    } catch (error) {
+      console.error('Error getting terms by page ID:', error);
+      throw error;
     } finally {
       await statement.finalizeAsync();
     }
@@ -131,6 +136,10 @@ export const TermConditionsPageContent = {
 
     try {
       await statement.executeAsync([...values, id]);
+      console.log(`Updated terms and conditions with ID ${id}`);
+    } catch (error) {
+      console.error('Error updating terms and conditions:', error);
+      throw error;
     } finally {
       await statement.finalizeAsync();
     }
@@ -143,6 +152,26 @@ export const TermConditionsPageContent = {
 
     try {
       await statement.executeAsync([id]);
+    } finally {
+      await statement.finalizeAsync();
+    }
+  },
+
+  getTermsIdByPageId: async (pageId: number): Promise<number | null> => {
+    const statement = await db.prepareAsync(
+      `SELECT id FROM ${TermConditionsPageContent.tableName} 
+       WHERE page_id = ? AND is_active = true 
+       ORDER BY created_date DESC 
+       LIMIT 1`
+    );
+
+    try {
+      const result = await statement.executeAsync([pageId]);
+      const row = await result.getFirstAsync();
+      return row ? (row as { id: number }).id : null;
+    } catch (error) {
+      console.error('Error getting terms ID by page ID:', error);
+      throw error;
     } finally {
       await statement.finalizeAsync();
     }

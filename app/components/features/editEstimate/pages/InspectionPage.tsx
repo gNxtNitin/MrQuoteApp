@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Image,
 } from "react-native";
 import { Card } from "../../../common/Card";
 import { Input } from "../../../common/Input";
@@ -20,6 +21,7 @@ import { useTheme } from "@/app/components/providers/ThemeProvider";
 import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
 import { FileUploader } from "@/app/components/common/FileUploader";
 import { flattenObject } from "@/app/utils/flattenObj";
+import { InspectionPageContent } from "@/app/database/models/InspectionPageContent";
 
 export function InspectionPage() {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -30,7 +32,7 @@ export function InspectionPage() {
     {
       id: "1",
       title: "Section 1",
-      items: [{ id: "1", description: "", images: [] }],
+      items: [{ id: "1", description: "", images: '' }],
     },
   ]);
   const theme = useTheme();
@@ -40,7 +42,6 @@ export function InspectionPage() {
     [key: string]: string;
   }>({});
 
-  // Initialize refs for each item
   useEffect(() => {
     sections.forEach((section) => {
       section.items.forEach((item) => {
@@ -51,6 +52,35 @@ export function InspectionPage() {
     });
   }, [sections]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await InspectionPageContent.getById(1);
+        if (data) {
+          const transformedSections = [
+            {
+              id: "1",
+              title: "Default Section",
+              items: [
+                {
+                  id: "1",
+                  description: data.inspection_title || "",
+                  images: '',
+                },
+              ],
+            },
+          ];
+          setSections(transformedSections as any);
+          setTitle(data?.inspection_title || "Inspection");
+        }
+      } catch (error) {
+        console.error("Error fetching data for selectedPageId:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const addSection = () => {
     const newSectionNumber = sections.length + 1;
     setSections([
@@ -58,7 +88,7 @@ export function InspectionPage() {
       {
         id: Date.now().toString(),
         title: `Section ${newSectionNumber}`,
-        items: [{ id: Date.now().toString(), description: "", images: [] }],
+        items: [{ id: Date.now().toString(), description: "", images: '' }],
       },
     ]);
   };
@@ -73,9 +103,36 @@ export function InspectionPage() {
             ...section,
             items: [
               ...section.items,
-              { id: newItemId, description: "", images: [] },
+              { id: newItemId, description: "", images: '' },
             ],
           };
+        }
+        return section;
+      })
+    );
+  };
+
+  const moveSection = (index: number, direction: "up" | "down") => {
+    const newSections = [...sections];
+    const [removedSection] = newSections.splice(index, 1);
+    const newIndex = direction === "up" ? index - 1 : index + 1;
+    newSections.splice(newIndex, 0, removedSection);
+    setSections(newSections);
+  };
+
+  const moveItem = (
+    sectionId: string,
+    itemIndex: number,
+    direction: "up" | "down"
+  ) => {
+    setSections(
+      sections.map((section) => {
+        if (section.id === sectionId) {
+          const newItems = [...section.items];
+          const [removedItem] = newItems.splice(itemIndex, 1);
+          const newIndex = direction === "up" ? itemIndex - 1 : itemIndex + 1;
+          newItems.splice(newIndex, 0, removedItem);
+          return { ...section, items: newItems };
         }
         return section;
       })
@@ -86,10 +143,7 @@ export function InspectionPage() {
     setSections(
       sections.map((section) => {
         if (section.id === sectionId) {
-          return {
-            ...section,
-            title: newTitle,
-          };
+          return { ...section, title: newTitle };
         }
         return section;
       })
@@ -121,48 +175,77 @@ export function InspectionPage() {
     );
   };
 
-  // Add uploaded image
-  const updatedSections = sections.map((section) => {
-    return {
-      ...section,
-      items: section.items.map((item) => {
-        if (item.images.length === 0 && image) {
-          return {
-            ...item,
-            images: [...item.images, image],
-          };
-        }
-        return item;
-      }),
-    };
-  });
-
   const handleSaveChanges = () => {
-    const inspectionData = {
-      title,
-      sections: updatedSections,
-      editorContents,
-    };
-
-    // Log all images in sections
-    // updatedSections.forEach((section) => {
-    //   console.log(`Images for Section: ${section.title}`);
-    //   section.items.forEach((item) => {
-    //     console.log(`Item ${item.id} Images:`, item.images);
-    //   });
-    // });
-
-    console.log(
-      "Saving changes Inspection:",
-      JSON.stringify({ inspectionData }, null, 2)
-    );
+    const inspectionData = { title, sections, editorContents };
     const flattenedData = flattenObject(inspectionData);
     useEstimatePageStore.getState().setFormData("Inspection", flattenedData);
   };
 
+  const handleFileUpload = (files: any[], sectionId: string, itemId: string) => {
+    try {
+      setSections(prevSections =>
+        prevSections.map(section => {
+          if (section.id === sectionId) {
+            // Find the current item and update it with the first image
+            const updatedItems = section.items.map(item => {
+              if (item.id === itemId) {
+                return {
+                  ...item,
+                  images: files[0].uri // Assign first image to current item
+                };
+              }
+              return item;
+            });
+
+            // Create new items for remaining images (if any)
+            const remainingImages = files.slice(1);
+            const newItems = remainingImages.map(file => ({
+              id: Date.now().toString() + Math.random(),
+              description: "",
+              images: file.uri
+            }));
+
+            return {
+              ...section,
+              items: [...updatedItems, ...newItems]
+            };
+          }
+          return section;
+        })
+      );
+
+      console.log('Files uploaded and items created');
+    } catch (error) {
+      console.error('Error handling file upload:', error);
+    }
+  };
+
+  // Add a function to handle image deletion
+  const handleImageDelete = (sectionId: string, itemId: string) => {
+    setSections(prevSections =>
+      prevSections.map(section => {
+        if (section.id === sectionId) {
+          return {
+            ...section,
+            items: section.items.map(item => {
+              if (item.id === itemId) {
+                return {
+                  ...item,
+                  images: '' // Clear the image
+                };
+              }
+              return item;
+            })
+          };
+        }
+        return section;
+      })
+    );
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Card style={styles.mainCard}>
+      <Card style={[styles.mainCard, { backgroundColor: theme.card }]}>
         <ScrollView style={styles.scrollView}>
           <View style={styles.header}>
             <View style={styles.titleRow}>
@@ -176,9 +259,15 @@ export function InspectionPage() {
                 />
               ) : (
                 <>
-                  <Text style={styles.title}>{title}</Text>
+                  <Text style={[styles.title, { color: theme.textSecondary }]}>
+                    {title}
+                  </Text>
                   <TouchableOpacity onPress={() => setIsEditingTitle(true)}>
-                    <Feather name="edit-2" size={16} color={Colors.primary} />
+                    <Feather
+                      name="edit-2"
+                      size={16}
+                      color={theme.textPrimary}
+                    />
                   </TouchableOpacity>
                 </>
               )}
@@ -187,8 +276,12 @@ export function InspectionPage() {
 
           {/* Style Selector */}
           <View style={styles.styleSection}>
-            <Text style={styles.label}>Style:</Text>
-            <Text style={styles.styleText}>Standard</Text>
+            <Text style={[styles.label, { color: theme.textSecondary }]}>
+              Style:
+            </Text>
+            <Text style={[styles.styleText, { color: theme.textSecondary }]}>
+              Standard
+            </Text>
             <TouchableOpacity>
               <Text style={styles.changeLink}>Change</Text>
             </TouchableOpacity>
@@ -206,15 +299,29 @@ export function InspectionPage() {
                     }
                     onBlur={() => setEditingSectionId(null)}
                     autoFocus
-                    style={styles.sectionTitle}
+                    style={[
+                      styles.sectionTitle,
+                      { color: theme.textSecondary },
+                    ]}
                   />
                 ) : (
                   <>
-                    <Text style={styles.sectionTitle}>{section.title}</Text>
+                    <Text
+                      style={[
+                        styles.sectionTitle,
+                        { color: theme.textSecondary },
+                      ]}
+                    >
+                      {section.title}
+                    </Text>
                     <TouchableOpacity
                       onPress={() => setEditingSectionId(section.id)}
                     >
-                      <Feather name="edit-2" size={16} color={Colors.primary} />
+                      <Feather
+                        name="edit-2"
+                        size={16}
+                        color={theme.textPrimary}
+                      />
                     </TouchableOpacity>
                     <View style={{ flex: 1 }} />
                     <TouchableOpacity onPress={() => deleteSection(section.id)}>
@@ -228,8 +335,11 @@ export function InspectionPage() {
                 )}
               </View>
 
-              {section.items.map((item) => (
-                <Card key={item.id} style={styles.itemCard}>
+              {section.items.map((item, itemIndex) => (
+                <Card
+                  key={item.id}
+                  style={[styles.itemCard, { backgroundColor: theme.card }]}
+                >
                   <View style={styles.itemHeader}>
                     <TouchableOpacity
                       style={styles.deleteIcon}
@@ -245,29 +355,83 @@ export function InspectionPage() {
                   <View style={styles.cardContainer}>
                     {/* Left Side - Upload Section */}
                     <View style={[styles.leftSection, styles.sectionBorder]}>
-                      <Text style={styles.sectionHeader}>Upload Files</Text>
+                      <Text
+                        style={[
+                          styles.sectionHeader,
+                          { color: theme.textSecondary },
+                        ]}
+                      >
+                        Upload Files
+                      </Text>
 
-                      {/* <TouchableOpacity style={styles.uploadSection}>
-                        <MaterialIcons
-                          name="file-upload"
-                          size={24}
-                          color={Colors.gray[500]}
+                      {item.images ? (
+                        // Show image with edit and delete buttons if image exists
+                        <View style={styles.imageContainer}>
+                          <Image
+                            source={{ uri: item.images }}
+                            style={styles.uploadedImage}
+                            resizeMode="cover"
+                          />
+                          <View style={styles.imageActions}>
+                            <TouchableOpacity
+                              style={styles.imageActionButton}
+                              onPress={() => {
+                                // Trigger FileUploader when edit is pressed
+                                // const fileUploaderInput = document.createElement('input');
+                                // fileUploaderInput.type = 'file';
+                                // fileUploaderInput.accept = 'image/*';
+                                // fileUploaderInput.onchange = (e: any) => {
+                                //   const files = Array.from(e.target.files);
+                                //   if (files.length > 0) {
+                                //     handleFileUpload([files[0]], section.id, item.id);
+                                //   }
+                                // };
+                                // fileUploaderInput.click();
+                              }}
+                            >
+                              <MaterialIcons
+                                name="edit"
+                                size={20}
+                                color={Colors.primary}
+                              />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              style={styles.imageActionButton}
+                              onPress={() => handleImageDelete(section.id, item.id)}
+                            >
+                              <MaterialIcons
+                                name="delete"
+                                size={20}
+                                color={Colors.red[500]}
+                              />
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                      ) : (
+                        // Show FileUploader if no image
+                        <FileUploader
+                          label="Upload file"
+                          accept="image"
+                          multiple={true}
+                          onUpload={(files) => {
+                            if (files && Array.isArray(files)) {
+                              handleFileUpload(files, section.id, item.id);
+                            }
+                          }}
                         />
-                        <Text style={styles.uploadText}>Upload Images</Text>
-                      </TouchableOpacity> */}
-
-                      <FileUploader
-                        label="File Upload"
-                        accept="both"
-                        onUpload={(file) => {
-                          setImage(file || null);
-                        }}
-                      />
+                      )}
                     </View>
 
                     {/* Right Side - Description Section */}
                     <View style={[styles.rightSection, styles.sectionBorder]}>
-                      <Text style={styles.sectionHeader}>Description</Text>
+                      <Text
+                        style={[
+                          styles.sectionHeader,
+                          { color: theme.textSecondary },
+                        ]}
+                      >
+                        Description
+                      </Text>
                       <View style={styles.editorSection}>
                         <RichToolbar
                           editor={editorRefs.current[item.id]}
@@ -283,8 +447,8 @@ export function InspectionPage() {
                             actions.redo,
                           ]}
                           selectedIconTint={Colors.primary}
-                          disabledIconTint={Colors.black}
-                          iconTint={Colors.black}
+                          disabledIconTint={theme.textSecondary}
+                          iconTint={theme.textSecondary}
                           style={[styles.editorTools]}
                           iconSize={18}
                         />
@@ -299,12 +463,14 @@ export function InspectionPage() {
                           useContainer={true}
                           initialFocus={false}
                           editorStyle={{
-                            backgroundColor: Colors.white,
+                            backgroundColor: theme.card,
                             contentCSSText: `
                               font-size: 16px;
                               min-height: 200px;
                               padding: 12px;
                             `,
+                            color: theme.textSecondary,
+                            placeholderColor: theme.placeholder,
                           }}
                           scrollEnabled={true}
                           containerStyle={{
@@ -374,7 +540,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "600",
-    color: Colors.black,
   },
   titleInput: {
     flex: 1,
@@ -392,12 +557,10 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    color: Colors.black,
   },
   styleText: {
     fontSize: 14,
     fontWeight: "500",
-    color: Colors.black,
   },
   changeLink: {
     color: Colors.primary,
@@ -411,7 +574,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: Colors.black,
   },
   actionIcons: {
     flexDirection: "row",
@@ -446,7 +608,6 @@ const styles = StyleSheet.create({
   sectionHeader: {
     fontSize: 16,
     fontWeight: "600",
-    color: Colors.black,
     marginBottom: 16,
   },
   uploadSection: {
@@ -469,7 +630,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   editorTools: {
-    backgroundColor: Colors.white,
+    backgroundColor: "transparent",
     borderWidth: 1,
     borderColor: Colors.gray[200],
     borderRadius: 8,
@@ -489,5 +650,36 @@ const styles = StyleSheet.create({
   },
   addSectionButton: {
     marginTop: 24,
+  },
+  imageContainer: {
+    position: 'relative',
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  uploadedImage: {
+    width: '100%',
+    height: '100%',
+  },
+  imageActions: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    flexDirection: 'row',
+    gap: 8,
+  },
+  imageActionButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 20,
+    padding: 6,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
 });

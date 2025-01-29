@@ -9,6 +9,7 @@ export const lightTheme = {
   card: Colors.white,
   border: '#E5E5E5',
   error: Colors.error,
+  placeholder:'#9E9E9E'
 };
 
 export const darkTheme = {
@@ -20,6 +21,7 @@ export const darkTheme = {
   card: '#1E1E1E', // Slightly lighter than background for depth
   border: '#333333', // Subtle border color
   error: '#CF6679', // Material Design dark theme error color
+  placeholder:'#AAAAAA'
 };
 
 export type Theme = typeof lightTheme; 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -20,43 +20,102 @@ import { Button } from "../../../common/Button";
 import { useTheme } from "@/app/components/providers/ThemeProvider";
 import { FileUploader } from "@/app/components/common/FileUploader";
 import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
+import { TermConditionsPageContent } from "@/app/database/models/TermConditionsPageContent";
+import { useEstimateStore } from "@/app/stores/estimateStore";
+import { useUserStore } from '@/app/stores/userStore';
 
 export function TermsPage() {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [title, setTitle] = useState("Terms and Conditions");
   const [requireAcknowledgment, setRequireAcknowledgment] = useState(false);
-  const [editorContent, setEditorContent] = useState(
-    'You may cancel this contract from the day you enter into the contract until 10 days after you receive a copy of the contract. You do not need a reason to cancel. If you do not receive the goods or services within 30 days of the date stated in the contract, you may cancel this contract within one year of the contract date..."'
-  );
-  const [uploadedPdf, setUploadedPdf] = useState<
-    { uri: string } | string | null
-  >(null);
+  const [editorContent, setEditorContent] = useState("");
+  const [uploadedPdf, setUploadedPdf] = useState<{ uri: string } | string | null>(null);
+  const [tcPageId, setTcPageId] = useState<number | null>(null);
 
   const editorRef = React.useRef<RichEditor>(null);
   const [activeTab, setActiveTab] = useState("summary");
+  const { selectedPageId } = useEstimateStore();
+  const { currentUser } = useUserStore();
+
   const theme = useTheme();
+
+  // Fetch terms and conditions data
+  useEffect(() => {
+    const fetchTermsData = async () => {
+      try {
+        if (!selectedPageId) return;
+        
+        const termsData = await TermConditionsPageContent.getByPageId(selectedPageId);
+        if (termsData) {
+          setTcPageId(termsData.id || null);
+          setTitle(termsData.tc_page_title || "Terms and Conditions");
+          setRequireAcknowledgment(termsData.is_acknowledged === 1);
+          setEditorContent(termsData.summary_content || "");
+          setActiveTab(termsData.is_pdf ? "pdf" : "summary");
+          if (termsData.pdf_file_path) {
+            setUploadedPdf(termsData.pdf_file_path);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching terms data:", error);
+      }
+    };
+
+    fetchTermsData();
+  }, [selectedPageId]);
+
   const handleLayoutsPress = () => {
     // TODO: Implement navigation to Layouts
     console.log("Navigate to Layouts");
   };
 
-  const handleSave = () => {
-    const termsData = {
-      title,
-      editorContent,
-      requireAcknowledgment,
-      uploadedPdf,
-    };
+  const handleSave = async () => {
+    try {
+      const termsData = {
+        tc_page_title: title,
+        is_acknowledged: requireAcknowledgment ? 1 : 0,
+        is_summary: activeTab === "summary",
+        is_pdf: activeTab === "pdf",
+        summary_content: activeTab === "summary" ? editorContent : "",
+        pdf_file_path: activeTab === "pdf" ? (uploadedPdf as string) || "" : "",
+        is_active: true,
+        modified_by: currentUser?.id,
+        modified_date: new Date().toISOString()
+      };
 
-    console.log("Saving changes...", termsData);
-    useEstimatePageStore
-      .getState()
-      .setFormData("Terms and Conditions", termsData);
+      console.log('Saving terms data:', termsData);
+
+      if (tcPageId) {
+        await TermConditionsPageContent.update(tcPageId!, termsData);
+        console.log("Terms and conditions updated successfully");
+      } else {
+        await TermConditionsPageContent.insert({
+          page_id: selectedPageId!,
+          ...termsData,
+          created_by: currentUser?.id,
+          created_date: new Date().toISOString()
+        });
+        console.log("Terms and conditions created successfully");
+      }
+
+      // Refresh the data after save
+      const updatedTerms = await TermConditionsPageContent.getByPageId(selectedPageId!);
+      console.log('Updated terms data:', updatedTerms);
+
+      useEstimatePageStore.getState().setFormData("Terms and Conditions", termsData);
+    } catch (error) {
+      console.error("Error saving terms and conditions:", error);
+    }
+  };
+
+  const handleAcknowledgmentToggle = (value: boolean) => {
+    console.log('Toggle value:', value);
+    setRequireAcknowledgment(value);
   };
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Card style={styles.mainCard}>
+      <Card style={[styles.mainCard, { backgroundColor: theme.card }]}>
         <ScrollView
           style={styles.scrollView}
           showsVerticalScrollIndicator={false}
@@ -74,9 +133,15 @@ export function TermsPage() {
                 />
               ) : (
                 <>
-                  <Text style={styles.title}>{title}</Text>
+                  <Text style={[styles.title, { color: theme.textSecondary }]}>
+                    {title}
+                  </Text>
                   <TouchableOpacity onPress={() => setIsEditingTitle(true)}>
-                    <Feather name="edit-2" size={16} color={Colors.primary} />
+                    <Feather
+                      name="edit-2"
+                      size={16}
+                      color={theme.textSecondary}
+                    />
                   </TouchableOpacity>
                 </>
               )}
@@ -87,16 +152,26 @@ export function TermsPage() {
           <View style={styles.acknowledgmentContainer}>
             <View style={styles.acknowledgmentContent}>
               <View>
-                <Text style={styles.acknowledgmentTitle}>
+                <Text
+                  style={[
+                    styles.acknowledgmentTitle,
+                    { color: theme.textSecondary },
+                  ]}
+                >
                   Require customers to acknowledge this page
                 </Text>
-                <Text style={styles.acknowledgmentSubtitle}>
+                <Text
+                  style={[
+                    styles.acknowledgmentSubtitle,
+                    { color: theme.textSecondary },
+                  ]}
+                >
                   They will be asked during the signing process
                 </Text>
               </View>
               <Switch
                 value={requireAcknowledgment}
-                onValueChange={setRequireAcknowledgment}
+                onValueChange={handleAcknowledgmentToggle}
                 trackColor={{ false: "#E5E7EB", true: Colors.primary }}
                 thumbColor={Colors.white}
               />
@@ -151,16 +226,27 @@ export function TermsPage() {
                   actions.code,
                 ]}
                 style={styles.toolbarContainer}
-                iconTint="#666"
+                iconTint={theme.textSecondary}
                 selectedIconTint={Colors.primary}
+                disabledIconTint={theme.textSecondary}
               />
               <View style={styles.editorContent}>
                 <RichEditor
                   ref={editorRef}
                   onChange={setEditorContent}
-                  initialContentHTML="You may cancel this contract from the day you enter into the contract until 10 days after you receive a copy of the contract. You do not need a reason to cancel. If you do not receive the goods or services within 30 days of the date stated in the contract, you may cancel this contract within one year of the contract date..."
+                  initialContentHTML={editorContent}
                   style={styles.editor}
                   placeholder="Start typing..."
+                  editorStyle={{
+                    backgroundColor: theme.card,
+                    contentCSSText: `
+                      font-size: 16px;
+                      min-height: 200px;
+                      padding: 12px;
+                    `,
+                    color: theme.textSecondary,
+                    placeholderColor: theme.placeholder,
+                  }}
                 />
               </View>
             </View>
@@ -233,7 +319,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "600",
-    color: Colors.black,
+    // color: Colors.black,
   },
   titleInput: {
     flex: 1,
@@ -252,7 +338,7 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
   },
   toolbarContainer: {
-    backgroundColor: "#f9fafb",
+    backgroundColor: "transparent",
     borderBottomWidth: 1,
     borderBottomColor: "#e5e7eb",
     flex: 1,
@@ -275,7 +361,7 @@ const styles = StyleSheet.create({
   acknowledgmentTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: Colors.black,
+    // color: Colors.black,
     marginBottom: 4,
   },
   acknowledgmentSubtitle: {
@@ -299,7 +385,7 @@ const styles = StyleSheet.create({
   },
   tabText: {
     fontSize: 16,
-    color: "#666",
+    color: Colors.gray[400],
   },
   activeTabText: {
     color: Colors.primary,

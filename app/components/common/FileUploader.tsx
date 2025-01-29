@@ -1,10 +1,17 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  FlatList,
+} from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import { Colors } from "@/app/constants/colors";
 import { Card } from "./Card";
 import { MaterialIcons, Feather } from "@expo/vector-icons";
 import { ScrollView } from "react-native-gesture-handler";
+import { useTheme } from "../providers/ThemeProvider";
 
 export function FileUploader({
   label,
@@ -19,6 +26,7 @@ export function FileUploader({
   multiple?: boolean;
   onUpload?: (files: any | any[]) => void;
 }) {
+  const theme = useTheme();
   const [selectedFiles, setSelectedFiles] = useState<any[]>([]);
 
   const pickFile = async () => {
@@ -62,32 +70,59 @@ export function FileUploader({
   const getIcon = () => {
     if (accept === "pdf") {
       return (
-        <MaterialIcons name="picture-as-pdf" size={24} color={Colors.primary} />
+        <MaterialIcons
+          name="picture-as-pdf"
+          size={24}
+          color={theme.textPrimary}
+        />
       );
     }
     return <Feather name="upload-cloud" size={24} color={Colors.primary} />;
   };
 
   const renderFileItem = ({ item, index }: { item: any; index: number }) => (
-    <View style={styles.successContainer}>
-      <Text style={styles.successText}>{item.name || "File uploaded"}</Text>
+    <View style={[styles.successContainer, { backgroundColor: theme.card }]}>
+      <Text style={[styles.successText, { color: theme.textSecondary }]}>
+        {item.name || "File uploaded"}
+      </Text>
       <MaterialIcons name="check-circle" size={24} color={Colors.green} />
-      <TouchableOpacity onPress={() => deleteFile(index)} style={styles.deleteBtn}>
-        <MaterialIcons name="delete" size={24} color={Colors.gray[500]} />
+      <TouchableOpacity
+        onPress={() => deleteFile(index)}
+        style={styles.deleteBtn}
+      >
+        <MaterialIcons name="delete" size={24} color={Colors.red[500]} />
       </TouchableOpacity>
     </View>
   );
 
   return (
     <View style={styles.container}>
-      {label && <Text style={styles.label}>{label}</Text>}
+      {label && (
+        <Text style={[styles.label, { color: theme.textSecondary }]}>
+          {label}
+        </Text>
+      )}
 
       {multiple || selectedFiles.length === 0 ? (
         <TouchableOpacity onPress={pickFile} style={styles.touchable}>
-          <View style={[styles.uploadContainer, { height }]}>
-            <Card variant="outlined" style={[styles.uploadCard, styles.dashedCard]}>
+          <View
+            style={[
+              styles.uploadContainer,
+              { height },
+              { backgroundColor: theme.card },
+            ]}
+          >
+            <Card
+              variant="outlined"
+              style={[
+                styles.uploadCard,
+                { backgroundColor: theme.card },
+                styles.dashedCard,
+                { borderColor: theme.textPrimary },
+              ]}
+            >
               {getIcon()}
-              <Text style={styles.uploadText}>
+              <Text style={[styles.uploadText, { color: theme.textPrimary }]}>
                 {accept === "pdf" ? "Upload PDF" : "Upload File"}
               </Text>
             </Card>
@@ -96,24 +131,27 @@ export function FileUploader({
       ) : null}
 
       {multiple && selectedFiles.length > 0 && (
-        <ScrollView horizontal={true} style={{width:'100%'}}>
-        <FlatList
-          data={selectedFiles}
-          renderItem={renderFileItem}
-          keyExtractor={(item, index) => `${item.uri}-${index}`}
-          contentContainerStyle={{ marginTop: 10 }}
-        />
+        <ScrollView horizontal={true} style={{ width: "100%" }}>
+          <FlatList
+            data={selectedFiles}
+            renderItem={renderFileItem}
+            keyExtractor={(item, index) => `${item.uri}-${index}`}
+            contentContainerStyle={{ marginTop: 10 }}
+          />
         </ScrollView>
       )}
 
       {!multiple && selectedFiles.length > 0 && (
         <View style={styles.successContainer}>
-          <Text style={styles.successText}>
+          <Text style={[styles.successText, { color: theme.textSecondary }]}>
             {selectedFiles[0].name || "File uploaded"}
           </Text>
           <MaterialIcons name="check-circle" size={24} color={Colors.green} />
-          <TouchableOpacity onPress={() => deleteFile(0)} style={styles.deleteBtn}>
-            <MaterialIcons name="delete" size={24} color={Colors.gray[500]} />
+          <TouchableOpacity
+            onPress={() => deleteFile(0)}
+            style={styles.deleteBtn}
+          >
+            <MaterialIcons name="delete" size={24} color={Colors.red[500]} />
           </TouchableOpacity>
         </View>
       )}
@@ -129,7 +167,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "500",
     marginBottom: 8,
-    color: "#333",
   },
   touchable: {
     flex: 1,
@@ -139,7 +176,6 @@ const styles = StyleSheet.create({
     padding: 16,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
     borderRadius: 14,
   },
   uploadCard: {
@@ -147,20 +183,16 @@ const styles = StyleSheet.create({
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
   },
   dashedCard: {
     borderStyle: "dashed",
-    borderColor: Colors.primary,
   },
   uploadText: {
-    color: "#666",
     fontSize: 14,
     marginTop: 8,
   },
   successContainer: {
     flexDirection: "row",
-    backgroundColor: Colors.white,
     padding: 16,
     borderRadius: 10,
     marginTop: 10,
@@ -171,8 +203,7 @@ const styles = StyleSheet.create({
   },
   successText: {
     fontSize: 16,
-    width:'80%',
-    color: Colors.black,
+    width: "80%",
   },
   deleteBtn: {
     marginLeft: "auto",

@@ -37,12 +37,12 @@ export function LayoutPage() {
       description,
     };
     console.log("Saving Layout Page...", LayoutData);
-    useEstimatePageStore.getState().setFormData("Layout",LayoutData);
+    useEstimatePageStore.getState().setFormData("Layout", LayoutData);
   };
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Card style={styles.mainCard}>
+      <Card style={[styles.mainCard, { backgroundColor: theme.card }]}>
         <View style={styles.header}>
           <View style={styles.titleRow}>
             {isEditingTitle ? (
@@ -55,9 +55,11 @@ export function LayoutPage() {
               />
             ) : (
               <>
-                <Text style={styles.title}>{title}</Text>
+                <Text style={[styles.title, { color: theme.textSecondary }]}>
+                  {title}
+                </Text>
                 <TouchableOpacity onPress={() => setIsEditingTitle(true)}>
-                  <Feather name="edit-2" size={16} color={Colors.primary} />
+                  <Feather name="edit-2" size={16} color={theme.textPrimary} />
                 </TouchableOpacity>
               </>
             )}
@@ -108,7 +110,14 @@ export function LayoutPage() {
           </View> */}
 
           <View style={styles.drawingSection}>
-            <Text style={styles.drawingSectionTitle}>Draw here</Text>
+            <Text
+              style={[
+                styles.drawingSectionTitle,
+                { color: theme.textSecondary },
+              ]}
+            >
+              Draw here
+            </Text>
             <View style={styles.drawingContainer}>
               <TouchableOpacity
                 style={styles.drawingArea}
@@ -126,15 +135,31 @@ export function LayoutPage() {
                   </Text>
                 </View>
               </TouchableOpacity>
-              <View style={styles.descriptionsCard}>
-                <Text style={styles.descriptionsTitle}>Descriptions</Text>
+              <View
+                style={[
+                  styles.descriptionsCard,
+                  { backgroundColor: theme.card },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.descriptionsTitle,
+                    { color: theme.textSecondary },
+                  ]}
+                >
+                  Descriptions
+                </Text>
                 <Input
                   placeholder="Description"
+                  placeholderTextColor={theme.placeholder}
                   value={description}
                   onChangeText={setDescription}
                   multiline
                   numberOfLines={4}
-                  style={styles.descriptionInput}
+                  style={[
+                    styles.descriptionInput,
+                    { color: theme.textSecondary },
+                  ]}
                 />
               </View>
             </View>
@@ -175,7 +200,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "bold",
-    color: Colors.primary,
   },
   titleInput: {
     flex: 1,
@@ -265,7 +289,6 @@ const styles = StyleSheet.create({
   drawingSectionTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: Colors.black,
     marginBottom: 12,
   },
   drawingContainer: {
@@ -298,7 +321,6 @@ const styles = StyleSheet.create({
   },
   descriptionsCard: {
     flex: 1,
-    backgroundColor: "#fff",
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#e5e7eb",
@@ -307,7 +329,6 @@ const styles = StyleSheet.create({
   descriptionsTitle: {
     fontSize: 14,
     fontWeight: "600",
-    color: Colors.black,
     marginBottom: 8,
     borderBottomWidth: 1,
     borderBottomColor: "#e5e7eb",
@@ -316,7 +337,6 @@ const styles = StyleSheet.create({
   descriptionInput: {
     flex: 1,
     fontSize: 14,
-    color: Colors.black,
     padding: 8,
     borderWidth: 1,
     borderColor: "#e5e7eb",

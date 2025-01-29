@@ -6,6 +6,7 @@ import ErrorScreen from './components/ErrorScreen';
 import { useAuth } from './hooks/useAuth';
 import { useRouter } from 'expo-router';
 import { authService } from './services/auth/authService';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -36,7 +37,11 @@ export default function App() {
   }, [dbLoading, authLoading, user]);
 
   if (isLoading || dbLoading || authLoading) {
-    return <SplashScreen />;
+    return (
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <SplashScreen />
+      </GestureHandlerRootView>
+    );
   }
   
   if (error) {

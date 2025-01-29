@@ -14,10 +14,9 @@ import { Colors } from "@/app/constants/colors";
 import { Input } from "../../common/Input";
 import { Button } from "../../common/Button";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useRouter } from 'expo-router';
+import { useRouter } from "expo-router";
 import { Header } from "../home/Header";
 import { ScreenLayout } from "../../common/ScreenLayout";
-
 
 interface ReviewAndShareScreenProps {
   onReviewAndShare: () => void;
@@ -57,29 +56,46 @@ const OptionCard = ({
   item: OptionData;
   isSelected: boolean;
   onSelect: () => void;
-}) => (
-  <TouchableOpacity
-    style={[
-      styles.optionCard,
-      isSelected && { backgroundColor: Colors.primary },
-    ]}
-    onPress={onSelect}
-  >
-    <View style={styles.radioContainer}>
-      <View style={styles.radioOuter}>
-        {isSelected && <View style={styles.radioInner} />}
+}) => {
+  const theme = useTheme();
+
+  return (
+    <TouchableOpacity
+      style={[
+        styles.optionCard,
+        { backgroundColor: theme.card },
+        isSelected && { backgroundColor: Colors.primary },
+      ]}
+      onPress={onSelect}
+    >
+      <View style={styles.radioContainer}>
+        <View style={[styles.radioOuter, { borderColor: theme.textPrimary }]}>
+          {isSelected && <View style={styles.radioInner} />}
+        </View>
+        <View style={styles.optionContent}>
+          <Text
+            style={[
+              styles.option,
+              { color: theme.textPrimary },
+              isSelected && { color: Colors.white },
+            ]}
+          >
+            {item.option}
+          </Text>
+          <Text
+            style={[
+              styles.value2,
+              { color: theme.textPrimary },
+              isSelected && { color: Colors.white },
+            ]}
+          >
+            {item.value}
+          </Text>
+        </View>
       </View>
-      <View style={styles.optionContent}>
-        <Text style={[styles.option, isSelected && { color: Colors.white }]}>
-          {item.option}
-        </Text>
-        <Text style={[styles.value2, isSelected && { color: Colors.white }]}>
-          {item.value}
-        </Text>
-      </View>
-    </View>
-  </TouchableOpacity>
-);
+    </TouchableOpacity>
+  );
+};
 
 const MultiSelectCard = ({
   item,
@@ -89,38 +105,60 @@ const MultiSelectCard = ({
   item: OptionData;
   isSelected: boolean;
   onSelect: () => void;
-}) => (
-  <TouchableOpacity
-    style={[
-      styles.optionCard,
-      isSelected && { backgroundColor: Colors.primary },
-    ]}
-    onPress={onSelect}
-  >
-    <View style={styles.checkboxContainer}>
-      <View style={[
-        styles.checkboxOuter,
-        isSelected && { backgroundColor: Colors.white }
-      ]}>
-        {isSelected && <MaterialIcons name="check" size={14} color={Colors.primary} />}
+}) => {
+  const theme = useTheme();
+
+  return (
+    <TouchableOpacity
+      style={[
+        styles.optionCard,
+        { backgroundColor: theme.card },
+        isSelected && { backgroundColor: Colors.primary },
+      ]}
+      onPress={onSelect}
+    >
+      <View style={styles.checkboxContainer}>
+        <View
+          style={[
+            styles.checkboxOuter,
+            isSelected && { backgroundColor: Colors.white },
+          ]}
+        >
+          {isSelected && (
+            <MaterialIcons name="check" size={14} color={Colors.primary} />
+          )}
+        </View>
+        <View style={styles.optionContent}>
+          <Text
+            style={[
+              styles.option,
+              { color: theme.textPrimary },
+              isSelected && { color: Colors.white },
+            ]}
+          >
+            {item.option}
+          </Text>
+          <Text
+            style={[
+              styles.value2,
+              { color: theme.textPrimary },
+              isSelected && { color: Colors.white },
+            ]}
+          >
+            {item.value}
+          </Text>
+        </View>
       </View>
-      <View style={styles.optionContent}>
-        <Text style={[styles.option, isSelected && { color: Colors.white }]}>
-          {item.option}
-        </Text>
-        <Text style={[styles.value2, isSelected && { color: Colors.white }]}>
-          {item.value}
-        </Text>
-      </View>
-    </View>
-  </TouchableOpacity>
-);
+    </TouchableOpacity>
+  );
+};
 
 const OptionList = ({ data }: { data: OptionData[] }) => {
+  const theme = useTheme();
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   return (
-    <View style={styles.optionListContainer}>
+    <View style={[styles.optionListContainer, { backgroundColor: theme.card }]}>
       {data.map((item, index) => (
         <OptionCard
           key={`${item.option}-${index}`}
@@ -137,9 +175,9 @@ const MultiSelectList = ({ data }: { data: OptionData[] }) => {
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
 
   const toggleOption = (option: string) => {
-    setSelectedOptions(prev => 
-      prev.includes(option) 
-        ? prev.filter(item => item !== option)
+    setSelectedOptions((prev) =>
+      prev.includes(option)
+        ? prev.filter((item) => item !== option)
         : [...prev, option]
     );
   };
@@ -163,21 +201,27 @@ export function ReviewAndShareScreen({
   isDarkMode,
 }: ReviewAndShareScreenProps) {
   const theme = useTheme();
-    const router = useRouter();
+  const router = useRouter();
 
   const handleBack = () => router.back();
-
 
   return (
     <ScreenLayout>
       <View style={[styles.container, { backgroundColor: theme.background }]}>
-          <Pressable style={styles.backButton} onPress={handleBack}>
-                  <MaterialIcons name="arrow-back" size={20} color={theme.primary} />
-                  <Text style={[styles.backText, { color: theme.primary }]}>Back</Text>
-                </Pressable>
-        <Card style={styles.detailCard}>
-          <View style={styles.logoContainer}>
-            <Image 
+        <Pressable style={styles.backButton} onPress={handleBack}>
+          <MaterialIcons
+            name="arrow-back"
+            size={20}
+            color={theme.textPrimary}
+          />
+          <Text style={[styles.backText, { color: theme.textPrimary }]}>
+            Back
+          </Text>
+        </Pressable>
+
+        <Card style={[styles.detailCard]}>
+          <View style={[styles.logoContainer]}>
+            <Image
               source={require("@/assets/images/mr-quote-logo.png")}
               style={styles.logo}
               resizeMode="contain"
@@ -199,41 +243,89 @@ export function ReviewAndShareScreen({
           </View>
         </Card>
 
-        <Card style={styles.belowCard}>
-          <ScrollView showsVerticalScrollIndicator={false} style={styles.scroll}>
+        <Card style={[styles.belowCard, { backgroundColor: theme.card }]}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            style={styles.scroll}
+          >
             <View>
-              <Text style={styles.heading}>Select one of the options below</Text>
+              <Text style={[styles.heading, { color: theme.textPrimary }]}>
+                Select one of the options below
+              </Text>
               <OptionList data={DATA} />
 
-              <Text style={styles.heading}>
+              <Text style={[styles.heading, { color: theme.textPrimary }]}>
                 Choose from the following options upgrades
               </Text>
               <View>
-                <Text style={styles.leaf}>Leaf Protection</Text>
+                <Text style={[styles.leaf, { color: theme.textSecondary }]}>
+                  Leaf Protection
+                </Text>
                 <MultiSelectList data={ProtectionData} />
               </View>
             </View>
 
             <View style={styles.addOns}>
               <View style={styles.customAddOns}>
-                <Text style={styles.heading}>Details</Text>
-                <Text style={styles.leaf}>Gutter Color</Text>
+                <Text style={[styles.heading, { color: theme.textSecondary }]}>
+                  Details
+                </Text>
+                <Text style={[styles.leaf, { color: theme.textSecondary }]}>
+                  Gutter Color
+                </Text>
                 <Input placeholder="Please Select a color" />
 
                 <View style={styles.quoteSummary}>
-                  <Text style={styles.subHeading}>Quote Summary</Text>
+                  <Text
+                    style={[styles.subHeading, { color: theme.textSecondary }]}
+                  >
+                    Quote Summary
+                  </Text>
                   <View style={styles.row}>
-                    <Text style={styles.blackKey}>Quote subtotal</Text>
-                    <Text style={styles.valueBlack}>$0.00</Text>
+                    <Text
+                      style={[styles.blackKey, { color: theme.textSecondary }]}
+                    >
+                      Quote subtotal
+                    </Text>
+                    <Text
+                      style={[
+                        styles.valueBlack,
+                        { color: theme.textSecondary },
+                      ]}
+                    >
+                      $0.00
+                    </Text>
                   </View>
                   <View style={styles.row}>
-                    <Text style={styles.blackKey}>Options</Text>
-                    <Text style={styles.valueBlack}>$0.00</Text>
+                    <Text
+                      style={[styles.blackKey, { color: theme.textSecondary }]}
+                    >
+                      Options
+                    </Text>
+                    <Text
+                      style={[
+                        styles.valueBlack,
+                        { color: theme.textSecondary },
+                      ]}
+                    >
+                      $0.00
+                    </Text>
                   </View>
                   <View style={styles.line}></View>
                   <View style={styles.row}>
-                    <Text style={styles.blackKey}>Toatal</Text>
-                    <Text style={styles.valueBlack}>$0.00</Text>
+                    <Text
+                      style={[styles.blackKey, { color: theme.textSecondary }]}
+                    >
+                      Total
+                    </Text>
+                    <Text
+                      style={[
+                        styles.valueBlack,
+                        { color: theme.textSecondary },
+                      ]}
+                    >
+                      $0.00
+                    </Text>
                   </View>
                   <View style={styles.row}>
                     <Button
@@ -249,7 +341,7 @@ export function ReviewAndShareScreen({
                       styles.actionButton,
                       {
                         borderColor: theme.textPrimary,
-                        backgroundColor: theme.background,
+                        backgroundColor: theme.card,
                       },
                     ]}
                   >
@@ -271,14 +363,18 @@ export function ReviewAndShareScreen({
               </View>
 
               <View style={styles.customAddOns}>
-                <Text style={styles.subHeading}>Notes</Text>
+                <Text
+                  style={[styles.subHeading, { color: theme.textSecondary }]}
+                >
+                  Notes
+                </Text>
                 <Input placeholder="Notes..." />
               </View>
             </View>
           </ScrollView>
         </Card>
       </View>
-      </ScreenLayout>
+    </ScreenLayout>
   );
 }
 
@@ -300,6 +396,7 @@ const styles = StyleSheet.create({
     width: "25%",
     justifyContent: "center",
     alignItems: "center",
+    borderRadius: 10,
   },
   logo: {
     height: 75,
@@ -357,7 +454,7 @@ const styles = StyleSheet.create({
   },
   optionCard: {
     width: "23%", // Adjusted to fit 4 items per row with gap
-    backgroundColor: Colors.white,
+    // backgroundColor: Colors.white,
     borderRadius: 8,
     padding: 8,
     justifyContent: "center",
@@ -384,7 +481,7 @@ const styles = StyleSheet.create({
     height: 16,
     borderRadius: 8,
     borderWidth: 2,
-    borderColor: Colors.primary,
+    // borderColor: Colors.primary,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -408,18 +505,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   option: {
-    color: Colors.primary,
+    // color: Colors.primary,
     fontSize: 14,
     fontWeight: "700",
     marginBottom: 2,
   },
   value2: {
-    color: Colors.primary,
+    // color: Colors.primary,
     fontSize: 12,
     fontWeight: "500",
   },
   leaf: {
-    color: Colors.black,
+    // color: Colors.black,
     fontSize: 16,
     marginBottom: 8,
     fontWeight: "500",
@@ -428,11 +525,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     width: "100%",
     marginBottom: 50,
-    justifyContent:'space-between',
+    justifyContent: "space-between",
   },
   customAddOns: {
     width: "48%",
-    gap:10
+    gap: 10,
   },
   quoteSummary: {
     marginTop: 25,
@@ -445,11 +542,11 @@ const styles = StyleSheet.create({
   blackKey: {
     fontSize: 16,
     fontWeight: "600",
-    color: Colors.black,
+    // color: Colors.black,
   },
   valueBlack: {
     fontSize: 16,
-    color: Colors.black,
+    // color: Colors.black,
   },
   line: {
     backgroundColor: Colors.gray[400],
@@ -473,6 +570,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
+    width: 100,
   },
   backText: {
     fontSize: 16,

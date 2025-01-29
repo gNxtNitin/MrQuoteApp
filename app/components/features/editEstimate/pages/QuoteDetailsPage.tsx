@@ -282,7 +282,7 @@ export function QuoteDetailsPage() {
 
             <View style={[styles.cell, styles.itemCell]}>
               <TextInput
-                style={styles.input}
+                style={[styles.input, { color: theme.textSecondary }]}
                 value={item.item}
                 onChangeText={(value) =>
                   handleUpdateLineItem(
@@ -294,6 +294,7 @@ export function QuoteDetailsPage() {
                   )
                 }
                 placeholder="Enter item"
+                placeholderTextColor={theme.placeholder}
               />
               <TouchableOpacity style={styles.addIcon}>
                 <Feather name="plus" size={16} color={Colors.gray[400]} />
@@ -301,7 +302,11 @@ export function QuoteDetailsPage() {
             </View>
 
             <TextInput
-              style={[styles.cell, styles.numberCell]}
+              style={[
+                styles.cell,
+                { color: theme.textSecondary },
+                styles.numberCell,
+              ]}
               value={item.quantity}
               onChangeText={(value) =>
                 handleUpdateLineItem(
@@ -314,9 +319,14 @@ export function QuoteDetailsPage() {
               }
               keyboardType="numeric"
               placeholder="0"
+              placeholderTextColor={theme.placeholder}
             />
             <TextInput
-              style={[styles.cell, styles.numberCell]}
+              style={[
+                styles.cell,
+                { color: theme.textSecondary },
+                styles.numberCell,
+              ]}
               value={item.price}
               onChangeText={(value) =>
                 handleUpdateLineItem(
@@ -329,9 +339,12 @@ export function QuoteDetailsPage() {
               }
               keyboardType="numeric"
               placeholder="0.00"
+              placeholderTextColor={theme.placeholder}
             />
             <View style={[styles.cell, styles.numberCell]}>
-              <Text>${calculateLineTotal(item.quantity, item.price)}</Text>
+              <Text style={{ color: theme.textSecondary }}>
+                ${calculateLineTotal(item.quantity, item.price)}
+              </Text>
             </View>
             <TouchableOpacity
               style={styles.deleteCell}
@@ -408,11 +421,18 @@ export function QuoteDetailsPage() {
     if (quote.id !== activeQuoteId) return null;
 
     return (
-      <View key={quote.id} style={styles.quoteDetailsWrapper}>
+      <View
+        key={quote.id}
+        style={[styles.quoteDetailsWrapper, { backgroundColor: theme.card }]}
+      >
         <View style={styles.quoteDetailsHeader}>
-          <Text style={styles.quoteDetailsTitle}>Quote Details</Text>
+          <Text
+            style={[styles.quoteDetailsTitle, { color: theme.textSecondary }]}
+          >
+            Quote Details
+          </Text>
           <TouchableOpacity>
-            <Feather name="edit-2" size={16} color={Colors.primary} />
+            <Feather name="edit-2" size={16} color={theme.textSecondary} />
           </TouchableOpacity>
         </View>
 
@@ -421,10 +441,22 @@ export function QuoteDetailsPage() {
             <View key={section.id} style={styles.section}>
               <View style={styles.sectionHeader}>
                 <View style={styles.sectionTitleContainer}>
-                  <Text style={styles.sectionLabel}>Section title</Text>
+                  <Text
+                    style={[
+                      styles.sectionLabel,
+                      { color: theme.textSecondary },
+                    ]}
+                  >
+                    Section title
+                  </Text>
                   <TextInput
-                    style={[styles.sectionInput, styles.titleInput]}
+                    style={[
+                      styles.sectionInput,
+                      styles.titleInput,
+                      { color: theme.textSecondary },
+                    ]}
                     placeholder="Section title"
+                    placeholderTextColor={theme.placeholder}
                     value={section.title}
                     onChangeText={(value) =>
                       handleUpdateSection(quote.id, section.id, "title", value)
@@ -441,14 +473,40 @@ export function QuoteDetailsPage() {
 
               <View style={styles.tableHeader}>
                 <View style={styles.dragHandle} />
-                <Text style={[styles.headerCell, styles.itemCell]}>Item</Text>
-                <Text style={[styles.headerCell, styles.numberCell]}>
+                <Text
+                  style={[
+                    styles.headerCell,
+                    { color: theme.textSecondary },
+                    styles.itemCell,
+                  ]}
+                >
+                  Item
+                </Text>
+                <Text
+                  style={[
+                    styles.headerCell,
+                    { color: theme.textSecondary },
+                    styles.numberCell,
+                  ]}
+                >
                   Quantity
                 </Text>
-                <Text style={[styles.headerCell, styles.numberCell]}>
+                <Text
+                  style={[
+                    styles.headerCell,
+                    { color: theme.textSecondary },
+                    styles.numberCell,
+                  ]}
+                >
                   Price
                 </Text>
-                <Text style={[styles.headerCell, styles.numberCell]}>
+                <Text
+                  style={[
+                    styles.headerCell,
+                    { color: theme.textSecondary },
+                    styles.numberCell,
+                  ]}
+                >
                   Total
                 </Text>
                 <View style={styles.deleteCell} />
@@ -482,7 +540,9 @@ export function QuoteDetailsPage() {
                   size="medium"
                   icon="add"
                 />
-                <Text style={styles.sectionTotal}>
+                <Text
+                  style={[styles.sectionTotal, { color: theme.textPrimary }]}
+                >
                   Section total: ${calculateSectionTotal(section.items)}
                 </Text>
               </View>
@@ -501,7 +561,9 @@ export function QuoteDetailsPage() {
 
           <View style={styles.bottomRow}>
             <View style={[styles.section, styles.profitMarginSection]}>
-              <Text style={styles.sectionHeader}>
+              <Text
+                style={[styles.sectionHeader, { color: theme.textSecondary }]}
+              >
                 Profit margin for this quote
               </Text>
               <Slider
@@ -515,15 +577,23 @@ export function QuoteDetailsPage() {
                 minimumTrackTintColor={Colors.primary}
                 maximumTrackTintColor={Colors.gray[200]}
               />
-              <Text style={styles.profitMarginValue}>
+              <Text
+                style={[styles.profitMarginValue, { color: theme.textPrimary }]}
+              >
                 {Math.round(quote.profitMargin)}%
               </Text>
             </View>
 
             <View style={[styles.section, styles.totalsSection]}>
               <View style={styles.totalRow}>
-                <Text style={styles.totalLabel}>Quote subtotal</Text>
-                <Text style={styles.totalAmount}>
+                <Text
+                  style={[styles.totalLabel, { color: theme.textSecondary }]}
+                >
+                  Quote subtotal
+                </Text>
+                <Text
+                  style={[styles.totalAmount, { color: theme.textSecondary }]}
+                >
                   ${calculateQuoteSubtotal()}
                 </Text>
               </View>
@@ -531,12 +601,14 @@ export function QuoteDetailsPage() {
                 <Text
                   style={[
                     styles.totalLabel,
-                    { color: "black", fontWeight: "bold" },
+                    { color: theme.textPrimary, fontWeight: "bold" },
                   ]}
                 >
                   Total
                 </Text>
-                <Text style={styles.totalAmount}>
+                <Text
+                  style={[styles.totalAmount, { color: theme.textSecondary }]}
+                >
                   ${calculateQuoteSubtotal()}
                 </Text>
               </View>
@@ -544,9 +616,13 @@ export function QuoteDetailsPage() {
           </View>
 
           <View style={[styles.section, styles.notesSection]}>
-            <Text style={styles.sectionHeader}>Notes</Text>
+            <Text
+              style={[styles.sectionHeader, { color: theme.textSecondary }]}
+            >
+              Notes
+            </Text>
             <TextInput
-              style={styles.notesInput}
+              style={[styles.notesInput, { color: theme.textSecondary }]}
               multiline
               value={quote.notes}
               onChangeText={(value) =>
@@ -554,6 +630,7 @@ export function QuoteDetailsPage() {
               }
               placeholder="Add notes here..."
               textAlignVertical="top"
+              placeholderTextColor={theme.placeholder}
             />
           </View>
           <View style={styles.buttonContainer}>
@@ -571,7 +648,7 @@ export function QuoteDetailsPage() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Card style={styles.mainCard}>
+      <Card style={[styles.mainCard, { backgroundColor: theme.card }]}>
         <View style={styles.scrollContainer}>
           <View style={styles.titleContainer}>
             <View style={styles.titleRow}>
@@ -585,16 +662,24 @@ export function QuoteDetailsPage() {
                 />
               ) : (
                 <View style={styles.row}>
-                  <Text style={styles.titleText}>{title}</Text>
+                  <Text
+                    style={[styles.titleText, { color: theme.textSecondary }]}
+                  >
+                    {title}
+                  </Text>
                   <TouchableOpacity onPress={() => setIsEditingTitle(true)}>
-                    <Feather name="edit-2" size={16} color={Colors.primary} />
+                    <Feather
+                      name="edit-2"
+                      size={16}
+                      color={theme.textPrimary}
+                    />
                   </TouchableOpacity>
                 </View>
               )}
             </View>
             <View style={styles.subtitleRow}>
-              <Text style={styles.subtitle}>
-                You have saved templates.{" "}
+              <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
+                You have saved templates.
                 <Text style={styles.link} onPress={handleViewTemplates}>
                   view templates
                 </Text>
@@ -625,7 +710,9 @@ export function QuoteDetailsPage() {
                     <TouchableOpacity
                       style={[
                         styles.tab,
+                        { backgroundColor: theme.background },
                         item.isActive && styles.activeTab,
+                        { backgroundColor: theme.background },
                         isActive && styles.draggingTab,
                       ]}
                       onPress={() => setActiveQuoteId(item.quote.id)}
@@ -640,14 +727,16 @@ export function QuoteDetailsPage() {
                           <Feather
                             name="menu"
                             size={16}
-                            color={Colors.gray[400]}
+                            color={theme.textSecondary}
                           />
                         </TouchableOpacity>
 
                         <Text
                           style={[
                             styles.tabText,
+                            { color: theme.textSecondary },
                             item.isActive && styles.activeTabText,
+                            { color: theme.textPrimary },
                           ]}
                         >
                           {item.quote.title}
@@ -679,6 +768,7 @@ export function QuoteDetailsPage() {
             <TouchableOpacity
               style={[
                 styles.addTab,
+                { backgroundColor: theme.background },
                 quotes.length >= 9 && styles.disabledAddTab,
               ]}
               onPress={handleAddQuote}
@@ -687,7 +777,9 @@ export function QuoteDetailsPage() {
               <Feather
                 name="plus"
                 size={20}
-                color={quotes.length >= 9 ? Colors.gray[400] : Colors.primary}
+                color={
+                  quotes.length >= 9 ? Colors.gray[400] : theme.textPrimary
+                }
               />
             </TouchableOpacity>
           </View>
@@ -737,7 +829,6 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 20,
     fontWeight: "600",
-    color: Colors.black,
   },
   titleInput: {
     flex: 1,
@@ -745,7 +836,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   subtitle: {
-    color: Colors.black,
     fontSize: 14,
   },
   link: {
@@ -758,7 +848,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   section: {
-    backgroundColor: Colors.gray[50],
     borderRadius: 8,
     padding: 16,
     marginBottom: 16,
@@ -777,7 +866,6 @@ const styles = StyleSheet.create({
   sectionLabel: {
     fontSize: 14,
     fontWeight: "500",
-    color: Colors.black,
     marginBottom: 8,
   },
   sectionInput: {
@@ -786,7 +874,6 @@ const styles = StyleSheet.create({
     borderColor: Colors.gray[200],
     borderRadius: 8,
     paddingHorizontal: 12,
-    backgroundColor: "white",
   },
   selectionInput: {
     // Additional styles for selection input if needed
@@ -806,7 +893,6 @@ const styles = StyleSheet.create({
   headerCell: {
     fontSize: 14,
     fontWeight: "500",
-    color: Colors.black,
   },
   dragHandle: {
     width: 40,
@@ -824,7 +910,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.gray[200],
     borderRadius: 8,
-    backgroundColor: "white",
     marginRight: 8,
     justifyContent: "center",
     paddingHorizontal: 12,
@@ -886,7 +971,6 @@ const styles = StyleSheet.create({
   },
   totalLabel: {
     fontSize: 14,
-    color: Colors.gray[500],
   },
   totalAmount: {
     fontSize: 14,
@@ -920,19 +1004,16 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 8,
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
-    backgroundColor: Colors.gray[50],
     borderWidth: 1,
     borderColor: Colors.gray[200],
     borderBottomColor: Colors.gray[200],
     minWidth: 150,
   },
   activeTab: {
-    backgroundColor: "white",
     borderColor: Colors.primary,
     borderBottomColor: "white",
   },
   tabText: {
-    color: Colors.gray[500],
     marginRight: 8,
   },
   activeTabText: {
@@ -947,7 +1028,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 8,
-    backgroundColor: "white",
     borderWidth: 1,
     borderColor: Colors.gray[200],
     marginLeft: 8,
@@ -979,7 +1059,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     minHeight: 100,
-    backgroundColor: "white",
     marginTop: 8,
   },
   contentContainer: {
@@ -999,7 +1078,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.gray[200],
     borderRadius: 8,
-    backgroundColor: "white",
     marginBottom: 24,
   },
   quoteDetailsHeader: {
@@ -1013,7 +1091,6 @@ const styles = StyleSheet.create({
   quoteDetailsTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: Colors.black,
   },
   quoteDetailsContent: {
     padding: 16,

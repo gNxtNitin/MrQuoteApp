@@ -8,6 +8,7 @@ import {
 import { Colors } from "@/app/constants/colors";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Card } from "./Card";
+import { useTheme } from "../providers/ThemeProvider";
 
 interface CustomCollapsibleProps {
   title: string;
@@ -18,6 +19,7 @@ export const CustomCollapsible: React.FC<CustomCollapsibleProps> = ({
   title,
   children,
 }) => {
+  const theme = useTheme()
   const [isCollapsed, setIsCollapsed] = useState(true);
 
   const toggleCollapse = () => {
@@ -25,13 +27,13 @@ export const CustomCollapsible: React.FC<CustomCollapsibleProps> = ({
   };
 
   return (
-    <Card>
+    <Card style={{backgroundColor:theme.card}}>
       <TouchableOpacity onPress={toggleCollapse} style={styles.header}>
-        <Text style={styles.title}>{title}</Text>
+        <Text style={[styles.title,{color:theme.textPrimary}]}>{title}</Text>
         <MaterialIcons
           name={isCollapsed ? "keyboard-arrow-down" : "keyboard-arrow-up"}
           size={25}
-          color={Colors.primary}
+          color={theme.textPrimary}
         />
       </TouchableOpacity>
 
@@ -61,10 +63,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "600",
-    color: Colors.primary,
   },
   contentContainer: {
     overflow: "hidden",
-    backgroundColor: Colors.white,
   },
 });

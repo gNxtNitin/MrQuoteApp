@@ -21,6 +21,8 @@ import DraggableFlatList, {
 import { ViewTemplatesDialog } from "./ViewTemplatesDialog";
 import { flattenObject } from "@/app/utils/flattenObj";
 import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
+import { useTheme } from "@/app/components/providers/ThemeProvider";
+import { useEstimateStore } from "@/app/stores/estimateStore";
 
 interface LineItem {
   id: string;
@@ -43,10 +45,12 @@ interface Signer {
 }
 
 export function AuthorizePage() {
+  const theme = useTheme();
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [title, setTitle] = useState("Authorize");
   const [disclaimer, setDisclaimer] = useState("");
   const [sectionTitle, setSectionTitle] = useState("");
+  const { selectedPageId } = useEstimateStore();
   const [lineItems, setLineItems] = useState<LineItem[]>([
     {
       id: "1",
@@ -142,7 +146,9 @@ export function AuthorizePage() {
     };
     const flattenedData = flattenObject(authorizeData);
     console.log("Saving changes...", flattenedData);
-    useEstimatePageStore.getState().setFormData("Authorize Page",flattenedData)
+    useEstimatePageStore
+      .getState()
+      .setFormData("Authorize Page", flattenedData);
   };
 
   const renderItem = ({ item, drag, isActive }: RenderItemParams<LineItem>) => {
@@ -154,31 +160,44 @@ export function AuthorizePage() {
           style={[styles.tableRow, isActive && styles.draggingRow]}
         >
           <TouchableOpacity onPressIn={drag} style={styles.dragHandle}>
-            <Feather name="menu" size={16} color={Colors.gray[400]} />
+            <Feather name="menu" size={16} color={theme.placeholder} />
           </TouchableOpacity>
 
           <TextInput
-            style={[styles.cell, styles.itemCell]}
+            style={[styles.cell, { color: theme.textPrimary }, styles.itemCell]}
             value={item.item}
             onChangeText={(value) => updateLineItem(item.id, "item", value)}
             placeholder="Enter item"
+            placeholderTextColor={theme.placeholder}
           />
           <TextInput
-            style={[styles.cell, styles.numberCell]}
+            style={[
+              styles.cell,
+              { color: theme.textSecondary },
+              styles.numberCell,
+            ]}
             value={item.quantity}
             onChangeText={(value) => updateLineItem(item.id, "quantity", value)}
             keyboardType="numeric"
             placeholder="0"
+            placeholderTextColor={theme.placeholder}
           />
           <TextInput
-            style={[styles.cell, styles.numberCell]}
+            style={[
+              styles.cell,
+              { color: theme.textSecondary },
+              styles.numberCell,
+            ]}
             value={item.price}
             onChangeText={(value) => updateLineItem(item.id, "price", value)}
             keyboardType="numeric"
             placeholder="0.00"
+            placeholderTextColor={theme.placeholder}
           />
           <View style={[styles.cell, styles.numberCell, styles.lineTotalCell]}>
-            <Text style={styles.lineTotalText}>
+            <Text
+              style={[styles.lineTotalText, { color: theme.textSecondary }]}
+            >
               ${calculateLineTotal(item.quantity, item.price)}
             </Text>
           </View>
@@ -207,35 +226,60 @@ export function AuthorizePage() {
                   onChangeText={setTitle}
                   onBlur={() => setIsEditingTitle(false)}
                   autoFocus
-                  style={styles.titleInput}
+                  style={[styles.titleInput]}
                 />
               ) : (
                 <>
-                  <Text style={styles.titleText}>{title}</Text>
+                  <Text
+                    style={[styles.titleText, { color: theme.textSecondary }]}
+                  >
+                    {title}
+                  </Text>
                   <TouchableOpacity onPress={() => setIsEditingTitle(true)}>
-                    <Feather name="edit-2" size={16} color={Colors.primary} />
+                    <Feather name="edit-2" size={16} color={theme.textPrimary} />
                   </TouchableOpacity>
                 </>
               )}
             </View>
-            <Text style={styles.savedTemplatesText}>
+            <Text
+              style={[
+                styles.savedTemplatesText,
+                { color: theme.textSecondary },
+              ]}
+            >
               Edit the estimate details below. You can store them for use in
               subsequent reports.
             </Text>
             <View style={styles.templatesRow}>
-              <Text style={styles.savedTemplatesText}>
+              <Text
+                style={[
+                  styles.savedTemplatesText,
+                  { color: theme.textSecondary },
+                ]}
+              >
                 You have saved templates.
               </Text>
               <TouchableOpacity onPress={handleViewTemplates}>
-                <Text style={styles.link}>View templates</Text>
+                <Text style={[styles.link, { color: theme.textPrimary }]}>
+                  View templates
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
 
           <View style={[styles.section, styles.disclaimerContainer]}>
             <View style={styles.disclaimerHeader}>
-              <Text style={styles.disclaimerTitle}>Disclaimer</Text>
-              <Text style={styles.disclaimerSubtitle}>
+              <Text
+                style={[styles.disclaimerTitle, { color: theme.textSecondary }]}
+              >
+                Disclaimer
+              </Text>
+              <Text
+                style={[
+                  styles.disclaimerSubtitle,
+                  { color: theme.textSecondary },
+                ]}
+              >
                 For example, the terms of an estimate, or a direction to the
                 insurer.
               </Text>
@@ -243,16 +287,22 @@ export function AuthorizePage() {
             <TextInput
               style={styles.disclaimerInput}
               placeholder="Enter disclaimer text..."
+              placeholderTextColor={theme.placeholder}
               value={disclaimer}
               onChangeText={setDisclaimer}
             />
           </View>
 
           <View style={[styles.section, styles.sectionContainer]}>
-            <Text style={styles.sectionHeading}>Section Title</Text>
+            <Text
+              style={[styles.sectionHeading, { color: theme.textSecondary }]}
+            >
+              Section Title
+            </Text>
             <TextInput
               style={styles.sectionTitleInput}
               placeholder="Enter section title"
+              placeholderTextColor={theme.placeholder}
               value={sectionTitle}
               onChangeText={setSectionTitle}
             />
@@ -260,14 +310,40 @@ export function AuthorizePage() {
             <View style={styles.tableContainer}>
               <View style={styles.tableHeader}>
                 <View style={styles.dragHandle} />
-                <Text style={[styles.headerCell, styles.itemCell]}>Item</Text>
-                <Text style={[styles.headerCell, styles.numberCell]}>
+                <Text
+                  style={[
+                    styles.headerCell,
+                    { color: theme.textSecondary },
+                    styles.itemCell,
+                  ]}
+                >
+                  Item
+                </Text>
+                <Text
+                  style={[
+                    styles.headerCell,
+                    { color: theme.textSecondary },
+                    styles.numberCell,
+                  ]}
+                >
                   Quantity
                 </Text>
-                <Text style={[styles.headerCell, styles.numberCell]}>
+                <Text
+                  style={[
+                    styles.headerCell,
+                    { color: theme.textSecondary },
+                    styles.numberCell,
+                  ]}
+                >
                   Price
                 </Text>
-                <Text style={[styles.headerCell, styles.numberCell]}>
+                <Text
+                  style={[
+                    styles.headerCell,
+                    { color: theme.textSecondary },
+                    styles.numberCell,
+                  ]}
+                >
                   Line Total
                 </Text>
                 <View style={styles.deleteCell} />
@@ -294,7 +370,12 @@ export function AuthorizePage() {
             <View style={styles.divider} />
 
             <View style={styles.profitMarginSection}>
-              <Text style={styles.profitMarginTitle}>
+              <Text
+                style={[
+                  styles.profitMarginTitle,
+                  { color: theme.textSecondary },
+                ]}
+              >
                 Profit margin for this quote
               </Text>
               <View style={styles.profitMarginContainer}>
@@ -309,7 +390,12 @@ export function AuthorizePage() {
                   thumbTintColor={Colors.primary[500]}
                 />
                 <View style={styles.profitMarginValue}>
-                  <Text style={styles.profitMarginNumber}>
+                  <Text
+                    style={[
+                      styles.profitMarginNumber,
+                      { color: theme.textSecondary },
+                    ]}
+                  >
                     {Math.round(profitMargin)}
                   </Text>
                 </View>
@@ -319,7 +405,9 @@ export function AuthorizePage() {
                   /* Handle calculation info */
                 }}
               >
-                <Text style={styles.calculationLink}>
+                <Text
+                  style={[styles.calculationLink, { color: theme.placeholder }]}
+                >
                   How is this calculated?
                 </Text>
               </TouchableOpacity>
@@ -338,31 +426,66 @@ export function AuthorizePage() {
                 />
               ) : (
                 <>
-                  <Text style={styles.sectionHeading}>{productTitle}</Text>
+                  <Text
+                    style={[
+                      styles.sectionHeading,
+                      { color: theme.textSecondary },
+                    ]}
+                  >
+                    {productTitle}
+                  </Text>
                   <TouchableOpacity
                     onPress={() => setIsEditingProductTitle(true)}
                   >
-                    <Feather name="edit-2" size={16} color={Colors.primary} />
+                    <Feather
+                      name="edit-2"
+                      size={16}
+                      color={theme.textPrimary}
+                    />
                   </TouchableOpacity>
                 </>
               )}
             </View>
 
-            <Text style={styles.productSelectionsSubtitle}>
+            <Text
+              style={[
+                styles.productSelectionsSubtitle,
+                { color: theme.textSecondary },
+              ]}
+            >
               Use this section to request project or product details on your
               authorization page.
             </Text>
 
             <View style={styles.productSelectionHeaders}>
-              <Text style={styles.productHeaderText}>Item</Text>
-              <Text style={styles.productHeaderText}>Selection</Text>
+              <Text
+                style={[
+                  styles.productHeaderText,
+                  { color: theme.textSecondary },
+                ]}
+              >
+                Item
+              </Text>
+              <Text
+                style={[
+                  styles.productHeaderText,
+                  { color: theme.textSecondary },
+                ]}
+              >
+                Selection
+              </Text>
             </View>
 
             {productSelections.map((selection) => (
               <View key={selection.id} style={styles.productSelectionRow}>
                 <TextInput
-                  style={[styles.productInput, styles.itemInput]}
+                  style={[
+                    styles.productInput,
+                    { color: theme.textSecondary },
+                    styles.itemInput,
+                  ]}
                   placeholder="Ex: Shingle color, etc"
+                  placeholderTextColor={theme.placeholder}
                   value={selection.item}
                   onChangeText={(text) => {
                     const updated = productSelections.map((s) =>
@@ -372,8 +495,13 @@ export function AuthorizePage() {
                   }}
                 />
                 <TextInput
-                  style={[styles.productInput, styles.selectionInput]}
+                  style={[
+                    styles.productInput,
+                    { color: theme.textPrimary },
+                    styles.selectionInput,
+                  ]}
                   placeholder="Can be left blank"
+                  placeholderTextColor={theme.placeholder}
                   value={selection.selection}
                   onChangeText={(text) => {
                     const updated = productSelections.map((s) =>
@@ -388,12 +516,20 @@ export function AuthorizePage() {
 
           <View style={[styles.section, styles.signersSection]}>
             <View style={styles.signerContainer}>
-              <Text style={styles.signerTitle}>Primary signer</Text>
+              <Text
+                style={[styles.signerTitle, { color: theme.textSecondary }]}
+              >
+                Primary signer
+              </Text>
               <View style={styles.signerRow}>
                 <View style={styles.signerField}>
-                  <Text style={styles.fieldLabel}>First name</Text>
+                  <Text
+                    style={[styles.fieldLabel, { color: theme.textSecondary }]}
+                  >
+                    First name
+                  </Text>
                   <TextInput
-                    style={styles.signerInput}
+                    style={[styles.signerInput, { color: theme.textSecondary }]}
                     value={signers[0].firstName}
                     onChangeText={(text) => {
                       const updated = signers.map((s, i) =>
@@ -404,9 +540,13 @@ export function AuthorizePage() {
                   />
                 </View>
                 <View style={styles.signerField}>
-                  <Text style={styles.fieldLabel}>Last name</Text>
+                  <Text
+                    style={[styles.fieldLabel, { color: theme.textSecondary }]}
+                  >
+                    Last name
+                  </Text>
                   <TextInput
-                    style={styles.signerInput}
+                    style={[styles.signerInput, { color: theme.textSecondary }]}
                     value={signers[0].lastName}
                     onChangeText={(text) => {
                       const updated = signers.map((s, i) =>
@@ -417,9 +557,13 @@ export function AuthorizePage() {
                   />
                 </View>
                 <View style={[styles.signerField, styles.emailField]}>
-                  <Text style={styles.fieldLabel}>Email address</Text>
+                  <Text
+                    style={[styles.fieldLabel, { color: theme.textSecondary }]}
+                  >
+                    Email address
+                  </Text>
                   <TextInput
-                    style={styles.signerInput}
+                    style={[styles.signerInput, { color: theme.textSecondary }]}
                     value={signers[0].email}
                     onChangeText={(text) => {
                       const updated = signers.map((s, i) =>
@@ -436,12 +580,26 @@ export function AuthorizePage() {
 
             {signers.slice(1).map((signer, index) => (
               <View key={signer.id} style={styles.signerContainer}>
-                <Text style={styles.signerTitle}>Signer {index + 2}</Text>
+                <Text
+                  style={[styles.signerTitle, { color: theme.textSecondary }]}
+                >
+                  Signer {index + 2}
+                </Text>
                 <View style={styles.signerRow}>
                   <View style={styles.signerField}>
-                    <Text style={styles.fieldLabel}>First name</Text>
+                    <Text
+                      style={[
+                        styles.fieldLabel,
+                        { color: theme.textSecondary },
+                      ]}
+                    >
+                      First name
+                    </Text>
                     <TextInput
-                      style={styles.signerInput}
+                      style={[
+                        styles.signerInput,
+                        { color: theme.textSecondary },
+                      ]}
                       value={signer.firstName}
                       onChangeText={(text) => {
                         const updated = signers.map((s) =>
@@ -452,9 +610,19 @@ export function AuthorizePage() {
                     />
                   </View>
                   <View style={styles.signerField}>
-                    <Text style={styles.fieldLabel}>Last name</Text>
+                    <Text
+                      style={[
+                        styles.fieldLabel,
+                        { color: theme.textSecondary },
+                      ]}
+                    >
+                      Last name
+                    </Text>
                     <TextInput
-                      style={styles.signerInput}
+                      style={[
+                        styles.signerInput,
+                        { color: theme.textSecondary },
+                      ]}
                       value={signer.lastName}
                       onChangeText={(text) => {
                         const updated = signers.map((s) =>
@@ -465,11 +633,22 @@ export function AuthorizePage() {
                     />
                   </View>
                   <View style={[styles.signerField, styles.emailField]}>
-                    <Text style={styles.fieldLabel}>Email address</Text>
+                    <Text
+                      style={[
+                        styles.fieldLabel,
+                        { color: theme.textSecondary },
+                      ]}
+                    >
+                      Email address
+                    </Text>
                     <View style={styles.emailFieldContainer}>
                       <View style={styles.emailInputContainer}>
                         <TextInput
-                          style={[styles.signerInput, styles.emailInput]}
+                          style={[
+                            styles.signerInput,
+                            { color: theme.textSecondary },
+                            styles.emailInput,
+                          ]}
                           value={signer.email}
                           onChangeText={(text) => {
                             const updated = signers.map((s) =>
@@ -521,19 +700,19 @@ export function AuthorizePage() {
                 />
               ) : (
                 <>
-                  <Text style={styles.sectionHeading}>{footerTitle}</Text>
+                  <Text style={[styles.sectionHeading,{color:theme.textSecondary}]}>{footerTitle}</Text>
                   <TouchableOpacity
                     onPress={() => setIsEditingFooterTitle(true)}
                   >
-                    <Feather name="edit-2" size={16} color={Colors.primary} />
+                    <Feather name="edit-2" size={16} color={theme.textSecondary} />
                   </TouchableOpacity>
                 </>
               )}
             </View>
 
-            <Text style={styles.footerLabel}>Note:</Text>
+            <Text style={[styles.footerLabel,{color:theme.textSecondary}]}>Note:</Text>
             <TextInput
-              style={styles.footerInput}
+              style={[styles.footerInput,{color:theme.textSecondary}]}
               value={footerNote}
               onChangeText={setFooterNote}
               multiline
@@ -557,7 +736,7 @@ export function AuthorizePage() {
 
   return (
     <View style={styles.container}>
-      <Card style={styles.mainCard}>
+      <Card style={[styles.mainCard, { backgroundColor: theme.card }]}>
         <SectionList
           sections={sections}
           keyExtractor={(item, index) => index.toString()}
@@ -583,7 +762,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 24,
-    backgroundColor: "#f5f5f5",
+    // backgroundColor: "#f5f5f5",
   },
   mainCard: {
     padding: 12,
@@ -601,7 +780,7 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 20,
     fontWeight: "600",
-    color: Colors.black,
+    // color: Colors.black,
   },
   titleInput: {
     flex: 1,
@@ -615,11 +794,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   savedTemplatesText: {
-    color: Colors.black,
+    // color: Colors.black,
     fontSize: 14,
   },
   link: {
-    color: Colors.primary,
+    // color: Colors.primary,
     fontSize: 14,
   },
   disclaimerContainer: {
@@ -631,11 +810,11 @@ const styles = StyleSheet.create({
   disclaimerTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: Colors.black,
+    // color: Colors.black,
     marginBottom: 8,
   },
   disclaimerSubtitle: {
-    color: Colors.gray[500],
+    // color: Colors.gray[500],
     fontSize: 14,
   },
   disclaimerInput: {
@@ -644,7 +823,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.gray[200],
     borderRadius: 8,
     paddingHorizontal: 12,
-    backgroundColor: "white",
+    // backgroundColor: "white",
   },
   sectionContainer: {
     marginTop: 0,
@@ -652,7 +831,7 @@ const styles = StyleSheet.create({
   sectionHeading: {
     fontSize: 16,
     fontWeight: "600",
-    color: Colors.black,
+    // color: Colors.black,
     marginBottom: 8,
   },
   sectionTitleInput: {
@@ -661,7 +840,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.gray[200],
     borderRadius: 8,
     paddingHorizontal: 12,
-    backgroundColor: "white",
+    // backgroundColor: "white",
     marginBottom: 16,
   },
   tableHeader: {
@@ -674,7 +853,7 @@ const styles = StyleSheet.create({
   headerCell: {
     fontSize: 14,
     fontWeight: "500",
-    color: Colors.black,
+    // color: Colors.black,
   },
   tableRow: {
     flexDirection: "row",
@@ -687,7 +866,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.gray[200],
     borderRadius: 8,
     paddingHorizontal: 8,
-    backgroundColor: "white",
+    // backgroundColor: "white",
     marginRight: 8,
   },
   itemCell: {
@@ -728,7 +907,7 @@ const styles = StyleSheet.create({
   profitMarginTitle: {
     fontSize: 20,
     fontWeight: "600",
-    color: Colors.black,
+    // color: Colors.black,
     marginBottom: 16,
   },
   profitMarginContainer: {
@@ -749,14 +928,14 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "white",
+    // backgroundColor: "white",
   },
   profitMarginNumber: {
     fontSize: 16,
-    color: Colors.black,
+    // color: Colors.black,
   },
   calculationLink: {
-    color: Colors.primary[500],
+    // color: Colors.primary[500],
     textDecorationLine: "underline",
     fontSize: 14,
   },
@@ -778,7 +957,7 @@ const styles = StyleSheet.create({
   },
   productSelectionsSubtitle: {
     fontSize: 14,
-    color: Colors.gray[500],
+    // color: Colors.gray[500],
     marginBottom: 24,
   },
   productSelectionHeaders: {
@@ -788,7 +967,7 @@ const styles = StyleSheet.create({
   productHeaderText: {
     fontSize: 16,
     fontWeight: "600",
-    color: Colors.black,
+    // color: Colors.black,
     flex: 1,
   },
   productSelectionRow: {
@@ -802,7 +981,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.gray[200],
     borderRadius: 8,
     paddingHorizontal: 12,
-    backgroundColor: "white",
+    // backgroundColor: "white",
     flex: 1,
   },
   itemInput: {
@@ -827,7 +1006,7 @@ const styles = StyleSheet.create({
   signerTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: Colors.black,
+    // color: Colors.black,
     marginBottom: 16,
   },
   signerRow: {
@@ -843,7 +1022,7 @@ const styles = StyleSheet.create({
   fieldLabel: {
     fontSize: 14,
     fontWeight: "500",
-    color: Colors.black,
+    // color: Colors.black,
     marginBottom: 8,
   },
   signerInput: {
@@ -852,7 +1031,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.gray[200],
     borderRadius: 8,
     paddingHorizontal: 12,
-    backgroundColor: "white",
+    // backgroundColor: "white",
   },
   emailFieldContainer: {
     flexDirection: "row",
@@ -881,7 +1060,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.gray[200],
     borderRadius: 8,
-    backgroundColor: "white",
+    // backgroundColor: "white",
     flexShrink: 0,
   },
   addSignerContainer: {
@@ -899,7 +1078,7 @@ const styles = StyleSheet.create({
   },
   footerLabel: {
     fontSize: 16,
-    color: Colors.black,
+    // color: Colors.black,
     marginTop: 16,
     marginBottom: 8,
   },
@@ -908,7 +1087,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.gray[200],
     borderRadius: 8,
     padding: 12,
-    backgroundColor: "white",
+    // backgroundColor: "white",
     minHeight: 120,
     textAlignVertical: "top",
   },

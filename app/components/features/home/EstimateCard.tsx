@@ -110,26 +110,26 @@ export function EstimateCard({ estimate, index, onStatusChange, estimateData, es
       
       <View style={[styles.contentContainer, { backgroundColor: theme.card }]}>
         <View style={styles.header}>
-          <Text style={[styles.customerName, { color: theme.primary }]} numberOfLines={1}>
+          <Text style={[styles.customerName, { color: theme.textPrimary }]} numberOfLines={2}>
             {estimate.customerName}
           </Text>
         </View>
 
         <View style={styles.content}>
           <View style={styles.infoRow}>
-            <MaterialIcons name="tag" size={18} color={theme.primary} />
+            <MaterialIcons name="tag" size={18} color={theme.textPrimary} />
             <Text style={[styles.infoText, { color: theme.textSecondary }]} numberOfLines={1}>
               {estimate.estimateNumber}
             </Text>
           </View>
           <View style={styles.infoRow}>
-            <MaterialIcons name="location-on" size={18} color={theme.primary} />
+            <MaterialIcons name="location-on" size={18} color={theme.textPrimary} />
             <Text style={[styles.infoText, { color: theme.textSecondary }]} numberOfLines={2}>
               {estimate.address}
             </Text>
           </View>
           <View style={styles.infoRow}>
-            <MaterialIcons name="event" size={18} color={theme.primary} />
+            <MaterialIcons name="event" size={18} color={theme.textPrimary} />
             <Text style={[styles.infoText, { color: theme.textSecondary }]}>
               {estimate.date}
             </Text>
@@ -196,7 +196,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     borderRadius: 16,
     width: '48%',
-    height: 420,
     shadowColor: Colors.black,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,

@@ -30,8 +30,10 @@ export function EstimateSettingsScreen({
 }: EstimateSettingsScreenProps) {
   const theme = useTheme();
 
+
   const [activeTab, setActiveTab] = useState("Estimate details");
   const [indicatorPosition] = useState(new Animated.Value(0));
+
 
   const tabs = [
     { label: "Estimate details", component: <EstimateDetailsTab /> },
@@ -55,10 +57,12 @@ export function EstimateSettingsScreen({
 
   return (
     <ScreenLayout>
+      <View style={{padding:16}}>
       <Pressable style={styles.backButton} onPress={handleBack}>
-        <MaterialIcons name="arrow-back" size={20} color={theme.primary} />
-        <Text style={[styles.backText, { color: theme.primary }]}>Back</Text>
+        <MaterialIcons name="arrow-back" size={20} color={theme.textPrimary} />
+        <Text style={[styles.backText, { color: theme.textPrimary }]}>Back</Text>
       </Pressable>
+      </View>
       <ScrollView style={{ flex: 1 }}>
         <View style={styles.container}>
           <View style={styles.tabBarContainer}>
@@ -71,7 +75,7 @@ export function EstimateSettingsScreen({
                     inputRange: [0, 100],
                     outputRange: ["0%", "100%"],
                   }),
-                },
+                },{backgroundColor:theme.card}
               ]}
             />
             <View style={styles.tabBar}>
@@ -84,7 +88,7 @@ export function EstimateSettingsScreen({
                   <Text
                     style={[
                       styles.tabText,
-                      activeTab === tab.label && styles.activeTabText,
+                      activeTab === tab.label && styles.activeTabText,{color:theme.textPrimary}
                     ]}
                   >
                     {tab.label}
@@ -110,12 +114,14 @@ const styles = StyleSheet.create({
     position: "relative",
     width: "100%",
     marginBottom: 10,
+    borderRadius:20,
   },
   tabBar: {
     flexDirection: "row",
     justifyContent: "space-around",
     width: "100%",
-    backgroundColor: Colors.white,
+    borderRadius:20
+
   },
   tabButton: {
     flex: 1,
@@ -125,18 +131,15 @@ const styles = StyleSheet.create({
   indicator: {
     position: "absolute",
     height: "100%",
-    backgroundColor: Colors.primary,
     borderRadius: 5,
     zIndex: -1,
   },
   tabText: {
     fontSize: 16,
     fontWeight: "600",
-    color: Colors.primary,
   },
   activeTabText: {
-    width: "100%",
-    color: Colors.primary,
+    width: "80%",
     fontSize: 18,
     borderBottomWidth: 2,
     textAlign: "center",
@@ -144,14 +147,7 @@ const styles = StyleSheet.create({
     marginStart: 20,
     paddingVertical: 5,
   },
-  backButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    width: "100%",
-    padding: 10,
-    backgroundColor: Colors.white,
-    alignSelf: "center",
-  },
+  backButton: { flexDirection: "row", alignItems: "center", gap: 6,width:100 },
+
   backText: { fontSize: 16, color: Colors.primary, fontWeight: "600" },
 });

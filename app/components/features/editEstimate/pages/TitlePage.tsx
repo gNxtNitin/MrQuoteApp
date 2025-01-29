@@ -17,10 +17,16 @@ import {
   TitlePageContentData,
 } from "@/app/database/models/TitlePageContent";
 import { openDatabase } from "@/app/services/database/init";
+import { useTheme } from "@/app/components/providers/ThemeProvider";
+import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
+import { useEstimateStore } from "@/app/stores/estimateStore";
+import { showToast } from "@/app/utils/ToastService";
 
 const db = openDatabase();
 
 export function TitlePage() {
+  const theme = useTheme();
+
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [title, setTitle] = useState("Title");
   const [reportType, setReportType] = useState("");
@@ -38,11 +44,17 @@ export function TitlePage() {
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [postalCode, setPostalCode] = useState("");
+  const { selectedPageId } = useEstimateStore();
+  const [id, setId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await TitlePageContent.getById(1);
+        const id = await TitlePageContent.getIdByPageId(selectedPageId!);
+        setId(id);
+        console.log("id Title Page: ", id, "selectedPageId: ", selectedPageId);
+        const data = await TitlePageContent.getById(id!);
+        console.log("data", data);
         if (data) {
           console.log("Fetched Data:", data);
           setTitle(data.title_name || "Title");
@@ -89,17 +101,19 @@ export function TitlePage() {
       zip_code: postalCode,
     };
     try {
-      await TitlePageContent.update(1, formData);
+      await TitlePageContent.update(id!, formData);
       console.log("Data updated successfully.");
-    } catch (error) {
+      showToast("success","Data updated successfully.")
+    } catch (error:any) {
       console.error("Error updating data:", error);
+      showToast("error",error)
     }
     console.log("Saving changes...", formData);
   };
 
   return (
     <View style={styles.container}>
-      <Card style={styles.mainCard}>
+      <Card style={[styles.mainCard, { backgroundColor: theme.card }]}>
         <ScrollView
           style={styles.scrollView}
           showsVerticalScrollIndicator={false}
@@ -118,9 +132,17 @@ export function TitlePage() {
                   />
                 ) : (
                   <>
-                    <Text style={styles.titleText}>{title}</Text>
+                    <Text
+                      style={[styles.titleText, { color: theme.textSecondary }]}
+                    >
+                      {title}
+                    </Text>
                     <TouchableOpacity onPress={() => setIsEditingTitle(true)}>
-                      <Feather name="edit-2" size={16} color={Colors.primary} />
+                      <Feather
+                        name="edit-2"
+                        size={16}
+                        color={theme.textSecondary}
+                      />
                     </TouchableOpacity>
                   </>
                 )}
@@ -130,7 +152,9 @@ export function TitlePage() {
             {/* Report Type and Date Row */}
             <View style={styles.row}>
               <View style={styles.column}>
-                <Text style={styles.label}>Report type</Text>
+                <Text style={[styles.label, { color: theme.textSecondary }]}>
+                  Report type
+                </Text>
                 <Input
                   value={reportType}
                   placeholder="Select report type"
@@ -138,7 +162,9 @@ export function TitlePage() {
                 />
               </View>
               <View style={styles.column}>
-                <Text style={styles.label}>Date</Text>
+                <Text style={[styles.label, { color: theme.textSecondary }]}>
+                  Date
+                </Text>
                 <Input
                   placeholder="Select date"
                   onChangeText={setDate}
@@ -171,7 +197,9 @@ export function TitlePage() {
             {/* Name Row */}
             <View style={styles.row}>
               <View style={styles.column}>
-                <Text style={styles.label}>First name</Text>
+                <Text style={[styles.label, { color: theme.textSecondary }]}>
+                  First name
+                </Text>
                 <Input
                   placeholder="Enter first name"
                   onChangeText={setFirstName}
@@ -179,7 +207,9 @@ export function TitlePage() {
                 />
               </View>
               <View style={styles.column}>
-                <Text style={styles.label}>Last name</Text>
+                <Text style={[styles.label, { color: theme.textSecondary }]}>
+                  Last name
+                </Text>
                 <Input
                   placeholder="Enter last name"
                   onChangeText={setLastName}
@@ -191,7 +221,9 @@ export function TitlePage() {
             {/* Company and Address Row */}
             <View style={styles.row}>
               <View style={styles.column}>
-                <Text style={styles.label}>Company name</Text>
+                <Text style={[styles.label, { color: theme.textSecondary }]}>
+                  Company name
+                </Text>
                 <Input
                   placeholder="Enter company name"
                   onChangeText={setCompanyName}
@@ -199,7 +231,9 @@ export function TitlePage() {
                 />
               </View>
               <View style={styles.column}>
-                <Text style={styles.label}>Address</Text>
+                <Text style={[styles.label, { color: theme.textSecondary }]}>
+                  Address
+                </Text>
                 <Input
                   placeholder="Enter address"
                   onChangeText={setAddress}
@@ -211,7 +245,9 @@ export function TitlePage() {
             {/* Location Row */}
             <View style={styles.row}>
               <View style={[styles.column, { flex: 0.5 }]}>
-                <Text style={styles.label}>City</Text>
+                <Text style={[styles.label, { color: theme.textSecondary }]}>
+                  City
+                </Text>
                 <Input
                   placeholder="Enter city"
                   onChangeText={setCity}
@@ -221,7 +257,11 @@ export function TitlePage() {
               <View style={[styles.column, { flex: 0.5 }]}>
                 <View style={styles.row}>
                   <View style={styles.column}>
-                    <Text style={styles.label}>State/Province</Text>
+                    <Text
+                      style={[styles.label, { color: theme.textSecondary }]}
+                    >
+                      State/Province
+                    </Text>
                     <Input
                       placeholder="Enter state/province"
                       onChangeText={setState}
@@ -229,7 +269,11 @@ export function TitlePage() {
                     />
                   </View>
                   <View style={styles.column}>
-                    <Text style={styles.label}>Zip code/Postal code</Text>
+                    <Text
+                      style={[styles.label, { color: theme.textSecondary }]}
+                    >
+                      Zip code/Postal code
+                    </Text>
                     <Input
                       placeholder="Enter zip/postal code"
                       onChangeText={setPostalCode}
@@ -248,6 +292,7 @@ export function TitlePage() {
                 variant="primary"
                 size="small"
               />
+       
             </View>
           </View>
         </ScrollView>
@@ -259,7 +304,6 @@ export function TitlePage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
     padding: 24,
   },
   mainCard: {
@@ -283,7 +327,6 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 20,
     fontWeight: "600",
-    color: Colors.black,
   },
   titleInput: {
     flex: 1,
@@ -302,7 +345,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "500",
     marginBottom: 8,
-    color: "#333",
   },
   uploadCard: {
     height: 180,

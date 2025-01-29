@@ -89,11 +89,11 @@ export function SubHeader() {
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.leftSection}>
         <Pressable style={styles.backButton} onPress={handleBack}>
-          <MaterialIcons name="arrow-back" size={20} color={theme.primary} />
-          <Text style={[styles.backText, { color: theme.primary }]}>Back</Text>
+          <MaterialIcons name="arrow-back" size={20} color={theme.textPrimary} />
+          <Text style={[styles.backText, { color: theme.textPrimary }]}>Back</Text>
         </Pressable>
         <View style={styles.estimateInfo}>
-          <Text style={[styles.estimateName, { color: theme.primary }]}>
+          <Text style={[styles.estimateName, { color: theme.textPrimary }]}>
             Estimate #1234
           </Text>
           <View style={styles.detailsRow}>
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: Colors.white,
     borderBottomWidth: 1,
-    borderBottomColor: "#eee",
+    borderBottomColor: Colors.gray[500],
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -184,6 +184,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
+    width:100
   },
   backText: {
     fontSize: 16,
