@@ -110,7 +110,7 @@ export function EstimateCard({ estimate, index, onStatusChange, estimateData, es
       
       <View style={[styles.contentContainer, { backgroundColor: theme.card }]}>
         <View style={styles.header}>
-          <Text style={[styles.customerName, { color: theme.textPrimary }]} numberOfLines={1}>
+          <Text style={[styles.customerName, { color: theme.textPrimary }]} numberOfLines={2}>
             {estimate.customerName}
           </Text>
         </View>
@@ -196,7 +196,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     borderRadius: 16,
     width: '48%',
-    height: 420,
     shadowColor: Colors.black,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
