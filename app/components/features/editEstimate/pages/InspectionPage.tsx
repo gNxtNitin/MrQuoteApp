@@ -345,23 +345,47 @@ export function InspectionPage() {
                       </Text>
 
                       {item.images ? (
-                        // Show image with delete button if image exists
+                        // Show image with edit and delete buttons if image exists
                         <View style={styles.imageContainer}>
                           <Image
                             source={{ uri: item.images }}
                             style={styles.uploadedImage}
                             resizeMode="cover"
                           />
-                          <TouchableOpacity
-                            style={styles.imageDeleteButton}
-                            onPress={() => handleImageDelete(section.id, item.id)}
-                          >
-                            <MaterialIcons
-                              name="delete"
-                              size={24}
-                              color={Colors.red[500]}
-                            />
-                          </TouchableOpacity>
+                          <View style={styles.imageActions}>
+                            <TouchableOpacity
+                              style={styles.imageActionButton}
+                              onPress={() => {
+                                // Trigger FileUploader when edit is pressed
+                                // const fileUploaderInput = document.createElement('input');
+                                // fileUploaderInput.type = 'file';
+                                // fileUploaderInput.accept = 'image/*';
+                                // fileUploaderInput.onchange = (e: any) => {
+                                //   const files = Array.from(e.target.files);
+                                //   if (files.length > 0) {
+                                //     handleFileUpload([files[0]], section.id, item.id);
+                                //   }
+                                // };
+                                // fileUploaderInput.click();
+                              }}
+                            >
+                              <MaterialIcons
+                                name="edit"
+                                size={20}
+                                color={Colors.primary}
+                              />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              style={styles.imageActionButton}
+                              onPress={() => handleImageDelete(section.id, item.id)}
+                            >
+                              <MaterialIcons
+                                name="delete"
+                                size={20}
+                                color={Colors.red[500]}
+                              />
+                            </TouchableOpacity>
+                          </View>
                         </View>
                       ) : (
                         // Show FileUploader if no image
@@ -618,13 +642,17 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  imageDeleteButton: {
+  imageActions: {
     position: 'absolute',
     top: 8,
     right: 8,
+    flexDirection: 'row',
+    gap: 8,
+  },
+  imageActionButton: {
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
     borderRadius: 20,
-    padding: 4,
+    padding: 6,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
