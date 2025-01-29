@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -20,38 +20,97 @@ import { Button } from "../../../common/Button";
 import { useTheme } from "@/app/components/providers/ThemeProvider";
 import { FileUploader } from "@/app/components/common/FileUploader";
 import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
+import { TermConditionsPageContent } from "@/app/database/models/TermConditionsPageContent";
+import { useEstimateStore } from "@/app/stores/estimateStore";
+import { useUserStore } from '@/app/stores/userStore';
 
 export function TermsPage() {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [title, setTitle] = useState("Terms and Conditions");
   const [requireAcknowledgment, setRequireAcknowledgment] = useState(false);
-  const [editorContent, setEditorContent] = useState(
-    'You may cancel this contract from the day you enter into the contract until 10 days after you receive a copy of the contract. You do not need a reason to cancel. If you do not receive the goods or services within 30 days of the date stated in the contract, you may cancel this contract within one year of the contract date..."'
-  );
-  const [uploadedPdf, setUploadedPdf] = useState<
-    { uri: string } | string | null
-  >(null);
+  const [editorContent, setEditorContent] = useState("");
+  const [uploadedPdf, setUploadedPdf] = useState<{ uri: string } | string | null>(null);
+  const [tcPageId, setTcPageId] = useState<number | null>(null);
 
   const editorRef = React.useRef<RichEditor>(null);
   const [activeTab, setActiveTab] = useState("summary");
+  const { selectedPageId } = useEstimateStore();
+  const { currentUser } = useUserStore();
+
   const theme = useTheme();
+
+  // Fetch terms and conditions data
+  useEffect(() => {
+    const fetchTermsData = async () => {
+      try {
+        if (!selectedPageId) return;
+        
+        const termsData = await TermConditionsPageContent.getByPageId(selectedPageId);
+        if (termsData) {
+          setTcPageId(termsData.id || null);
+          setTitle(termsData.tc_page_title || "Terms and Conditions");
+          setRequireAcknowledgment(termsData.is_acknowledged === 1);
+          setEditorContent(termsData.summary_content || "");
+          setActiveTab(termsData.is_pdf ? "pdf" : "summary");
+          if (termsData.pdf_file_path) {
+            setUploadedPdf(termsData.pdf_file_path);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching terms data:", error);
+      }
+    };
+
+    fetchTermsData();
+  }, [selectedPageId]);
+
   const handleLayoutsPress = () => {
     // TODO: Implement navigation to Layouts
     console.log("Navigate to Layouts");
   };
 
-  const handleSave = () => {
-    const termsData = {
-      title,
-      editorContent,
-      requireAcknowledgment,
-      uploadedPdf,
-    };
+  const handleSave = async () => {
+    try {
+      const termsData = {
+        tc_page_title: title,
+        is_acknowledged: requireAcknowledgment ? 1 : 0,
+        is_summary: activeTab === "summary",
+        is_pdf: activeTab === "pdf",
+        summary_content: activeTab === "summary" ? editorContent : "",
+        pdf_file_path: activeTab === "pdf" ? (uploadedPdf as string) || "" : "",
+        is_active: true,
+        modified_by: currentUser?.id,
+        modified_date: new Date().toISOString()
+      };
 
-    console.log("Saving changes...", termsData);
-    useEstimatePageStore
-      .getState()
-      .setFormData("Terms and Conditions", termsData);
+      console.log('Saving terms data:', termsData);
+
+      if (tcPageId) {
+        await TermConditionsPageContent.update(tcPageId!, termsData);
+        console.log("Terms and conditions updated successfully");
+      } else {
+        await TermConditionsPageContent.insert({
+          page_id: selectedPageId!,
+          ...termsData,
+          created_by: currentUser?.id,
+          created_date: new Date().toISOString()
+        });
+        console.log("Terms and conditions created successfully");
+      }
+
+      // Refresh the data after save
+      const updatedTerms = await TermConditionsPageContent.getByPageId(selectedPageId!);
+      console.log('Updated terms data:', updatedTerms);
+
+      useEstimatePageStore.getState().setFormData("Terms and Conditions", termsData);
+    } catch (error) {
+      console.error("Error saving terms and conditions:", error);
+    }
+  };
+
+  const handleAcknowledgmentToggle = (value: boolean) => {
+    console.log('Toggle value:', value);
+    setRequireAcknowledgment(value);
   };
 
   return (
@@ -112,7 +171,7 @@ export function TermsPage() {
               </View>
               <Switch
                 value={requireAcknowledgment}
-                onValueChange={setRequireAcknowledgment}
+                onValueChange={handleAcknowledgmentToggle}
                 trackColor={{ false: "#E5E7EB", true: Colors.primary }}
                 thumbColor={Colors.white}
               />
@@ -170,13 +229,12 @@ export function TermsPage() {
                 iconTint={theme.textSecondary}
                 selectedIconTint={Colors.primary}
                 disabledIconTint={theme.textSecondary}
-
               />
               <View style={styles.editorContent}>
                 <RichEditor
                   ref={editorRef}
                   onChange={setEditorContent}
-                  initialContentHTML="You may cancel this contract from the day you enter into the contract until 10 days after you receive a copy of the contract. You do not need a reason to cancel. If you do not receive the goods or services within 30 days of the date stated in the contract, you may cancel this contract within one year of the contract date..."
+                  initialContentHTML={editorContent}
                   style={styles.editor}
                   placeholder="Start typing..."
                   editorStyle={{

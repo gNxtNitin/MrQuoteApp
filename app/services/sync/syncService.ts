@@ -7,10 +7,12 @@ import { Pages } from '@/app/database/models/Pages';
 import { LayoutPages } from '@/app/database/models/LayoutPages';
 import { TitlePageContent } from '@/app/database/models/TitlePageContent';
 import { IntroductionPageContent } from '@/app/database/models/IntroductionPageContent';
+import { TermConditionsPageContent } from '@/app/database/models/TermConditionsPageContent';
 import { User } from '@/app/database/models/User';
 import { UserCompany } from '@/app/database/models/UserCompany';
 import { Estimate } from '@/app/database/models/Estimate';
 import { EstimateDetail } from '@/app/database/models/EstimateDetail';
+import { useUserStore } from '@/app/stores/userStore';
 
 interface LoginDataResponse {
   Users: Array<{
@@ -140,10 +142,25 @@ interface LoginDataResponse {
     ModifiedBy: number | null;
     ModifiedDate: string | null;
   }>;
+  TermConditionsPageContent: Array<{
+    TC_PageId: number;
+    PageId: number;
+    TCPageTitle: string;
+    IsAcknowledged: boolean;
+    IsSummary: boolean;
+    IsPdf: boolean;
+    SummaryContent: string;
+    PdfFilePath: string;
+    IsActive: boolean;
+    CreatedBy: number;
+    CreatedDate: string;
+    ModifiedBy: number | null;
+    ModifiedDate: string | null;
+  }>;
 }
 
 export const syncService = {
-  syncLoginData: async (dataResponse: string) => {
+  syncLoginData: async (dataResponse: string, username: string) => {
     try {
       // console.log('dataResponse', dataResponse);
       const data: LoginDataResponse = JSON.parse(dataResponse);
@@ -377,6 +394,32 @@ export const syncService = {
         }
       }
 
+      // Sync TermConditionsPageContent
+      for (const tcPage of data.TermConditionsPageContent) {
+        const existingTCPage = await TermConditionsPageContent.getById(tcPage.TC_PageId);
+        if (!existingTCPage) {
+          console.log('TermConditionsPageContent not found, inserting...');
+          await TermConditionsPageContent.insert({
+            id: tcPage.TC_PageId,
+            page_id: tcPage.PageId,
+            tc_page_title: tcPage.TCPageTitle,
+            is_acknowledged: tcPage.IsAcknowledged ? 1 : 0,
+            is_summary: tcPage.IsSummary,
+            is_pdf: tcPage.IsPdf,
+            summary_content: tcPage.SummaryContent,
+            pdf_file_path: tcPage.PdfFilePath,
+            is_active: tcPage.IsActive,
+            created_by: tcPage.CreatedBy,
+            created_date: tcPage.CreatedDate,
+            modified_by: tcPage.ModifiedBy ?? undefined,
+            modified_date: tcPage.ModifiedDate ?? ''
+          });
+          console.log('TermConditionsPageContentInserted synced:', tcPage.TC_PageId);
+        } else {
+          console.log('TermConditionsPageContent already exists:', tcPage.TC_PageId);
+        }
+      }
+
       // Sync UserCompany
       for (const userCompany of data.UserCompany) {
         // console.log('userCompany', userCompany);
@@ -398,6 +441,9 @@ export const syncService = {
           // console.log('UserCompany already exists for user:', userCompany.UserId);
         }
       }
+
+      // Set current user using the enhanced function
+      useUserStore.getState().setCurrentUserFromLogin(data, username);
 
       // console.log('Data sync completed successfully');
       return true;
