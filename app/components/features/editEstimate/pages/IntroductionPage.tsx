@@ -70,13 +70,13 @@ export function IntroductionPage() {
   const handleSaveTemplate = async () => {
     // Implement save template logic
     if (editorContent) {
-      const cleanedContent = editorContent.replace(/<\/?div>/g, ""); // Remove <div> and </div> tags
+      const cleanedContent = editorContent.replace(/<\/?div>/g, "");
       const newTemplate: Template = {
         id: Date.now().toString(),
         content: cleanedContent,
         title: `Template ${Date.now()}`,
       };
-      // Save to storage or state management
+
       console.log("Saving template:", newTemplate);
       useEstimatePageStore.getState().setFormData("Introduction", newTemplate);
     }

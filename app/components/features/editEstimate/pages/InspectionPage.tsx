@@ -21,6 +21,7 @@ import { useTheme } from "@/app/components/providers/ThemeProvider";
 import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
 import { FileUploader } from "@/app/components/common/FileUploader";
 import { flattenObject } from "@/app/utils/flattenObj";
+import { InspectionPageContent } from "@/app/database/models/InspectionPageContent";
 
 export function InspectionPage() {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -41,7 +42,6 @@ export function InspectionPage() {
     [key: string]: string;
   }>({});
 
-  // Initialize refs for each item
   useEffect(() => {
     sections.forEach((section) => {
       section.items.forEach((item) => {
@@ -51,6 +51,35 @@ export function InspectionPage() {
       });
     });
   }, [sections]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await InspectionPageContent.getById(1);
+        if (data) {
+          const transformedSections = [
+            {
+              id: "1",
+              title: "Default Section",
+              items: [
+                {
+                  id: "1",
+                  description: data.inspection_title || "",
+                  images: '',
+                },
+              ],
+            },
+          ];
+          setSections(transformedSections as any);
+          setTitle(data?.inspection_title || "Inspection");
+        }
+      } catch (error) {
+        console.error("Error fetching data for selectedPageId:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const addSection = () => {
     const newSectionNumber = sections.length + 1;
@@ -83,14 +112,38 @@ export function InspectionPage() {
     );
   };
 
+  const moveSection = (index: number, direction: "up" | "down") => {
+    const newSections = [...sections];
+    const [removedSection] = newSections.splice(index, 1);
+    const newIndex = direction === "up" ? index - 1 : index + 1;
+    newSections.splice(newIndex, 0, removedSection);
+    setSections(newSections);
+  };
+
+  const moveItem = (
+    sectionId: string,
+    itemIndex: number,
+    direction: "up" | "down"
+  ) => {
+    setSections(
+      sections.map((section) => {
+        if (section.id === sectionId) {
+          const newItems = [...section.items];
+          const [removedItem] = newItems.splice(itemIndex, 1);
+          const newIndex = direction === "up" ? itemIndex - 1 : itemIndex + 1;
+          newItems.splice(newIndex, 0, removedItem);
+          return { ...section, items: newItems };
+        }
+        return section;
+      })
+    );
+  };
+
   const updateSectionTitle = (sectionId: string, newTitle: string) => {
     setSections(
       sections.map((section) => {
         if (section.id === sectionId) {
-          return {
-            ...section,
-            title: newTitle,
-          };
+          return { ...section, title: newTitle };
         }
         return section;
       })
@@ -122,41 +175,8 @@ export function InspectionPage() {
     );
   };
 
-  // Add uploaded image
-  const updatedSections = sections.map((section) => {
-    return {
-      ...section,
-      items: section.items.map((item) => {
-        if (item.images.length === 0 && image) {
-          return {
-            ...item,
-            images: [...item.images, image],
-          };
-        }
-        return item;
-      }),
-    };
-  });
-
   const handleSaveChanges = () => {
-    const inspectionData = {
-      title,
-      sections: updatedSections,
-      editorContents,
-    };
-
-    // Log all images in sections
-    // updatedSections.forEach((section) => {
-    //   console.log(`Images for Section: ${section.title}`);
-    //   section.items.forEach((item) => {
-    //     console.log(`Item ${item.id} Images:`, item.images);
-    //   });
-    // });
-
-    console.log(
-      "Saving changes Inspection:",
-      JSON.stringify({ inspectionData }, null, 2)
-    );
+    const inspectionData = { title, sections, editorContents };
     const flattenedData = flattenObject(inspectionData);
     useEstimatePageStore.getState().setFormData("Inspection", flattenedData);
   };

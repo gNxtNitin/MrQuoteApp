@@ -450,7 +450,11 @@ export function QuoteDetailsPage() {
                     Section title
                   </Text>
                   <TextInput
-                    style={[styles.sectionInput, styles.titleInput,{color:theme.textSecondary}]}
+                    style={[
+                      styles.sectionInput,
+                      styles.titleInput,
+                      { color: theme.textSecondary },
+                    ]}
                     placeholder="Section title"
                     placeholderTextColor={theme.placeholder}
                     value={section.title}
@@ -557,7 +561,9 @@ export function QuoteDetailsPage() {
 
           <View style={styles.bottomRow}>
             <View style={[styles.section, styles.profitMarginSection]}>
-              <Text style={styles.sectionHeader}>
+              <Text
+                style={[styles.sectionHeader, { color: theme.textSecondary }]}
+              >
                 Profit margin for this quote
               </Text>
               <Slider
@@ -571,15 +577,23 @@ export function QuoteDetailsPage() {
                 minimumTrackTintColor={Colors.primary}
                 maximumTrackTintColor={Colors.gray[200]}
               />
-              <Text style={styles.profitMarginValue}>
+              <Text
+                style={[styles.profitMarginValue, { color: theme.textPrimary }]}
+              >
                 {Math.round(quote.profitMargin)}%
               </Text>
             </View>
 
             <View style={[styles.section, styles.totalsSection]}>
               <View style={styles.totalRow}>
-                <Text style={styles.totalLabel}>Quote subtotal</Text>
-                <Text style={styles.totalAmount}>
+                <Text
+                  style={[styles.totalLabel, { color: theme.textSecondary }]}
+                >
+                  Quote subtotal
+                </Text>
+                <Text
+                  style={[styles.totalAmount, { color: theme.textSecondary }]}
+                >
                   ${calculateQuoteSubtotal()}
                 </Text>
               </View>
@@ -587,12 +601,14 @@ export function QuoteDetailsPage() {
                 <Text
                   style={[
                     styles.totalLabel,
-                    { color: "black", fontWeight: "bold" },
+                    { color: theme.textPrimary, fontWeight: "bold" },
                   ]}
                 >
                   Total
                 </Text>
-                <Text style={styles.totalAmount}>
+                <Text
+                  style={[styles.totalAmount, { color: theme.textSecondary }]}
+                >
                   ${calculateQuoteSubtotal()}
                 </Text>
               </View>
@@ -606,7 +622,7 @@ export function QuoteDetailsPage() {
               Notes
             </Text>
             <TextInput
-              style={[styles.notesInput,{color:theme.textSecondary}]}
+              style={[styles.notesInput, { color: theme.textSecondary }]}
               multiline
               value={quote.notes}
               onChangeText={(value) =>
@@ -955,7 +971,6 @@ const styles = StyleSheet.create({
   },
   totalLabel: {
     fontSize: 14,
-    color: Colors.gray[500],
   },
   totalAmount: {
     fontSize: 14,

@@ -188,6 +188,7 @@ export function Header() {
               <View style={styles.switcherContainer}>
                 <CompanySwitcher
                   companies={companies}
+                  
                   selectedCompany={selectedCompany}
                   onSelectCompany={handleSelectCompany}
                   onLogout={handleLogout}
