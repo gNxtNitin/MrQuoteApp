@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/app/components/providers/ThemeProvider';
 import { Sidebar } from '@/app/components/features/sidebar/Sidebar';
 import { useSidebarStore } from '@/app/stores/sidebarStore';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Toast from "react-native-toast-message";
 
 export default function RootLayout() {
   const { isOpen, close } = useSidebarStore();
@@ -23,6 +24,7 @@ export default function RootLayout() {
             }} 
           />
           <Sidebar isOpen={isOpen} onClose={close} />
+          <Toast/>
         </View>
       </ThemeProvider>
     </GestureHandlerRootView>

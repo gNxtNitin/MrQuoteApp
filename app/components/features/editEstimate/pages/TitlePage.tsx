@@ -19,6 +19,7 @@ import {
 import { openDatabase } from "@/app/services/database/init";
 import { useTheme } from "@/app/components/providers/ThemeProvider";
 import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
+import { showToast } from "@/app/utils/ToastService";
 
 const db = openDatabase();
 
@@ -95,8 +96,10 @@ export function TitlePage() {
     try {
       await TitlePageContent.update(1, formData);
       console.log("Data updated successfully.");
-    } catch (error) {
+      showToast("success","Data updated successfully.")
+    } catch (error:any) {
       console.error("Error updating data:", error);
+      showToast("error",error)
     }
     console.log("Saving changes...", formData);
     useEstimatePageStore.getState().setFormData("Title", formData);
@@ -283,6 +286,7 @@ export function TitlePage() {
                 variant="primary"
                 size="small"
               />
+       
             </View>
           </View>
         </ScrollView>
