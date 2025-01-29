@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Image,
 } from "react-native";
 import { Card } from "../../../common/Card";
 import { Input } from "../../../common/Input";
@@ -30,7 +31,7 @@ export function InspectionPage() {
     {
       id: "1",
       title: "Section 1",
-      items: [{ id: "1", description: "", images: [] }],
+      items: [{ id: "1", description: "", images: '' }],
     },
   ]);
   const theme = useTheme();
@@ -58,7 +59,7 @@ export function InspectionPage() {
       {
         id: Date.now().toString(),
         title: `Section ${newSectionNumber}`,
-        items: [{ id: Date.now().toString(), description: "", images: [] }],
+        items: [{ id: Date.now().toString(), description: "", images: '' }],
       },
     ]);
   };
@@ -73,7 +74,7 @@ export function InspectionPage() {
             ...section,
             items: [
               ...section.items,
-              { id: newItemId, description: "", images: [] },
+              { id: newItemId, description: "", images: '' },
             ],
           };
         }
@@ -158,6 +159,68 @@ export function InspectionPage() {
     );
     const flattenedData = flattenObject(inspectionData);
     useEstimatePageStore.getState().setFormData("Inspection", flattenedData);
+  };
+
+  const handleFileUpload = (files: any[], sectionId: string, itemId: string) => {
+    try {
+      setSections(prevSections =>
+        prevSections.map(section => {
+          if (section.id === sectionId) {
+            // Find the current item and update it with the first image
+            const updatedItems = section.items.map(item => {
+              if (item.id === itemId) {
+                return {
+                  ...item,
+                  images: files[0].uri // Assign first image to current item
+                };
+              }
+              return item;
+            });
+
+            // Create new items for remaining images (if any)
+            const remainingImages = files.slice(1);
+            const newItems = remainingImages.map(file => ({
+              id: Date.now().toString() + Math.random(),
+              description: "",
+              images: file.uri
+            }));
+
+            return {
+              ...section,
+              items: [...updatedItems, ...newItems]
+            };
+          }
+          return section;
+        })
+      );
+
+      console.log('Files uploaded and items created');
+    } catch (error) {
+      console.error('Error handling file upload:', error);
+    }
+  };
+
+  // Add a function to handle image deletion
+  const handleImageDelete = (sectionId: string, itemId: string) => {
+    setSections(prevSections =>
+      prevSections.map(section => {
+        if (section.id === sectionId) {
+          return {
+            ...section,
+            items: section.items.map(item => {
+              if (item.id === itemId) {
+                return {
+                  ...item,
+                  images: '' // Clear the image
+                };
+              }
+              return item;
+            })
+          };
+        }
+        return section;
+      })
+    );
   };
 
   return (
@@ -252,7 +315,7 @@ export function InspectionPage() {
                 )}
               </View>
 
-              {section.items.map((item) => (
+              {section.items.map((item, itemIndex) => (
                 <Card
                   key={item.id}
                   style={[styles.itemCard, { backgroundColor: theme.card }]}
@@ -281,22 +344,38 @@ export function InspectionPage() {
                         Upload Files
                       </Text>
 
-                      {/* <TouchableOpacity style={styles.uploadSection}>
-                        <MaterialIcons
-                          name="file-upload"
-                          size={24}
-                          color={Colors.gray[500]}
+                      {item.images ? (
+                        // Show image with delete button if image exists
+                        <View style={styles.imageContainer}>
+                          <Image
+                            source={{ uri: item.images }}
+                            style={styles.uploadedImage}
+                            resizeMode="cover"
+                          />
+                          <TouchableOpacity
+                            style={styles.imageDeleteButton}
+                            onPress={() => handleImageDelete(section.id, item.id)}
+                          >
+                            <MaterialIcons
+                              name="delete"
+                              size={24}
+                              color={Colors.red[500]}
+                            />
+                          </TouchableOpacity>
+                        </View>
+                      ) : (
+                        // Show FileUploader if no image
+                        <FileUploader
+                          label="Upload file"
+                          accept="image"
+                          multiple={true}
+                          onUpload={(files) => {
+                            if (files && Array.isArray(files)) {
+                              handleFileUpload(files, section.id, item.id);
+                            }
+                          }}
                         />
-                        <Text style={styles.uploadText}>Upload Images</Text>
-                      </TouchableOpacity> */}
-
-                      <FileUploader
-                        label="Upload file"
-                        accept="both"
-                        onUpload={(file) => {
-                          setImage(file || null);
-                        }}
-                      />
+                      )}
                     </View>
 
                     {/* Right Side - Description Section */}
@@ -527,5 +606,32 @@ const styles = StyleSheet.create({
   },
   addSectionButton: {
     marginTop: 24,
+  },
+  imageContainer: {
+    position: 'relative',
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  uploadedImage: {
+    width: '100%',
+    height: '100%',
+  },
+  imageDeleteButton: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 20,
+    padding: 4,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
 });
