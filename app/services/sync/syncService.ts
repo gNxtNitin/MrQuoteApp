@@ -13,6 +13,7 @@ import { UserCompany } from '@/app/database/models/UserCompany';
 import { Estimate } from '@/app/database/models/Estimate';
 import { EstimateDetail } from '@/app/database/models/EstimateDetail';
 import { useUserStore } from '@/app/stores/userStore';
+import { WarrantyPageContent } from '@/app/database/models/WarrantyPageContent';
 
 interface LoginDataResponse {
   Users: Array<{
@@ -156,6 +157,21 @@ interface LoginDataResponse {
     CreatedDate: string;
     ModifiedBy: number | null;
     ModifiedDate: string | null;
+  }>;
+  WarrantyPageContent: Array<{
+    WarrantyPageId: number;
+    PageId: number;
+    WarrantyPageTitle: string;
+    WarrantyDetails: string;
+    ThankYouNote: string;
+    Signature: string;
+    SigneeName: string;
+    SigneeTitle: string;
+    IsActive: boolean;
+    CreatedBy: number;
+    CreatedDate: string;
+    ModifiedBy: number;
+    ModifiedDate: string;
   }>;
 }
 
@@ -374,7 +390,6 @@ export const syncService = {
       for (const introPage of data.IntroductionPageContent) {
         console.log('introPage', introPage);
         const existingIntroPage = await IntroductionPageContent.getById(introPage.IntroductionPageId);
-        console.log('existingIntroPage', existingIntroPage);
         if (!existingIntroPage) {
           console.log('IntroductionPageContent not found, inserting...');
           await IntroductionPageContent.insert({
@@ -439,6 +454,32 @@ export const syncService = {
           // console.log('UserCompany synced for user:', userCompany.UserId);
         } else {
           // console.log('UserCompany already exists for user:', userCompany.UserId);
+        }
+      }
+
+      // Sync WarrantyPageContent
+      for (const warrantyPage of data.WarrantyPageContent) {
+        const existingWarrantyPage = await WarrantyPageContent.getById(warrantyPage.WarrantyPageId);
+        if (!existingWarrantyPage) {
+          console.log('warrantyPage', warrantyPage);
+          await WarrantyPageContent.insert({
+            id: warrantyPage.WarrantyPageId,
+            page_id: warrantyPage.PageId,
+            warranty_page_title: warrantyPage.WarrantyPageTitle,
+            warranty_details: warrantyPage.WarrantyDetails,
+            thank_you_note: warrantyPage.ThankYouNote,
+            signature: warrantyPage.Signature,
+            signee_name: warrantyPage.SigneeName,
+            signee_title: warrantyPage.SigneeTitle,
+            is_active: warrantyPage.IsActive,
+            created_by: warrantyPage.CreatedBy,
+            created_date: warrantyPage.CreatedDate,
+            modified_by: warrantyPage.ModifiedBy,
+            modified_date: warrantyPage.ModifiedDate
+          });
+          console.log('WarrantyPageContent synced:', warrantyPage.WarrantyPageId);
+        } else {
+          console.log('WarrantyPageContent already exists:', warrantyPage.WarrantyPageId);
         }
       }
 

@@ -51,6 +51,7 @@ import { CustomPageContent } from '@/app/database/models/CustomPageContent';
 import { MaterialPageContent } from '@/app/database/models/MaterialPageContent';
 import { Canvas } from '@/app/database/models/Canvas';
 import { UserCompany } from '@/app/database/models/UserCompany';
+import { WarrantyPageContent } from '@/app/database/models/WarrantyPageContent';
 
 // Create singleton database instance
 let dbInstance: SQLite.SQLiteDatabase | null = null;
@@ -151,6 +152,8 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                 await MaterialPageContent.createTable();
                 await Canvas.createTable();
                 await UserCompany.createTable();
+                await WarrantyPageContent.createTable();
+
 
                 // // Only insert sample data if database is empty
                 // if (shouldInitialize) {

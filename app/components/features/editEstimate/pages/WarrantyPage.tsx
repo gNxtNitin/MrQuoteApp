@@ -23,6 +23,9 @@ import {
 } from "react-native-pell-rich-editor";
 import { FileUploader } from "@/app/components/common/FileUploader";
 import { CustomInputRow } from "@/app/components/common/CustomRowInput";
+import { WarrantyPageContent } from '@/app/database/models/WarrantyPageContent';
+import { useEstimateStore } from '@/app/stores/estimateStore';
+import { WarrantyPageContentData } from '@/app/database/models/WarrantyPageContent';
 
 export function WarrantyPage() {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -30,16 +33,22 @@ export function WarrantyPage() {
   const [showWarrantyDatePicker, setShowWarrantyDatePicker] = useState(false);
   const [showCompletionDatePicker, setShowCompletionDatePicker] =
     useState(false);
-  const [warrantyDate, setWarrantyDate] = useState(new Date());
-  const [completionDate, setCompletionDate] = useState(new Date());
+  const [warrantyDate, setWarrantyDate] = useState<Date | null>(null);
+  const [completionDate, setCompletionDate] = useState<Date | null>(null);
+  const { selectedPageId } = useEstimateStore();
+  
   const [formData, setFormData] = useState({
+    id: 0,
     title: "Warranty",
     warrantyStartDate: "",
     completionDate: "",
-    customerName: "Insurance Sample", // This would come from props/state in real app
-    address: "123 Sample Ave NW, Calgary, AB, T2T 2T2", // This would come from props/state
+    customerName: "",
+    address: "",
+    warrantyDetails: "",
+    thankYouNote: "",
   });
-  const [sign, setSign] = useState<File | null>(null);
+  
+  const [sign, setSign] = useState<string | null>(null);
   const [signeeName, setSigneeName] = useState("");
   const [signeeTitle, setSigneeTitle] = useState("");
 
@@ -49,7 +58,15 @@ export function WarrantyPage() {
   const editorRefs = useRef<{ [key: string]: React.RefObject<RichEditor> }>({});
   const [editorContents, setEditorContents] = useState<{
     [key: string]: string;
-  }>({});
+  }>({
+    "editor1": ""
+  });
+
+  // Update editor refs and content state
+  const warrantyEditorRef = useRef<RichEditor>(null);
+  const thankyouEditorRef = useRef<RichEditor>(null);
+  const [warrantyDetails, setWarrantyDetails] = useState("");
+  const [thankyouNote, setThankyouNote] = useState("");
 
   useEffect(() => {
     items.forEach((item) => {
@@ -58,6 +75,51 @@ export function WarrantyPage() {
       }
     });
   }, [items]);
+
+  // Fetch warranty data on component mount
+  useEffect(() => {
+    const fetchWarrantyData = async () => {
+      try {
+        const warrantyData = await WarrantyPageContent.getByPageId(1);
+        console.log('warrantyData', warrantyData);
+        
+        if (warrantyData) {
+          // Set form data
+          setFormData({
+            id: warrantyData.id || 0,
+            title: warrantyData.warranty_page_title || "Warranty",
+            warrantyStartDate: warrantyData.warranty_start_date || "",
+            completionDate: warrantyData.completion_date || "",
+            customerName: warrantyData.customer_name || "",
+            address: warrantyData.address || "",
+            warrantyDetails: warrantyData.warranty_details || "",
+            thankYouNote: warrantyData.thank_you_note || "",
+          });
+
+          // Set dates if they exist
+          if (warrantyData.warranty_start_date) {
+            setWarrantyDate(new Date(warrantyData.warranty_start_date));
+          }
+          if (warrantyData.completion_date) {
+            setCompletionDate(new Date(warrantyData.completion_date));
+          }
+
+          // Set signature and signee info
+          setSign(warrantyData.signature || null);
+          setSigneeName(warrantyData.signee_name || "");
+          setSigneeTitle(warrantyData.signee_title || "");
+          
+          // Set editor contents
+          setWarrantyDetails(warrantyData.warranty_details || "");
+          setThankyouNote(warrantyData.thank_you_note || "");
+        }
+      } catch (error) {
+        console.error('Error fetching warranty data:', error);
+      }
+    };
+
+    fetchWarrantyData();
+  }, []);
 
   const handleInputChange = (field: string, value: string) => {
     if (isFormSaved) return; // Prevent changes if form is saved
@@ -106,20 +168,46 @@ export function WarrantyPage() {
     if (!validateForm()) return;
 
     try {
-      // Here you would typically make an API call to save the data
-      console.log("Saving warranty data:", formData);
+      console.log('warranty Start Date', formData.warrantyStartDate);
+      console.log('completion Date', formData.completionDate);
+      const warrantyData: Partial<WarrantyPageContentData> = {
+        warranty_page_title: formData.title,
+        warranty_details: warrantyDetails,
+        warranty_start_date: formData.warrantyStartDate,
+        completion_date: formData.completionDate,
+        customer_name: formData.customerName,
+        address: formData.address,
+        thank_you_note: thankyouNote,
+        signature: sign || "",
+        signee_name: signeeName,
+        signee_title: signeeTitle,
+        is_active: true,
+        modified_by: 1,
+        modified_date: new Date().toISOString()
+      };
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      if (formData.id) {
+        console.log('formData.id', formData.id);
+        console.log('warrantyData in Update', warrantyData);
+        // Update existing record
+        await WarrantyPageContent.update(1, warrantyData);
+      } else {
+        console.log('formData.id', formData.id);
+        console.log('warrantyData in Insert', warrantyData);
+        // Insert new record
+        await WarrantyPageContent.insert({
+          ...warrantyData,
+          page_id: selectedPageId,
+          created_by: 1, // Replace with actual user ID
+          created_date: new Date().toISOString()
+        } as WarrantyPageContentData);
+      }
 
-      setIsFormSaved(true); // Disable editing after successful save
-      setIsEditingTitle(false); // Close title editing if open
+      setIsFormSaved(true);
+      setIsEditingTitle(false);
       Alert.alert("Success", "Warranty information saved successfully");
     } catch (error) {
-      Alert.alert(
-        "Error",
-        "Failed to save warranty information. Please try again."
-      );
+      Alert.alert("Error", "Failed to save warranty information. Please try again.");
       console.error("Error saving warranty data:", error);
     }
   };
@@ -248,7 +336,7 @@ export function WarrantyPage() {
             <DatePickerModal
               visible={showWarrantyDatePicker}
               onClose={() => setShowWarrantyDatePicker(false)}
-              date={warrantyDate}
+              date={warrantyDate || new Date()}
               onConfirm={(date) => handleDateChange(date, "warrantyStartDate")}
               title="Select Warranty Start Date"
             />
@@ -258,59 +346,38 @@ export function WarrantyPage() {
             >
               Warranty details:
             </Text>
-            {items.map((item) => {
-              const editorRef = editorRefs.current[item.id];
-              return (
-                <View key={item.id} style={styles.editorSection}>
-                  {editorRef?.current && (
-                    <RichToolbar
-                      editor={editorRef.current}
-                      actions={[
-                        actions.setBold,
-                        actions.setItalic,
-                        actions.setUnderline,
-                        actions.insertBulletsList,
-                        actions.insertOrderedList,
-                        actions.setStrikethrough,
-                        actions.blockquote,
-                        actions.undo,
-                        actions.redo,
-                      ]}
-                      selectedIconTint={Colors.primary}
-                      disabledIconTint={theme.textSecondary}
-                      iconTint={theme.textSecondary}
-                      style={styles.editorTools}
-                      iconSize={18}
-                    />
-                  )}
-                  <RichEditor
-                    ref={editorRef}
-                    onChange={(content) => handleEditorChange(item.id, content)}
-                    placeholder="Enter description..."
-                    style={styles.editorContent}
-                    initialHeight={200}
-                    useContainer={true}
-                    initialFocus={false}
-                    editorStyle={{
-                      backgroundColor: theme.card,
-                      contentCSSText: `
-                  font-size: 16px;
-                  min-height: 200px;
-                  padding: 12px;
-                `,
-                      color: theme.textSecondary,
-                      placeholderColor: theme.placeholder,
-                    }}
-                    scrollEnabled={true}
-                    containerStyle={{
-                      borderRadius: 8,
-                      borderWidth: 1,
-                      borderColor: Colors.gray[200],
-                    }}
-                  />
-                </View>
-              );
-            })}
+            <View style={styles.editorSection}>
+              <RichToolbar
+                editor={warrantyEditorRef}
+                actions={[
+                  actions.setBold,
+                  actions.setItalic,
+                  actions.setUnderline,
+                  actions.insertBulletsList,
+                  actions.insertOrderedList,
+                  actions.setStrikethrough,
+                  actions.blockquote,
+                ]}
+                selectedIconTint={Colors.primary}
+                disabledTextTint={theme.textSecondary}
+                iconTint={theme.textSecondary}
+                style={styles.toolbar}
+              />
+              <RichEditor
+                ref={warrantyEditorRef}
+                onChange={setWarrantyDetails}
+                initialContentHTML={warrantyDetails}
+                placeholder="Enter warranty details..."
+                style={styles.editor}
+                initialHeight={200}
+                editorStyle={{
+                  backgroundColor: theme.card,
+                  color: theme.textSecondary,
+                  placeholderColor: theme.placeholder,
+                  contentCSSText: 'font-size: 16px;'
+                }}
+              />
+            </View>
 
             <View style={styles.infoSection}>
               <View style={styles.infoGroup}>
@@ -356,7 +423,7 @@ export function WarrantyPage() {
                 <DatePickerModal
                   visible={showCompletionDatePicker}
                   onClose={() => setShowCompletionDatePicker(false)}
-                  date={completionDate}
+                  date={completionDate || new Date()}
                   onConfirm={(date) => handleDateChange(date, "completionDate")}
                   title="Select Completion Date"
                 />
@@ -368,65 +435,42 @@ export function WarrantyPage() {
                       { color: theme.textSecondary },
                     ]}
                   >
-                    Thankyou note:
+                    Thank you note:
                   </Text>
 
-                  {items.map((item) => {
-                    const editorRef = editorRefs.current[item.id]; // Ensure reference exists
-                    return (
-                      <View key={item.id} style={styles.editorSection}>
-                        {editorRef?.current && (
-                          <RichToolbar
-                            editor={editorRef.current}
-                            actions={[
-                              actions.setBold,
-                              actions.setItalic,
-                              actions.setUnderline,
-                              actions.insertBulletsList,
-                              actions.insertOrderedList,
-                              actions.setStrikethrough,
-                              actions.blockquote,
-                              actions.undo,
-                              actions.redo,
-                            ]}
-                            selectedIconTint={Colors.primary}
-                            disabledIconTint={theme.textSecondary}
-                            iconTint={theme.textSecondary}
-                            style={styles.editorTools}
-                            iconSize={18}
-                          />
-                        )}
-                        <RichEditor
-                          ref={editorRef}
-                          onChange={(content) =>
-                            handleEditorChange(item.id, content)
-                          }
-                          placeholder="Enter description..."
-                          style={styles.editorContent}
-                          initialHeight={200}
-                          useContainer={true}
-                          initialFocus={false}
-                          editorStyle={{
-                            backgroundColor: theme.card,
-                            contentCSSText: `
-                  font-size: 16px;
-                  min-height: 200px;
-                  padding: 12px;
-                `,
-                            color: theme.textSecondary,
-                            placeholderColor: theme.placeholder,
-                          }}
-                          scrollEnabled={true}
-                          containerStyle={{
-                            borderRadius: 8,
-                            borderWidth: 1,
-                            borderColor: Colors.gray[200],
-                          }}
-                        />
-                      </View>
-                    );
-                  })}
-                  <View style={styles.signeeBox}>
+                  <View style={styles.editorSection}>
+                    <RichToolbar
+                      editor={thankyouEditorRef}
+                      actions={[
+                        actions.setBold,
+                        actions.setItalic,
+                        actions.setUnderline,
+                        actions.insertBulletsList,
+                        actions.insertOrderedList,
+                      ]}
+                      selectedIconTint={Colors.primary}
+                      disabledTextTint={theme.textSecondary}
+                      iconTint={theme.textSecondary}
+                      style={styles.toolbar}
+                    />
+                    <RichEditor
+                      ref={thankyouEditorRef}
+                      onChange={setThankyouNote}
+                      initialContentHTML={thankyouNote}
+                      placeholder="Enter thank you note..."
+                      style={styles.editor}
+                      initialHeight={200}
+                      editorStyle={{
+                        backgroundColor: theme.card,
+                        color: theme.textSecondary,
+                        placeholderColor: theme.placeholder,
+                        contentCSSText: 'font-size: 16px;'
+                      }}
+                    />
+                  </View>
+                </View>
+
+                <View style={styles.signeeBox}>
                   <FileUploader
                     label="Signature:"
                     accept="both"
@@ -453,7 +497,6 @@ export function WarrantyPage() {
                 </View>
               </View>
             </View>
-          </View>
 
           <View style={styles.footer}>
             <Button
@@ -582,19 +625,23 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   editorSection: {
+    marginTop: 16,
     gap: 8,
   },
-  editorTools: {
-    backgroundColor: "transparent",
+  toolbar: {
+    backgroundColor: 'transparent',
     borderWidth: 1,
     borderColor: Colors.gray[200],
     borderRadius: 8,
     padding: 8,
     alignItems: "flex-start",
   },
-  editorContent: {
+  editor: {
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    borderRadius: 8,
+    padding: 8,
     minHeight: 200,
-    // backgroundColor: Colors.white,
   },
   sectionHeader: {
     fontSize: 16,
