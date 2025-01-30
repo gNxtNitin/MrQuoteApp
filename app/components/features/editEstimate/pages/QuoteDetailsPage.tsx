@@ -447,7 +447,7 @@ export function QuoteDetailsPage() {
                       { color: theme.textSecondary },
                     ]}
                   >
-                    Section title
+                    Section Title
                   </Text>
                   <TextInput
                     style={[
@@ -455,7 +455,7 @@ export function QuoteDetailsPage() {
                       styles.titleInput,
                       { color: theme.textSecondary },
                     ]}
-                    placeholder="Section title"
+                    placeholder="Section Title"
                     placeholderTextColor={theme.placeholder}
                     value={section.title}
                     onChangeText={(value) =>
@@ -507,7 +507,7 @@ export function QuoteDetailsPage() {
                     styles.numberCell,
                   ]}
                 >
-                  Total
+                 Line Total
                 </Text>
                 <View style={styles.deleteCell} />
               </View>

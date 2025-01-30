@@ -236,7 +236,11 @@ export function AuthorizePage() {
                     {title}
                   </Text>
                   <TouchableOpacity onPress={() => setIsEditingTitle(true)}>
-                    <Feather name="edit-2" size={16} color={theme.textPrimary} />
+                    <Feather
+                      name="edit-2"
+                      size={16}
+                      color={theme.textPrimary}
+                    />
                   </TouchableOpacity>
                 </>
               )}
@@ -521,6 +525,14 @@ export function AuthorizePage() {
               >
                 Primary signer
               </Text>
+              <Text
+                style={[
+                  styles.productSelectionsSubtitle,
+                  { color: theme.textSecondary },
+                ]}
+              >
+                Signatories can be customized within a report.
+              </Text>
               <View style={styles.signerRow}>
                 <View style={styles.signerField}>
                   <Text
@@ -700,19 +712,33 @@ export function AuthorizePage() {
                 />
               ) : (
                 <>
-                  <Text style={[styles.sectionHeading,{color:theme.textSecondary}]}>{footerTitle}</Text>
-                  <TouchableOpacity
+                  <Text
+                    style={[
+                      styles.sectionHeading,
+                      { color: theme.textSecondary },
+                    ]}
+                  >
+                    {footerTitle}
+                  </Text>
+
+                  {/* <TouchableOpacity
                     onPress={() => setIsEditingFooterTitle(true)}
                   >
-                    <Feather name="edit-2" size={16} color={theme.textSecondary} />
-                  </TouchableOpacity>
+                    <Feather
+                      name="edit-2"
+                      size={16}
+                      color={theme.textSecondary}
+                    />
+                  </TouchableOpacity> */}
                 </>
               )}
             </View>
 
-            <Text style={[styles.footerLabel,{color:theme.textSecondary}]}>Note:</Text>
+            <Text style={[styles.footerLabel, { color: theme.textSecondary }]}>
+              Note:
+            </Text>
             <TextInput
-              style={[styles.footerInput,{color:theme.textSecondary}]}
+              style={[styles.footerInput, { color: theme.textSecondary }]}
               value={footerNote}
               onChangeText={setFooterNote}
               multiline

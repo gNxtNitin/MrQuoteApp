@@ -4,26 +4,30 @@ import { Colors } from "@/app/constants/colors";
 import { router } from "expo-router";
 import { Estimate } from "@/app/types/estimate";
 import { CreateEstimateDialog } from "./CreateEstimateDialog";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChangeLayoutDialog } from "./ChangeLayoutDialog";
 import { useTheme } from "@/app/components/providers/ThemeProvider";
 
 type EstimateSubHeaderProps = Estimate;
 
-export function EstimateSubHeader({ 
-  customerName, 
-  address, 
-  phone, 
-  email, 
-  estimateStatus, 
-  date 
+export function EstimateSubHeader({
+  customerName,
+  address,
+  phone,
+  email,
+  estimateStatus,
+  date,
 }: EstimateSubHeaderProps) {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showLayoutDialog, setShowLayoutDialog] = useState(false);
   const theme = useTheme();
 
   const handleBack = () => router.back();
-  
+
+  useEffect(() => {
+    console.log("estimateStatus", estimateStatus);
+  }, []);
+
   const handleCloseDialog = () => {
     setShowCreateDialog(false);
   };
@@ -48,16 +52,20 @@ export function EstimateSubHeader({
     setShowLayoutDialog(false);
   };
 
-  const handleEstimateSettings =()=>{
-    router.push("/estimateSettings")
-  }
+  const handleEstimateSettings = () => {
+    router.push("/estimateSettings");
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.content}>
         <View style={styles.leftSection}>
           <Pressable style={styles.backButton} onPress={handleBack}>
-            <MaterialIcons name="arrow-back" size={20} color={theme.textPrimary} />
+            <MaterialIcons
+              name="arrow-back"
+              size={20}
+              color={theme.textPrimary}
+            />
             <Text style={[styles.backText, { color: theme.textPrimary }]}>
               Back
             </Text>
@@ -68,7 +76,12 @@ export function EstimateSubHeader({
                 {customerName}
               </Text>
               <View style={[styles.badge, styles[`status_${estimateStatus}`]]}>
-                <Text style={[styles.badgeText, styles[`statusText_${estimateStatus}`]]}>
+                <Text
+                  style={[
+                    styles.badgeText,
+                    styles[`statusText_${estimateStatus}`],
+                  ]}
+                >
                   {estimateStatus.toUpperCase()}
                 </Text>
               </View>
@@ -84,11 +97,17 @@ export function EstimateSubHeader({
                   <Text
                     style={[styles.detailText, { color: theme.textSecondary }]}
                   >
-                    {address}
+                    {address.length > 30
+                      ? `${address.substring(0, 30)}...`
+                      : address}
                   </Text>
                 </View>
                 <View style={styles.detailsRow}>
-                  <MaterialIcons name="phone" size={14} color={theme.textPrimary} />
+                  <MaterialIcons
+                    name="phone"
+                    size={14}
+                    color={theme.textPrimary}
+                  />
                   <Text
                     style={[styles.detailText, { color: theme.textSecondary }]}
                   >
@@ -98,15 +117,23 @@ export function EstimateSubHeader({
               </View>
               <View style={styles.detailsColumn}>
                 <View style={styles.detailsRow}>
-                  <MaterialIcons name="email" size={14} color={theme.textPrimary} />
+                  <MaterialIcons
+                    name="email"
+                    size={14}
+                    color={theme.textPrimary}
+                  />
                   <Text
                     style={[styles.detailText, { color: theme.textSecondary }]}
                   >
-                    {email}
+                    {email.length > 30 ? `${email.substring(0, 30)}...` : email}
                   </Text>
                 </View>
                 <View style={styles.detailsRow}>
-                  <MaterialIcons name="event" size={14} color={theme.textPrimary} />
+                  <MaterialIcons
+                    name="event"
+                    size={14}
+                    color={theme.textPrimary}
+                  />
                   <Text
                     style={[styles.detailText, { color: theme.textSecondary }]}
                   >
@@ -120,17 +147,33 @@ export function EstimateSubHeader({
         <View style={styles.rightSection}>
           <View style={styles.actionRows}>
             <View style={styles.iconGroup}>
-              <Pressable style={[styles.iconButton, { backgroundColor: theme.background }]} onPress={handleEstimateSettings}>
-                <MaterialIcons name="settings" size={18} color={theme.textPrimary} />
+              <Pressable
+                style={[
+                  styles.iconButton,
+                  { backgroundColor: theme.background },
+                ]}
+                onPress={handleEstimateSettings}
+              >
+                <MaterialIcons
+                  name="settings"
+                  size={18}
+                  color={theme.textPrimary}
+                />
               </Pressable>
             </View>
             <View style={styles.buttonGroup}>
-               <Pressable 
+              <Pressable
                 style={[styles.actionButton, styles.primaryButton]}
                 onPress={handleChangeLayout}
               >
-                <MaterialIcons name="view-agenda" size={16} color={Colors.white} />
-                <Text style={[styles.actionButtonText, styles.primaryButtonText]}>
+                <MaterialIcons
+                  name="view-agenda"
+                  size={16}
+                  color={Colors.white}
+                />
+                <Text
+                  style={[styles.actionButtonText, styles.primaryButtonText]}
+                >
                   Change Layout
                 </Text>
               </Pressable>
@@ -167,14 +210,15 @@ export function EstimateSubHeader({
       <CreateEstimateDialog
         visible={showCreateDialog}
         onClose={handleCloseDialog}
-        onSave={() => {}} 
+        onSave={() => {}}
         companyId={0}
-        />
+      />
 
       <ChangeLayoutDialog
         visible={showLayoutDialog}
         onClose={handleCloseLayoutDialog}
-        onSave={handleSaveLayout} />
+        onSave={handleSaveLayout}
+      />
     </View>
   );
 }
@@ -189,7 +233,12 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   leftSection: { flex: 1, gap: 12 },
-  backButton: { flexDirection: "row", alignItems: "center", gap: 6,width:100 },
+  backButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    width: 100,
+  },
   backText: { fontSize: 16, color: Colors.primary, fontWeight: "600" },
   infoSection: { gap: 12 },
   customerHeader: { flexDirection: "row", alignItems: "center", gap: 8 },
