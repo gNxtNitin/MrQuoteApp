@@ -1,10 +1,16 @@
-import { View, ScrollView, StyleSheet } from 'react-native';
-import { EstimateCard } from './EstimateCard';
-import { Estimate, EstimateData } from '@/app/database/models/Estimate';
-import { EstimateDetailData } from '@/app/database/models/EstimateDetail';
-import { useState } from 'react';
+import { View, ScrollView, StyleSheet } from "react-native";
+import { EstimateCard } from "./EstimateCard";
+import { Estimate, EstimateData } from "@/app/database/models/Estimate";
+import { EstimateDetailData } from "@/app/database/models/EstimateDetail";
+import { useState } from "react";
 
-type EstimateStatus = "provided" | "accepted" | "requested" | "completed" | "revised" | "cancelled";
+type EstimateStatus =
+  | "provided"
+  | "accepted"
+  | "requested"
+  | "completed"
+  | "revised"
+  | "cancelled";
 
 interface EstimateWithDetails {
   estimate: EstimateData;
@@ -15,18 +21,28 @@ interface EstimatesListProps {
   estimates: EstimateWithDetails[];
 }
 
-export function EstimatesList({ estimates }: EstimatesListProps) {
-  const handleStatusChange = async (estimateId: string, newStatus: EstimateStatus) => {
+export function EstimatesList({
+  estimates,
+  activeDropdown,
+  setActiveDropdown,
+}: EstimatesListProps & {
+  activeDropdown: string | null;
+  setActiveDropdown: (id: string | null) => void;
+}) {
+  const handleStatusChange = async (
+    estimateId: string,
+    newStatus: EstimateStatus
+  ) => {
     try {
       // Update the estimate status in the database
       await Estimate.update(parseInt(estimateId, 10), {
         estimate_status: newStatus,
-        modified_date: new Date().toISOString()
+        modified_date: new Date().toISOString(),
       });
-      
+
       return Promise.resolve();
     } catch (error) {
-      console.error('Failed to update status:', error);
+      console.error("Failed to update status:", error);
       return Promise.reject(error);
     }
   };
@@ -38,20 +54,29 @@ export function EstimatesList({ estimates }: EstimatesListProps) {
           <EstimateCard
             key={item.estimate.id}
             estimate={{
-              id: item.estimate.id?.toString() || '',
-              estimateNumber: item.detail.estimate_number?.toString() || '',
-              customerName: `${item.estimate.estimate_name || 'Unknown'}`,
-              address: `${item.detail.address || ''}, ${item.detail.state || ''} ${item.detail.zip_code || ''}`,
-              date: `Created ${new Date(item.estimate.created_date || '').toLocaleDateString()}`,
-              estimateStatus: item.estimate.estimate_status as EstimateStatus || 'provided',
-              email: item.detail.email || '',
-              phone: item.detail.phone || '',
-              houseImage: item.detail.image_url ? require('@/assets/images/house-1.jpg') : require('@/assets/images/house-2.jpg'),
+              id: item.estimate.id?.toString() || "",
+              estimateNumber: item.detail.estimate_number?.toString() || "",
+              customerName: `${item.estimate.estimate_name || "Unknown"}`,
+              address: `${item.detail.address || ""}, ${
+                item.detail.state || ""
+              } ${item.detail.zip_code || ""}`,
+              date: `Created ${new Date(
+                item.estimate.created_date || ""
+              ).toLocaleDateString()}`,
+              estimateStatus:
+                (item.estimate.estimate_status as EstimateStatus) || "provided",
+              email: item.detail.email || "",
+              phone: item.detail.phone || "",
+              houseImage: item.detail.image_url
+                ? require("@/assets/images/house-1.jpg")
+                : require("@/assets/images/house-2.jpg"),
             }}
             index={index}
             onStatusChange={handleStatusChange}
             estimateData={item.estimate}
             estimateDetail={item.detail}
+            activeDropdown={activeDropdown}
+            setActiveDropdown={setActiveDropdown}
           />
         ))}
       </View>
@@ -65,9 +90,9 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   content: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
     gap: 24,
   },
-}); 
+});

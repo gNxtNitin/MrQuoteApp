@@ -46,6 +46,14 @@ export function TitlePage() {
   const [postalCode, setPostalCode] = useState("");
   const { selectedPageId } = useEstimateStore();
   const [id, setId] = useState<number | null>(null);
+  const [errors, setErrors] = useState<{
+    title?: string;
+    firstName?: string;
+    quoteName?: string;
+    date?: string;
+    primayImage?: string;
+    lastName?: string;
+  }>({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,7 +86,45 @@ export function TitlePage() {
     fetchData();
   }, []);
 
+  const validateForm = (): boolean => {
+    let newErrors: {
+      firstName?: string;
+      quoteName?: string;
+      date?: string;
+      primayImage?: string;
+      lastName?: string;
+    } = {};
+
+    if (!firstName || firstName.trim() === "") {
+      newErrors.firstName = "First Name is required.";
+    }
+
+    if (!reportType || reportType.trim() === "") {
+      newErrors.quoteName = "Quote Name is required";
+    }
+
+    if (!date || date.trim() === "") {
+      newErrors.date = "Date is requied";
+    }
+
+    if (!lastName || lastName.trim() === "") {
+      newErrors.lastName = "Last name is required";
+    }
+
+    if (
+      !primaryImage ||
+      (typeof primaryImage === "string" && primaryImage.trim() === "") ||
+      (typeof primaryImage === "object" && !primaryImage.uri)
+    ) {
+      newErrors.primayImage = "Primary Image is required.";
+    }
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSave = async () => {
+    if (!validateForm()) return;
     const formData = {
       title_name: title,
       report_type: reportType,
@@ -103,12 +149,13 @@ export function TitlePage() {
     try {
       await TitlePageContent.update(id!, formData);
       console.log("Data updated successfully.");
-      showToast("success","Data updated successfully.")
-    } catch (error:any) {
+      showToast("success", "Data updated successfully.");
+    } catch (error: any) {
       console.error("Error updating data:", error);
-      showToast("error",error)
+      showToast("error", error);
     }
     console.log("Saving changes...", formData);
+    useEstimatePageStore.getState().setFormData("Title",formData)
   };
 
   return (
@@ -149,17 +196,20 @@ export function TitlePage() {
               </View>
             </View>
 
-            {/* Report Type and Date Row */}
+            {/* Quote Name and Date Row */}
             <View style={styles.row}>
               <View style={styles.column}>
                 <Text style={[styles.label, { color: theme.textSecondary }]}>
-                  Report type
+                  Quote Name
                 </Text>
                 <Input
                   value={reportType}
-                  placeholder="Select report type"
+                  placeholder="Select quote name"
                   onChangeText={setReportType}
                 />
+                {errors.quoteName && (
+                  <Text style={styles.errorText}>{errors.quoteName}</Text>
+                )}
               </View>
               <View style={styles.column}>
                 <Text style={[styles.label, { color: theme.textSecondary }]}>
@@ -170,19 +220,27 @@ export function TitlePage() {
                   onChangeText={setDate}
                   value={date}
                 />
+                {errors.date && (
+                  <Text style={styles.errorText}>{errors.date}</Text>
+                )}
               </View>
             </View>
 
             {/* Image Upload Row */}
             <View style={styles.row}>
-              <FileUploader
-                label="Primary Image"
-                accept="both"
-                onUpload={(file) => {
-                  setPrimaryImage(file || null);
-                }}
-                height={180}
-              />
+              <View style={styles.column}>
+                <FileUploader
+                  label="Primary Image"
+                  accept="both"
+                  onUpload={(file) => {
+                    setPrimaryImage(file || null);
+                  }}
+                  height={180}
+                />
+                {errors.primayImage && (
+                  <Text style={styles.errorText}>{errors.primayImage}</Text>
+                )}
+              </View>
 
               <FileUploader
                 label="Certification/Secondary Logo"
@@ -198,23 +256,29 @@ export function TitlePage() {
             <View style={styles.row}>
               <View style={styles.column}>
                 <Text style={[styles.label, { color: theme.textSecondary }]}>
-                  First name
+                  First Name
                 </Text>
                 <Input
                   placeholder="Enter first name"
                   onChangeText={setFirstName}
                   value={firstName}
                 />
+                {errors.firstName && (
+                  <Text style={styles.errorText}>{errors.firstName}</Text>
+                )}
               </View>
               <View style={styles.column}>
                 <Text style={[styles.label, { color: theme.textSecondary }]}>
-                  Last name
+                  Last Name
                 </Text>
                 <Input
                   placeholder="Enter last name"
                   onChangeText={setLastName}
                   value={lastName}
                 />
+                {errors.lastName && (
+                  <Text style={styles.errorText}>{errors.lastName}</Text>
+                )}
               </View>
             </View>
 
@@ -222,7 +286,7 @@ export function TitlePage() {
             <View style={styles.row}>
               <View style={styles.column}>
                 <Text style={[styles.label, { color: theme.textSecondary }]}>
-                  Company name
+                  Company Name
                 </Text>
                 <Input
                   placeholder="Enter company name"
@@ -292,7 +356,6 @@ export function TitlePage() {
                 variant="primary"
                 size="small"
               />
-       
             </View>
           </View>
         </ScrollView>
@@ -371,5 +434,10 @@ const styles = StyleSheet.create({
   buttonContainer: {
     alignItems: "flex-end",
     marginTop: 4,
+  },
+  errorText: {
+    color: Colors.error,
+    fontSize: 12,
+    marginTop: 2,
   },
 });

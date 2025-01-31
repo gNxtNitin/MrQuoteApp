@@ -149,7 +149,7 @@ export function LoginScreen({ onLogin, isDarkMode }: LoginScreenProps) {
 
                 <View style={styles.form}>
                   <View>
-                    <Text style={styles.inputLabel}>Username</Text>
+                    <Text style={styles.inputLabel}>Email or Username</Text>
                     <View style={[
                       styles.inputContainer,
                       touched.username && errors.username && styles.inputError

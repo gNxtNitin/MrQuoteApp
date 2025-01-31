@@ -31,12 +31,12 @@ export function EstimateSettingsScreen({
   const theme = useTheme();
 
 
-  const [activeTab, setActiveTab] = useState("Estimate details");
+  const [activeTab, setActiveTab] = useState("Estimate Details");
   const [indicatorPosition] = useState(new Animated.Value(0));
 
 
   const tabs = [
-    { label: "Estimate details", component: <EstimateDetailsTab /> },
+    { label: "Estimate Details", component: <EstimateDetailsTab /> },
     { label: "Customer Details", component: <CustomerDetailsTab /> },
     { label: "Property Measurements", component: <PropertyMeasurementsTab /> },
   ];
