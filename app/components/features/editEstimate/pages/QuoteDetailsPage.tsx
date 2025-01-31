@@ -22,6 +22,7 @@ import { ViewTemplatesDialog } from "./ViewTemplatesDialog";
 import { useTheme } from "@/app/components/providers/ThemeProvider";
 import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
 import { flattenObject } from "@/app/utils/flattenObj";
+import { showToast } from "@/app/utils/ToastService";
 
 interface LineItem {
   id: string;
@@ -264,6 +265,7 @@ export function QuoteDetailsPage() {
 
     console.log("Saving Quote changes...", flattenedData);
     useEstimatePageStore.getState().setFormData("Quote Details", flattenedData);
+    showToast("success", "Data updated successfully.");
   };
 
   const renderItem =
@@ -507,7 +509,7 @@ export function QuoteDetailsPage() {
                     styles.numberCell,
                   ]}
                 >
-                 Line Total
+                  Line Total
                 </Text>
                 <View style={styles.deleteCell} />
               </View>

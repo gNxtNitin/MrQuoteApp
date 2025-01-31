@@ -22,14 +22,17 @@ import { FileUploader } from "@/app/components/common/FileUploader";
 import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
 import { TermConditionsPageContent } from "@/app/database/models/TermConditionsPageContent";
 import { useEstimateStore } from "@/app/stores/estimateStore";
-import { useUserStore } from '@/app/stores/userStore';
+import { useUserStore } from "@/app/stores/userStore";
+import { showToast } from "@/app/utils/ToastService";
 
 export function TermsPage() {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [title, setTitle] = useState("Terms and Conditions");
   const [requireAcknowledgment, setRequireAcknowledgment] = useState(false);
   const [editorContent, setEditorContent] = useState("");
-  const [uploadedPdf, setUploadedPdf] = useState<{ uri: string } | string | null>(null);
+  const [uploadedPdf, setUploadedPdf] = useState<
+    { uri: string } | string | null
+  >(null);
   const [tcPageId, setTcPageId] = useState<number | null>(null);
 
   const editorRef = React.useRef<RichEditor>(null);
@@ -44,8 +47,10 @@ export function TermsPage() {
     const fetchTermsData = async () => {
       try {
         if (!selectedPageId) return;
-        
-        const termsData = await TermConditionsPageContent.getByPageId(selectedPageId);
+
+        const termsData = await TermConditionsPageContent.getByPageId(
+          selectedPageId
+        );
         if (termsData) {
           setTcPageId(termsData.id || null);
           setTitle(termsData.tc_page_title || "Terms and Conditions");
@@ -80,10 +85,10 @@ export function TermsPage() {
         pdf_file_path: activeTab === "pdf" ? (uploadedPdf as string) || "" : "",
         is_active: true,
         modified_by: currentUser?.id,
-        modified_date: new Date().toISOString()
+        modified_date: new Date().toISOString(),
       };
 
-      console.log('Saving terms data:', termsData);
+      console.log("Saving terms data:", termsData);
 
       if (tcPageId) {
         await TermConditionsPageContent.update(tcPageId!, termsData);
@@ -93,23 +98,29 @@ export function TermsPage() {
           page_id: selectedPageId!,
           ...termsData,
           created_by: currentUser?.id,
-          created_date: new Date().toISOString()
+          created_date: new Date().toISOString(),
         });
         console.log("Terms and conditions created successfully");
       }
 
       // Refresh the data after save
-      const updatedTerms = await TermConditionsPageContent.getByPageId(selectedPageId!);
-      console.log('Updated terms data:', updatedTerms);
+      const updatedTerms = await TermConditionsPageContent.getByPageId(
+        selectedPageId!
+      );
+      console.log("Updated terms data:", updatedTerms);
 
-      useEstimatePageStore.getState().setFormData("Terms and Conditions", termsData);
-    } catch (error) {
+      useEstimatePageStore
+        .getState()
+        .setFormData("Terms and Conditions", termsData);
+      showToast("success", "Data updated successfully.");
+    } catch (error: any) {
       console.error("Error saving terms and conditions:", error);
+      showToast("error", error);
     }
   };
 
   const handleAcknowledgmentToggle = (value: boolean) => {
-    console.log('Toggle value:', value);
+    console.log("Toggle value:", value);
     setRequireAcknowledgment(value);
   };
 

@@ -15,6 +15,7 @@ import { Input } from "@/app/components/common/Input";
 import { useRouter } from "expo-router";
 import { useTheme } from "@/app/components/providers/ThemeProvider";
 import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
+import { showToast } from "@/app/utils/ToastService";
 
 const DotPattern = () => (
   <View style={styles.dotPattern}>
@@ -38,6 +39,7 @@ export function LayoutPage() {
     };
     console.log("Saving Layout Page...", LayoutData);
     useEstimatePageStore.getState().setFormData("Layout", LayoutData);
+    showToast("success","Data updated successfully.")
   };
 
   return (

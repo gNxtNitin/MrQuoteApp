@@ -23,6 +23,7 @@ import { flattenObject } from "@/app/utils/flattenObj";
 import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
 import { useTheme } from "@/app/components/providers/ThemeProvider";
 import { useEstimateStore } from "@/app/stores/estimateStore";
+import { showToast } from "@/app/utils/ToastService";
 
 interface LineItem {
   id: string;
@@ -149,6 +150,7 @@ export function AuthorizePage() {
     useEstimatePageStore
       .getState()
       .setFormData("Authorize Page", flattenedData);
+    showToast("success", "Data updated successfully.");
   };
 
   const renderItem = ({ item, drag, isActive }: RenderItemParams<LineItem>) => {

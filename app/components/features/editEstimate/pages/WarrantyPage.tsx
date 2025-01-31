@@ -23,6 +23,9 @@ import {
 } from "react-native-pell-rich-editor";
 import { FileUploader } from "@/app/components/common/FileUploader";
 import { CustomInputRow } from "@/app/components/common/CustomRowInput";
+import { useEstimateStore } from "@/app/stores/estimateStore";
+import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
+import { showToast } from "@/app/utils/ToastService";
 
 export function WarrantyPage() {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -108,7 +111,8 @@ export function WarrantyPage() {
     try {
       // Here you would typically make an API call to save the data
       console.log("Saving warranty data:", formData);
-
+      useEstimatePageStore.getState().setFormData("Warranty", formData);
+      showToast("success", "Data updated successfully.");
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 500));
 
@@ -427,11 +431,11 @@ export function WarrantyPage() {
                     );
                   })}
                   <View style={styles.signeeBox}>
-                  <FileUploader
-                    label="Signature:"
-                    accept="both"
-                    onUpload={(file) => setSign(file || null)}
-                  />
+                    <FileUploader
+                      label="Signature:"
+                      accept="both"
+                      onUpload={(file) => setSign(file || null)}
+                    />
                   </View>
                 </View>
 
@@ -605,6 +609,6 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   signeeBox: {
-    marginTop:20
+    marginTop: 20,
   },
 });

@@ -22,6 +22,7 @@ import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
 import { FileUploader } from "@/app/components/common/FileUploader";
 import { flattenObject } from "@/app/utils/flattenObj";
 import { InspectionPageContent } from "@/app/database/models/InspectionPageContent";
+import { showToast } from "@/app/utils/ToastService";
 
 export function InspectionPage() {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -179,6 +180,7 @@ export function InspectionPage() {
     const inspectionData = { title, sections, editorContents };
     const flattenedData = flattenObject(inspectionData);
     useEstimatePageStore.getState().setFormData("Inspection", flattenedData);
+    showToast("success","Data updated successfully.")
   };
 
   const handleFileUpload = (files: any[], sectionId: string, itemId: string) => {

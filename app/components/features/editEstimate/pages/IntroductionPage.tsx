@@ -21,6 +21,7 @@ import { useTheme } from "@/app/components/providers/ThemeProvider";
 import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
 import { IntroductionPageContent } from "@/app/database/models/IntroductionPageContent";
 import { useEstimateStore } from "@/app/stores/estimateStore";
+import { showToast } from "@/app/utils/ToastService";
 
 interface Template {
   id: string;
@@ -52,7 +53,7 @@ export function IntroductionPage() {
     const fetchData = async () => {
       try {
         const id = await IntroductionPageContent.getIdByPageId(selectedPageId!);
-        setId(id);  
+        setId(id);
         console.log("ID Intro Page: ", id);
         const data = await IntroductionPageContent.getById(id!);
         if (data) {
@@ -76,8 +77,8 @@ export function IntroductionPage() {
         content: cleanedContent,
         title: `Template ${Date.now()}`,
       };
-
       console.log("Saving template:", newTemplate);
+      showToast("success", "Data updated successfully.");
       useEstimatePageStore.getState().setFormData("Introduction", newTemplate);
     }
     try {
@@ -86,8 +87,10 @@ export function IntroductionPage() {
         introduction_name: introTitle,
       });
       console.log("Data updated successfully.");
-    } catch (error) {
+      showToast("success", "Data updated successfully.");
+    } catch (error: any) {
       console.log("Error updating content", error);
+      showToast("error", error);
     }
   };
 
