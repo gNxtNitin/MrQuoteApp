@@ -7,6 +7,8 @@ import { CreateEstimateDialog } from "./CreateEstimateDialog";
 import { useEffect, useState } from "react";
 import { ChangeLayoutDialog } from "./ChangeLayoutDialog";
 import { useTheme } from "@/app/components/providers/ThemeProvider";
+import { useEstimateStore } from "@/app/stores/estimateStore";
+import { Estimate as EstimateModel } from "@/app/database/models/Estimate";
 
 type EstimateSubHeaderProps = Estimate;
 
@@ -20,13 +22,28 @@ export function EstimateSubHeader({
 }: EstimateSubHeaderProps) {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showLayoutDialog, setShowLayoutDialog] = useState(false);
+  const [currentStatus, setCurrentStatus] = useState(estimateStatus);
   const theme = useTheme();
+  const selectedEstimateId = useEstimateStore((state) => state.selectedEstimateId);
 
   const handleBack = () => router.back();
 
   useEffect(() => {
-    console.log("estimateStatus", estimateStatus);
-  }, []);
+    const fetchEstimateStatus = async () => {
+      if (selectedEstimateId) {
+        try {
+          const estimate = await EstimateModel.getById(selectedEstimateId);
+          if (estimate?.estimate_status) {
+            setCurrentStatus(estimate.estimate_status as Estimate["estimateStatus"]);
+          }
+        } catch (error) {
+          console.error("Failed to fetch estimate status:", error);
+        }
+      }
+    };
+
+    fetchEstimateStatus();
+  }, [selectedEstimateId]);
 
   const handleCloseDialog = () => {
     setShowCreateDialog(false);
@@ -75,14 +92,14 @@ export function EstimateSubHeader({
               <Text style={[styles.customerName, { color: theme.textPrimary }]}>
                 {customerName}
               </Text>
-              <View style={[styles.badge, styles[`status_${estimateStatus}`]]}>
+              <View style={[styles.badge, styles[`status_${currentStatus}`]]}>
                 <Text
                   style={[
                     styles.badgeText,
-                    styles[`statusText_${estimateStatus}`],
+                    styles[`statusText_${currentStatus}`],
                   ]}
                 >
-                  {estimateStatus.toUpperCase()}
+                  {currentStatus.toUpperCase()}
                 </Text>
               </View>
             </View>

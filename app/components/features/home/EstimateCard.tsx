@@ -16,8 +16,9 @@ import { Estimate } from "@/app/types/estimate";
 import { getHouseImage } from "@/app/utils/houseImages";
 import { useTheme } from "@/app/components/providers/ThemeProvider";
 import { useEstimateStore } from "@/app/stores/estimateStore";
-import { EstimateData } from "@/app/database/models/Estimate";
+import { EstimateData, Estimate as EstimateModel } from "@/app/database/models/Estimate";
 import { EstimateDetailData } from "@/app/database/models/EstimateDetail";
+import { openDatabase } from "@/app/services/database/init";
 
 interface EstimateCardProps {
   estimate: Estimate;
@@ -63,6 +64,16 @@ export function EstimateCard({
     console.log("Status Changing to:", newStatus);
     try {
       setIsSyncing(true);
+      // Update the status in the database using Estimate model
+      if (estimateData.id) {
+        console.log('estimateData.id', estimateData.id);
+        console.log('newStatus', newStatus);
+        await EstimateModel.update(estimateData.id, {
+          estimate_status: newStatus,
+          modified_date: new Date().toISOString()
+        });
+      }
+      
       if (onStatusChange) {
         await onStatusChange(estimate.id, newStatus);
         console.log("Status changed successfully. Current status:", newStatus);
