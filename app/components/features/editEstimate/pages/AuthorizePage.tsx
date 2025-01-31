@@ -117,7 +117,7 @@ export function AuthorizePage() {
   };
 
   const handleSelectTemplate = (template: string) => {
-    console.log("Selected template:", template);
+    // console.log.log("Selected template:", template);
     setShowTemplatesDialog(false);
   };
 
@@ -146,7 +146,7 @@ export function AuthorizePage() {
       footerNote,
     };
     const flattenedData = flattenObject(authorizeData);
-    console.log("Saving changes...", flattenedData);
+    // console.log.log("Saving changes...", flattenedData);
     useEstimatePageStore
       .getState()
       .setFormData("Authorize Page", flattenedData);

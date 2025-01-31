@@ -67,7 +67,7 @@ export const TaxSetting = {
     `;
     try {
       await db.execAsync(query);
-      console.log('TaxSetting table created');
+      // console.log.log('TaxSetting table created');
     } catch (error) {
       console.error('Error creating tax_setting table:', error);
       throw error;

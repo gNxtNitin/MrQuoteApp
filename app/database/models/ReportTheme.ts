@@ -51,7 +51,7 @@ export const ReportTheme = {
     `;
     try {
       await db.execAsync(query);
-      console.log('ReportTheme table created');
+      // console.log.log('ReportTheme table created');
     } catch (error) {
       console.error('Error creating report_themes table:', error);
       throw error;
@@ -69,7 +69,7 @@ export const ReportTheme = {
 
     try {
       await statement.executeAsync(values);
-      console.log('ReportTheme inserted');
+      // console.log.log('ReportTheme inserted');
     } finally {
       await statement.finalizeAsync();
     }

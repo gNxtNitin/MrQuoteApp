@@ -83,7 +83,7 @@ export const useUserStore = create(
             }
           });
 
-          console.log('Current user set successfully:', user.FirstName);
+          // console.log.log('Current user set successfully:', user.FirstName);
         } catch (error) {
           console.error('Error setting current user:', error);
         }

@@ -71,7 +71,7 @@ export function TermsPage() {
 
   const handleLayoutsPress = () => {
     // TODO: Implement navigation to Layouts
-    console.log("Navigate to Layouts");
+    // console.log.log("Navigate to Layouts");
   };
 
   const handleSave = async () => {
@@ -88,11 +88,11 @@ export function TermsPage() {
         modified_date: new Date().toISOString(),
       };
 
-      console.log("Saving terms data:", termsData);
+      // console.log.log("Saving terms data:", termsData);
 
       if (tcPageId) {
         await TermConditionsPageContent.update(tcPageId!, termsData);
-        console.log("Terms and conditions updated successfully");
+        // console.log.log("Terms and conditions updated successfully");
       } else {
         await TermConditionsPageContent.insert({
           page_id: selectedPageId!,
@@ -100,14 +100,14 @@ export function TermsPage() {
           created_by: currentUser?.id,
           created_date: new Date().toISOString(),
         });
-        console.log("Terms and conditions created successfully");
+        // console.log.log("Terms and conditions created successfully");
       }
 
       // Refresh the data after save
       const updatedTerms = await TermConditionsPageContent.getByPageId(
         selectedPageId!
       );
-      console.log("Updated terms data:", updatedTerms);
+      // console.log.log("Updated terms data:", updatedTerms);
 
       useEstimatePageStore
         .getState()
@@ -120,7 +120,7 @@ export function TermsPage() {
   };
 
   const handleAcknowledgmentToggle = (value: boolean) => {
-    console.log("Toggle value:", value);
+    // console.log.log("Toggle value:", value);
     setRequireAcknowledgment(value);
   };
 

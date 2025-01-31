@@ -216,7 +216,7 @@ export function InspectionPage() {
         })
       );
 
-      console.log('Files uploaded and items created');
+      // console.log.log('Files uploaded and items created');
     } catch (error) {
       console.error('Error handling file upload:', error);
     }

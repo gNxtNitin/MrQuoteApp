@@ -60,11 +60,11 @@ export function TitlePage() {
       try {
         const id = await TitlePageContent.getIdByPageId(selectedPageId!);
         setId(id);
-        console.log("id Title Page: ", id, "selectedPageId: ", selectedPageId);
+        // console.log.log("id Title Page: ", id, "selectedPageId: ", selectedPageId);
         const data = await TitlePageContent.getById(id!);
-        console.log("data", data);
+        // console.log.log("data", data);
         if (data) {
-          console.log("Fetched Data:", data);
+          // console.log.log("Fetched Data:", data);
           setTitle(data.title_name || "Title");
           setReportType(data.report_type || "");
           setDate(data.date ? new Date(data.date).toLocaleDateString() : "");
@@ -148,13 +148,13 @@ export function TitlePage() {
     };
     try {
       await TitlePageContent.update(id!, formData);
-      console.log("Data updated successfully.");
+      // console.log.log("Data updated successfully.");
       showToast("success", "Data updated successfully.");
     } catch (error: any) {
       console.error("Error updating data:", error);
       showToast("error", error);
     }
-    console.log("Saving changes...", formData);
+    // console.log.log("Saving changes...", formData);
     useEstimatePageStore.getState().setFormData("Title",formData)
   };
 

@@ -47,14 +47,14 @@ export function HomeScreen() {
           user.id,
           selectedCompany
         );
-        console.log("Estimates Data:", estimatesData);
+        // console.log.log("Estimates Data:", estimatesData);
         // Get details for each estimate
         const estimatesWithDetails = await Promise.all(
           estimatesData.map(async (estimate) => {
-            console.log("Estimate ID:", estimate.id);
+            // console.log.log("Estimate ID:", estimate.id);
             const estimateDetailData: EstimateDetailData | null =
               await EstimateDetail.getByEstimateId(estimate.id!);
-            console.log("Estimate Detail Data:", estimateDetailData);
+            // console.log.log("Estimate Detail Data:", estimateDetailData);
             if (!estimateDetailData) {
               // If no detail exists, create a default detail object
               return {
@@ -79,7 +79,7 @@ export function HomeScreen() {
           })
         );
 
-        console.log("Loaded User Estimates:", estimatesWithDetails);
+        // console.log.log("Loaded User Estimates:", estimatesWithDetails);
         setEstimates(estimatesWithDetails);
       }
     } catch (error) {

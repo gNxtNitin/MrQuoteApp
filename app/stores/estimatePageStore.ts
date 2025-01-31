@@ -46,7 +46,7 @@ export const useEstimatePageStore = create<EstimatePageState>((set) => ({
           ...data, // Merge new data
         },
       };
-      console.log("Updated formData:", updatedFormData); // Log updated formData
+      // console.log.log("Updated formData:", updatedFormData); // Log updated formData
       return { formData: updatedFormData };
     });
   },

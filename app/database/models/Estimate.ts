@@ -65,7 +65,7 @@ export async function duplicateDefaultLayout(
   try {
 
     if (!layout?.id) {
-      console.log('No default layout found for company:', companyId);
+      // console.log.log('No default layout found for company:', companyId);
       return null;
     }
 
@@ -84,10 +84,10 @@ export async function duplicateDefaultLayout(
       'SELECT last_insert_rowid() as id'
     );
     const newPageId = newPageResult?.id;
-    console.log('New page ID:', newPageId);
+    // console.log.log('New page ID:', newPageId);
 
     if (!newPageId) {
-      console.log('Failed to get new page ID');
+      // console.log.log('Failed to get new page ID');
       return null;
     }
 
@@ -96,10 +96,10 @@ export async function duplicateDefaultLayout(
       `SELECT * FROM ${LayoutPages.tableName} WHERE layout_id = ?`,
       [layout.id]
     );
-    console.log('Layout page:', layoutPage);
+    // console.log.log('Layout page:', layoutPage);
     // for (const layoutPage of layoutPages) {
       if (!layoutPage?.page_id) {
-        console.log('Layout page has no page_id:', layoutPage);
+        // console.log.log('Layout page has no page_id:', layoutPage);
         return null;
       }
 
@@ -108,7 +108,7 @@ export async function duplicateDefaultLayout(
         `SELECT * FROM ${TitlePageContent.tableName} WHERE page_id = ?`,
         [layoutPage.page_id]
       );
-      console.log('Title page:', titlePage);
+      // console.log.log('Title page:', titlePage);
       if (titlePage) {
         await TitlePageContent.insert({
           id: undefined,
@@ -130,7 +130,7 @@ export async function duplicateDefaultLayout(
           created_date: new Date().toISOString(),
           modified_date: new Date().toISOString()
         });
-        console.log('Title page content duplicated');
+        // console.log.log('Title page content duplicated');
       }
 
       // Find and duplicate introduction page content
@@ -138,7 +138,7 @@ export async function duplicateDefaultLayout(
         `SELECT * FROM ${IntroductionPageContent.tableName} WHERE page_id = ?`,
         [layoutPage.page_id]
       );
-      console.log('Introduction page:', introPage);
+      // console.log.log('Introduction page:', introPage);
 
       if (introPage) {
         await IntroductionPageContent.insert({
@@ -152,7 +152,7 @@ export async function duplicateDefaultLayout(
           created_date: new Date().toISOString(),
           modified_date: new Date().toISOString()
         });
-        console.log('Introduction page content duplicated');
+        // console.log.log('Introduction page content duplicated');
       }
 
       // 3. Find and duplicate inspection page content
@@ -160,7 +160,7 @@ export async function duplicateDefaultLayout(
         `SELECT * FROM ${InspectionPageContent.tableName} WHERE page_id = ?`,
         [layoutPage.page_id]
       );
-      console.log('Inspection page:', inspectionPage);
+      // console.log.log('Inspection page:', inspectionPage);
       if (inspectionPage) {
         await InspectionPageContent.insert({
           id: undefined,
@@ -172,17 +172,17 @@ export async function duplicateDefaultLayout(
           created_date: new Date().toISOString(),
           modified_date: new Date().toISOString()
         });
-        console.log('Inspection page content duplicated');
+        // console.log.log('Inspection page content duplicated');
         const newInspectionPageId = await db.getFirstAsync<{ id: number }>(
             'SELECT last_insert_rowid() as id'
           );
-          console.log('New inspection page ID:', newInspectionPageId);
+          // console.log.log('New inspection page ID:', newInspectionPageId);
         // 3a. Find and duplicate inspection sections
         const inspectionSections = await db.getAllAsync<InspectionPageSectionData>(
           `SELECT * FROM ${InspectionPageSection.tableName} WHERE inspection_page_id = ?`,
           [inspectionPage.id!]
         );
-        console.log('Inspection sections:', inspectionSections);
+        // console.log.log('Inspection sections:', inspectionSections);
         for (const section of inspectionSections) {
            await InspectionPageSection.insert({
             id: undefined,
@@ -193,17 +193,17 @@ export async function duplicateDefaultLayout(
             created_by: userId,
             modified_by: userId
           });
-          console.log('Inspection section duplicated');
+          // console.log.log('Inspection section duplicated');
           const newSectionId = await db.getFirstAsync<{ id: number }>(
             'SELECT last_insert_rowid() as id'
           );
-          console.log('New section ID:', newSectionId);
+          // console.log.log('New section ID:', newSectionId);
           // 3b. Find and duplicate inspection items
           const items = await db.getAllAsync<InspectionSectionItemsData>(
             `SELECT * FROM ${InspectionSectionItems.tableName} WHERE inspection_section_id = ?`,
             [section.id!]
           );
-          console.log('Inspection items:', items);
+          // console.log.log('Inspection items:', items);
           for (const item of items) {
             await InspectionSectionItems.insert({
               id: undefined,
@@ -214,7 +214,7 @@ export async function duplicateDefaultLayout(
               created_by: userId,
               modified_by: userId
             });
-            console.log('Inspection item duplicated');
+            // console.log.log('Inspection item duplicated');
           }
         }
       }
@@ -229,13 +229,13 @@ export async function duplicateDefaultLayout(
         created_date: new Date().toISOString(),
         is_active: true
       });
-      console.log('Canvas created successfully');
+      // console.log.log('Canvas created successfully');
       // 5. Find and duplicate quote page content
       const quotePage = await db.getFirstAsync<QuotePageContentData>(
         `SELECT * FROM ${QuotePageContent.tableName} WHERE page_id = ?`,
         [layoutPage.page_id]
       );
-      console.log('Quote page:', quotePage);
+      // console.log.log('Quote page:', quotePage);
       if (quotePage) {
         await QuotePageContent.insert({
           id: undefined,
@@ -248,17 +248,17 @@ export async function duplicateDefaultLayout(
           created_by: userId,
           modified_by: userId
         });
-        console.log('Quote page content duplicated');
+        // console.log.log('Quote page content duplicated');
         const newQuotePageId = await db.getFirstAsync<{ id: number }>(
             'SELECT last_insert_rowid() as id'
           );
-          console.log('New quote page ID:', newQuotePageId);
+          // console.log.log('New quote page ID:', newQuotePageId);
         // 5a. Find and duplicate quote sections
         const quoteSections = await db.getAllAsync<QuotePageSectionData>(
           `SELECT * FROM ${QuotePageSection.tableName} WHERE quote_page_id = ?`,
           [quotePage.id!]
         );
-        console.log('Quote page section:', quoteSections);
+        // console.log.log('Quote page section:', quoteSections);
         for (const section of quoteSections) {
           await QuotePageSection.insert({
             id: undefined,
@@ -269,17 +269,17 @@ export async function duplicateDefaultLayout(
             created_by: userId,
             modified_by: userId
           });
-          console.log('Quote page section duplicated');
+          // console.log.log('Quote page section duplicated');
           const newSectionId = await db.getFirstAsync<{ id: number }>(
             'SELECT last_insert_rowid() as id'
           );
-          console.log('New section ID:', newSectionId);
+          // console.log.log('New section ID:', newSectionId);
           // 5b. Find and duplicate quote price sections
           const priceSections = await db.getAllAsync<QuotePagePriceSectionData>(
             `SELECT * FROM ${QuotePagePriceSection.tableName} WHERE quote_section_id = ?`,
             [section.id!]
           );
-          console.log('Quote page price section:', priceSections);
+          // console.log.log('Quote page price section:', priceSections);
           for (const priceSection of priceSections) {
             await QuotePagePriceSection.insert({
               id: undefined,
@@ -290,7 +290,7 @@ export async function duplicateDefaultLayout(
               created_by: userId,
               modified_by: userId
             });
-            console.log('Quote page price section duplicated');
+            // console.log.log('Quote page price section duplicated');
           }
         }
       }
@@ -300,7 +300,7 @@ export async function duplicateDefaultLayout(
         `SELECT * FROM ${AuthorizationPageContent.tableName} WHERE page_id = ?`,
         [layoutPage.page_id]
       );
-      console.log('Authorization page:', authPage);
+      // console.log.log('Authorization page:', authPage);
       if (authPage) {
         await AuthorizationPageContent.insert({
           id: undefined,
@@ -313,17 +313,17 @@ export async function duplicateDefaultLayout(
           created_by: userId,
           modified_by: userId
         });
-        console.log('Authorization page content duplicated');
+        // console.log.log('Authorization page content duplicated');
         const newAuthPageId = await db.getFirstAsync<{ id: number }>(
             'SELECT last_insert_rowid() as id'
           );
-        console.log('New authorization page ID:', newAuthPageId);
+        // console.log.log('New authorization page ID:', newAuthPageId);
         // 6a. Find and duplicate auth price sections
         const authPriceSections = await db.getAllAsync<AuthPagePriceSectionData>(
           `SELECT * FROM ${AuthPagePriceSection.tableName} WHERE authorization_page_id = ?`,
           [authPage.id!]
         );
-        console.log('Auth price section:', authPriceSections);
+        // console.log.log('Auth price section:', authPriceSections);
         for (const priceSection of authPriceSections) {
           await AuthPagePriceSection.insert({
             id: undefined,
@@ -334,7 +334,7 @@ export async function duplicateDefaultLayout(
             created_by: userId,
             modified_by: userId
           });
-          console.log('Auth price section duplicated');
+          // console.log.log('Auth price section duplicated');
         }
 
         // 6b. Find and duplicate auth primary signer
@@ -342,7 +342,7 @@ export async function duplicateDefaultLayout(
           `SELECT * FROM ${AuthPrimarySigner.tableName} WHERE authorization_page_id = ?`,
           [authPage.id!]
         );
-        console.log('Auth primary signer:', signer);
+        // console.log.log('Auth primary signer:', signer);
         if (signer) {
           await AuthPrimarySigner.insert({
             auth_p_signer_id: undefined,
@@ -354,7 +354,7 @@ export async function duplicateDefaultLayout(
             created_by: userId,
             modified_by: userId
           });
-          console.log('Auth primary signer duplicated');
+          // console.log.log('Auth primary signer duplicated');
         }
 
         // 6c. Find and duplicate auth product selections
@@ -362,7 +362,7 @@ export async function duplicateDefaultLayout(
           `SELECT * FROM ${AuthProductSelection.tableName} WHERE authorization_page_id = ?`,
           [authPage.id!]
         );
-        console.log('Auth product selection:', products);
+        // console.log.log('Auth product selection:', products);
         for (const product of products) {
           await AuthProductSelection.insert({
             id: undefined,
@@ -373,7 +373,7 @@ export async function duplicateDefaultLayout(
             created_by: userId,
             modified_by: userId
           });
-          console.log('Auth product selection duplicated');
+          // console.log.log('Auth product selection duplicated');
         }
       }
 
@@ -382,7 +382,7 @@ export async function duplicateDefaultLayout(
         `SELECT * FROM ${TermConditionsPageContent.tableName} WHERE page_id = ?`,
         [layoutPage.page_id]
       );
-      console.log('Terms and conditions page:', termsPage);
+      // console.log.log('Terms and conditions page:', termsPage);
 
       if (termsPage) {
         await TermConditionsPageContent.insert({
@@ -398,7 +398,7 @@ export async function duplicateDefaultLayout(
           created_by: userId,
           modified_by: userId
         });
-        console.log('Terms and conditions page content duplicated');
+        // console.log.log('Terms and conditions page content duplicated');
       }
     // }
 
@@ -460,14 +460,14 @@ export const Estimate = {
 
       try {
         await statement.executeAsync(values);
-        console.log('Estimate inserted successfully');
+        // console.log.log('Estimate inserted successfully');
         
         // Get the inserted estimate's ID
         const result = await db.getFirstAsync<{ id: number }>(
           'SELECT last_insert_rowid() as id'
         );
         const estimateId = result!.id;
-        console.log('Estimate ID:', estimateId);
+        // console.log.log('Estimate ID:', estimateId);
 
         if (estimateId && estimateData.company_id) {
                 const defaultLayout: LayoutsData | null = await db.getFirstAsync<LayoutsData>(
@@ -487,8 +487,8 @@ export const Estimate = {
             created_by: estimateData.created_by,
             modified_by: estimateData.modified_by
           });
-          console.log("layout_id", defaultLayout?.id);
-          console.log('Report created successfully');
+          // console.log.log("layout_id", defaultLayout?.id);
+          // console.log.log('Report created successfully');
           const reportId = await db.getFirstAsync<{ id: number }>(
             'SELECT last_insert_rowid() as id'
           );
@@ -502,9 +502,9 @@ export const Estimate = {
               defaultLayout,
               db
             );
-            console.log('New page created with ID:', newPageId);
+            // console.log.log('New page created with ID:', newPageId);
             if (newPageId) {
-              console.log('Report ID:', reportId);
+              // console.log.log('Report ID:', reportId);
               await ReportPages.insert({
                 report_id: reportId?.id,
                 page_id: newPageId,
@@ -512,7 +512,7 @@ export const Estimate = {
                 created_by: estimateData.created_by,
                 modified_by: estimateData.modified_by
               });
-              console.log('Report page created successfully');
+              // console.log.log('Report page created successfully');
             }
           }
         }
@@ -607,7 +607,7 @@ export const Estimate = {
 
     try {
       await statement.executeAsync();
-      console.log('All estimates deleted successfully');
+      // console.log.log('All estimates deleted successfully');
     } finally {
       await statement.finalizeAsync();
     }

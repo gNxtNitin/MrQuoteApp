@@ -58,7 +58,7 @@ export const AuthProductSelection = {
     `;
     try {
       await db.execAsync(query);
-      console.log('AuthProductSelection table created');
+      // console.log.log('AuthProductSelection table created');
     } catch (error) {
       console.error('Error creating auth_product_selection table:', error);
       throw error;

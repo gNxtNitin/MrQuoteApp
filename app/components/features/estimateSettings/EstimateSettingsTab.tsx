@@ -256,7 +256,7 @@ export const PropertyMeasurementsTab = () => {
             <FileUploader
               accept="both"
               onUpload={(file) => {
-                console.log("File uploaded for Primary Image:", file);
+                // console.log.log("File uploaded for Primary Image:", file);
                 setFile(file);
               }}
             />

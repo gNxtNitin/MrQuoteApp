@@ -57,7 +57,7 @@ export const Pages = {
     `;
     try {
       await db.execAsync(query);
-      console.log('Pages table created');
+      // console.log.log('Pages table created');
     } catch (error) {
       console.error('Error creating pages table:', error);
       throw error;
@@ -75,7 +75,7 @@ export const Pages = {
 
     try {
       await statement.executeAsync(values);
-      console.log('Pages inserted');
+      // console.log.log('Pages inserted');
     } finally {
       await statement.finalizeAsync();
     }

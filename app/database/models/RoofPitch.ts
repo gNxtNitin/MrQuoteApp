@@ -53,7 +53,7 @@ export const RoofPitch = {
     `;
     try {
       await db.execAsync(query);
-      console.log('RoofPitch table created');
+      // console.log.log('RoofPitch table created');
     } catch (error) {
       console.error('Error creating roof_pitch table:', error);
       throw error;
@@ -71,7 +71,7 @@ export const RoofPitch = {
 
     try {
       await statement.executeAsync(values);
-      console.log('RoofPitch inserted');
+      // console.log.log('RoofPitch inserted');
     } finally {
       await statement.finalizeAsync();
     }

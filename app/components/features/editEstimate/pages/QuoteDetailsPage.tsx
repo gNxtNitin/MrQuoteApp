@@ -263,7 +263,7 @@ export function QuoteDetailsPage() {
 
     const flattenedData = flattenObject(quoteDetailsPageData);
 
-    console.log("Saving Quote changes...", flattenedData);
+    // console.log.log("Saving Quote changes...", flattenedData);
     useEstimatePageStore.getState().setFormData("Quote Details", flattenedData);
     showToast("success", "Data updated successfully.");
   };
@@ -415,7 +415,7 @@ export function QuoteDetailsPage() {
   };
 
   const handleSelectTemplate = (template: string) => {
-    console.log("Selected template:", template);
+    // console.log.log("Selected template:", template);
     setShowTemplatesDialog(false);
   };
 

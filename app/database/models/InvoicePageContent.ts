@@ -61,7 +61,7 @@ export const InvoicePageContent = {
     `;
     try {
       await db.execAsync(query);
-      console.log('InvoicePageContent table created');
+      // console.log.log('InvoicePageContent table created');
     } catch (error) {
       console.error('Error creating invoice_page_content table:', error);
       throw error;

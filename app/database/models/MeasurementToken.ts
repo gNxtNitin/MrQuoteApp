@@ -59,7 +59,7 @@ export const MeasurementToken = {
     `;
     try {
       await db.execAsync(query);
-      console.log('MeasurementToken table created');
+      // console.log.log('MeasurementToken table created');
     } catch (error) {
       console.error('Error creating measurement_token table:', error);
       throw error;

@@ -29,7 +29,7 @@ export function EstimateDetails({
   const finalEstimate = useEstimatePageStore((state) => state.formData);
 
   const handleViewEstimate = () => {
-    console.log("Final Estimate", finalEstimate);
+    // console.log.log("Final Estimate", finalEstimate);
   };
 
   return (

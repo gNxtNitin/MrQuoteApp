@@ -64,7 +64,7 @@ export const AuthorizationPageContent = {
     `;
     try {
       await db.execAsync(query);
-      console.log('AuthorizationPageContent table created');
+      // console.log.log('AuthorizationPageContent table created');
     } catch (error) {
       console.error('Error creating authorization_page_content table:', error);
       throw error;

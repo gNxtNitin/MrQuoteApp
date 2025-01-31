@@ -45,7 +45,7 @@ export const UserRole = {
     `;
     try {
       await db.execAsync(query);
-      console.log('UserRole table created');
+      // console.log.log('UserRole table created');
     } catch (error) {
       console.error('Error creating user_roles table:', error);
       throw error;
@@ -63,7 +63,7 @@ export const UserRole = {
 
     try {
       await statement.executeAsync(values);
-      console.log('UserRole inserted');
+      // console.log.log('UserRole inserted');
     } finally {
       await statement.finalizeAsync();
     }

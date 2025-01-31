@@ -59,7 +59,7 @@ export const AuthPagePriceSection = {
     `;
     try {
       await db.execAsync(query);
-      console.log('AuthPagePriceSection table created');
+      // console.log.log('AuthPagePriceSection table created');
     } catch (error) {
       console.error('Error creating auth_page_price_section table:', error);
       throw error;

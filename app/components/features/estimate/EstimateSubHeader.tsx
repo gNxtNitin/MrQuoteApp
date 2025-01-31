@@ -51,7 +51,7 @@ export function EstimateSubHeader({
 
   const handleSaveEstimate = (data: any) => {
     // Handle the save action
-    console.log("Saving estimate:", data);
+    // console.log.log("Saving estimate:", data);
     handleCloseDialog();
   };
 
@@ -65,7 +65,7 @@ export function EstimateSubHeader({
 
   const handleSaveLayout = () => {
     // Handle saving layout changes
-    console.log("Saving layout changes...");
+    // console.log.log("Saving layout changes...");
     setShowLayoutDialog(false);
   };
 

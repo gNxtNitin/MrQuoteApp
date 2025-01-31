@@ -76,7 +76,7 @@ export const MaterialPageContent = {
     `;
     try {
       await db.execAsync(query);
-      console.log('MaterialPageContent table created');
+      // console.log.log('MaterialPageContent table created');
     } catch (error) {
       console.error('Error creating material_page_content table:', error);
       throw error;

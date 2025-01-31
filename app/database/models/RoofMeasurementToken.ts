@@ -79,7 +79,7 @@ export const RoofMeasurementToken = {
     `;
     try {
       await db.execAsync(query);
-      console.log('RoofMeasurementToken table created');
+      // console.log.log('RoofMeasurementToken table created');
     } catch (error) {
       console.error('Error creating roof_measurement_token table:', error);
       throw error;
@@ -97,7 +97,7 @@ export const RoofMeasurementToken = {
 
     try {
       await statement.executeAsync(values);
-      console.log('RoofMeasurementToken inserted');
+      // console.log.log('RoofMeasurementToken inserted');
     } finally {
       await statement.finalizeAsync();
     }

@@ -54,15 +54,15 @@ export function IntroductionPage() {
       try {
         const id = await IntroductionPageContent.getIdByPageId(selectedPageId!);
         setId(id);
-        console.log("ID Intro Page: ", id);
+        // console.log.log("ID Intro Page: ", id);
         const data = await IntroductionPageContent.getById(id!);
         if (data) {
-          console.log("Fetched Introduction Data: ", data);
+          // console.log.log("Fetched Introduction Data: ", data);
           setEditorContent(data.introduction_content || "");
           setIntroTitle(data.introduction_name || "Introduction");
         }
       } catch (error) {
-        console.log("Error fetching data", error);
+        // console.log.log("Error fetching data", error);
       }
     };
     fetchData();
@@ -77,7 +77,7 @@ export function IntroductionPage() {
         content: cleanedContent,
         title: `Template ${Date.now()}`,
       };
-      console.log("Saving template:", newTemplate);
+      // console.log.log("Saving template:", newTemplate);
       showToast("success", "Data updated successfully.");
       useEstimatePageStore.getState().setFormData("Introduction", newTemplate);
     }
@@ -86,10 +86,10 @@ export function IntroductionPage() {
         introduction_content: editorContent,
         introduction_name: introTitle,
       });
-      console.log("Data updated successfully.");
+      // console.log.log("Data updated successfully.");
       showToast("success", "Data updated successfully.");
     } catch (error: any) {
-      console.log("Error updating content", error);
+      // console.log.log("Error updating content", error);
       showToast("error", error);
     }
   };
@@ -104,7 +104,7 @@ export function IntroductionPage() {
 
   const handleSelectTemplate = (template: string) => {
     // Handle template selection
-    console.log("Selected template:", template);
+    // console.log.log("Selected template:", template);
     setShowTemplatesDialog(false);
   };
 

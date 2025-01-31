@@ -73,7 +73,7 @@ export const WarrantyPageContent = {
     const query = `DROP TABLE IF EXISTS ${WarrantyPageContent.tableName}`;
     try {
       await db.execAsync(query);
-      console.log('WarrantyPageContent table dropped successfully');
+      // console.log.log('WarrantyPageContent table dropped successfully');
     } catch (error) {
       console.error('Error dropping warranty_page_content table:', error);
       throw error;
@@ -93,7 +93,7 @@ export const WarrantyPageContent = {
     `;
     try {
       await db.execAsync(query);
-      console.log('WarrantyPageContent table created successfully');
+      // console.log.log('WarrantyPageContent table created successfully');
     } catch (error) {
       console.error('Error creating warranty_page_content table:', error);
       throw error;
@@ -104,7 +104,7 @@ export const WarrantyPageContent = {
     try {
       await WarrantyPageContent.dropTable();
       await WarrantyPageContent.createTable();
-      console.log('WarrantyPageContent table recreated successfully');
+      // console.log.log('WarrantyPageContent table recreated successfully');
     } catch (error) {
       console.error('Error recreating warranty_page_content table:', error);
       throw error;
@@ -157,7 +157,7 @@ export const WarrantyPageContent = {
   },
 
   update: async (id: number, data: Partial<WarrantyPageContentData>) => {
-    console.log('data', data);
+    // console.log.log('data', data);
     const keys = Object.keys(data);
     const values = Object.values(data);
     const setClause = keys.map(key => `${key} = ?`).join(', ');

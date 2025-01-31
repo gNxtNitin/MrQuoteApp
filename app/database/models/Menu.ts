@@ -70,7 +70,7 @@ export const Menu = {
     `;
     try {
       await db.execAsync(query);
-      console.log('Menu table created');
+      // console.log.log('Menu table created');
     } catch (error) {
       console.error('Error creating menu table:', error);
       throw error;
@@ -88,7 +88,7 @@ export const Menu = {
 
     try {
       await statement.executeAsync(values);
-      console.log('Menu inserted');
+      // console.log.log('Menu inserted');
     } finally {
       await statement.finalizeAsync();
     }

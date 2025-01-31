@@ -72,7 +72,7 @@ export const Files = {
     `;
     try {
       await db.execAsync(query);
-      console.log('Files table created');
+      // console.log.log('Files table created');
     } catch (error) {
       console.error('Error creating files table:', error);
       throw error;

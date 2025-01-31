@@ -64,7 +64,7 @@ export const PriceSection = {
     `;
     try {
       await db.execAsync(query);
-      console.log('PriceSection table created');
+      // console.log.log('PriceSection table created');
     } catch (error) {
       console.error('Error creating price_section table:', error);
       throw error;

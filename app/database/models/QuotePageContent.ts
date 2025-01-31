@@ -24,15 +24,15 @@ interface QuotePageContentColumns {
 export interface QuotePageContentData {
   id?: number;
   page_id: number;
-  quote_page_title?: string;
-  quote_subtotal?: number;
-  total?: number;
-  notes?: string;
+  quote_page_title: string;
+  quote_subtotal: number;
+  total: number;
+  notes: string;
   is_active?: boolean;
   created_by?: number;
   created_date?: string;
-  modified_by?: number;
-  modified_date?: string;
+  modified_by?: number | null;
+  modified_date?: string | null;
 }
 
 export const QuotePageContent = {
@@ -40,7 +40,7 @@ export const QuotePageContent = {
   columns: {
     id: { type: 'INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE' },
     page_id: { type: 'INTEGER NOT NULL' },
-    quote_page_title: { type: 'TEXT' },
+    quote_page_title: { type: 'TEXT NOT NULL' },
     quote_subtotal: { type: 'DECIMAL(10,2)' },
     total: { type: 'DECIMAL(10,2)' },
     notes: { type: 'TEXT' },
@@ -64,7 +64,7 @@ export const QuotePageContent = {
     `;
     try {
       await db.execAsync(query);
-      console.log('QuotePageContent table created');
+      // console.log.log('QuotePageContent table created');
     } catch (error) {
       console.error('Error creating quote_page_content table:', error);
       throw error;

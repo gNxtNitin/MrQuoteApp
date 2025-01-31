@@ -51,7 +51,7 @@ export const SectionStyle = {
     `;
     try {
       await db.execAsync(query);
-      console.log('SectionStyle table created');
+      // console.log.log('SectionStyle table created');
     } catch (error) {
       console.error('Error creating section_style table:', error);
       throw error;

@@ -70,7 +70,7 @@ export const TermConditionsPageContent = {
     `;
     try {
       await db.execAsync(query);
-      console.log('TermConditionsPageContent table created');
+      // console.log.log('TermConditionsPageContent table created');
     } catch (error) {
       console.error('Error creating term_conditions_page_content table:', error);
       throw error;
@@ -136,7 +136,7 @@ export const TermConditionsPageContent = {
 
     try {
       await statement.executeAsync([...values, id]);
-      console.log(`Updated terms and conditions with ID ${id}`);
+      // console.log.log(`Updated terms and conditions with ID ${id}`);
     } catch (error) {
       console.error('Error updating terms and conditions:', error);
       throw error;

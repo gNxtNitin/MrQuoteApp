@@ -59,7 +59,7 @@ export const CustomEmailInvoiceQuickText = {
     `;
     try {
       await db.execAsync(query);
-      console.log('CustomEmailInvoiceQuickText table created');
+      // console.log.log('CustomEmailInvoiceQuickText table created');
     } catch (error) {
       console.error('Error creating custom_email_invoice_quick_text table:', error);
       throw error;

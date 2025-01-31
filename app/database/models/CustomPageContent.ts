@@ -70,7 +70,7 @@ export const CustomPageContent = {
     `;
     try {
       await db.execAsync(query);
-      console.log('CustomPageContent table created');
+      // console.log.log('CustomPageContent table created');
     } catch (error) {
       console.error('Error creating custom_page_content table:', error);
       throw error;

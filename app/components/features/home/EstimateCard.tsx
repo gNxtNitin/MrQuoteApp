@@ -57,17 +57,17 @@ export function EstimateCard({
   const houseImage = getHouseImage(estimate.id);
 
   useEffect(() => {
-    console.log("Status updated to:", currentStatus);
+    // console.log.log("Status updated to:", currentStatus);
   }, [currentStatus]);
 
   const handleStatusChange = async (newStatus: Estimate["estimateStatus"]) => {
-    console.log("Status Changing to:", newStatus);
+    // console.log.log("Status Changing to:", newStatus);
     try {
       setIsSyncing(true);
       // Update the status in the database using Estimate model
       if (estimateData.id) {
-        console.log('estimateData.id', estimateData.id);
-        console.log('newStatus', newStatus);
+        // console.log.log('estimateData.id', estimateData.id);
+        // console.log.log('newStatus', newStatus);
         await EstimateModel.update(estimateData.id, {
           estimate_status: newStatus,
           modified_date: new Date().toISOString()
@@ -76,7 +76,7 @@ export function EstimateCard({
       
       if (onStatusChange) {
         await onStatusChange(estimate.id, newStatus);
-        console.log("Status changed successfully. Current status:", newStatus);
+        // console.log.log("Status changed successfully. Current status:", newStatus);
         setCurrentStatus(newStatus);
       }
     } catch (error) {
@@ -85,7 +85,7 @@ export function EstimateCard({
       setIsSyncing(false);
     }
 
-    console.log("Updated Status after change:", currentStatus);
+    // console.log.log("Updated Status after change:", currentStatus);
     setActiveDropdown(null); 
   };
 
@@ -123,8 +123,8 @@ export function EstimateCard({
           estimateId: estimate.id,
         },
       });
-      console.log("home estimate", estimate);
-      console.log("home estimateData status", estimateData);
+      // console.log.log("home estimate", estimate);
+      // console.log.log("home estimateData status", estimateData);
     } catch (error) {
       console.error("Error handling estimate selection:", error);
     }
@@ -149,7 +149,7 @@ export function EstimateCard({
     }
   };
 
-  console.log("Rendering EstimateCard with currentStatus:", currentStatus); // Log during render
+  // console.log.log("Rendering EstimateCard with currentStatus:", currentStatus); // Log during render
 
   
 

@@ -58,7 +58,7 @@ export const IntroductionPageContent = {
     `;
     try {
       await db.execAsync(query);
-      console.log('IntroductionPageContent table created');
+      // console.log.log('IntroductionPageContent table created');
     } catch (error) {
       console.error('Error creating introduction_page_content table:', error);
       throw error;

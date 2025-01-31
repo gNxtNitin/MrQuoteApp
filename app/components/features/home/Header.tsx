@@ -48,7 +48,7 @@ export function Header() {
         if (user?.id) {
           // Get user's companies from UserCompany table
           const userCompanies = await UserCompany.getUserCompanies(user.id);
-          console.log('User companies:', userCompanies);
+          // console.log.log('User companies:', userCompanies);
           
           // Fetch full company details for each company
           const companyDetails = await Promise.all(

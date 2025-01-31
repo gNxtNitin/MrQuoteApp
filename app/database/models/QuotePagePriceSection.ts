@@ -23,12 +23,12 @@ export interface QuotePagePriceSectionData {
   id?: number;
   quote_section_id: number;
   price_section_id: number;
-  section_total?: number;
+  section_total: number;
   is_active?: boolean;
   created_by?: number;
   created_date?: string;
-  modified_by?: number;
-  modified_date?: string;
+  modified_by?: number | null;
+  modified_date?: string | null;
 }
 
 export const QuotePagePriceSection = {
@@ -59,7 +59,7 @@ export const QuotePagePriceSection = {
     `;
     try {
       await db.execAsync(query);
-      console.log('QuotePagePriceSection table created');
+      // console.log.log('QuotePagePriceSection table created');
     } catch (error) {
       console.error('Error creating quote_page_price_section table:', error);
       throw error;

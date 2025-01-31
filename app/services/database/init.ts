@@ -63,7 +63,7 @@ export function openDatabase(): SQLite.SQLiteDatabase {
     if (!dbInstance) {
         try {
             dbInstance = SQLite.openDatabaseSync('mrQuote.db');
-            console.log('Database opened successfully');
+            // console.log.log('Database opened successfully');
         } catch (error) {
             console.error('Error opening database:', error);
             throw error;
@@ -79,7 +79,7 @@ async function isDatabaseEmpty(db: SQLite.SQLiteDatabase): Promise<boolean> {
         );
         return !result || result.count === 0;
     } catch (error) {
-        console.log('Database is empty or first run');
+        // console.log.log('Database is empty or first run');
         return true;
     }
 }
@@ -157,7 +157,7 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
 
                 // // Only insert sample data if database is empty
                 // if (shouldInitialize) {
-                //     console.log('Initializing database with sample data...');
+                //     // console.log.log('Initializing database with sample data...');
                     
                 //     // Insert sample data
                 //     await Company.insert({
@@ -1308,12 +1308,12 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
                 //         modified_by: 1
                 //     });
 
-                //     console.log('Sample data inserted successfully');
+                //     // console.log.log('Sample data inserted successfully');
                 // } else {
-                //     console.log('Database already contains data, skipping sample data insertion');
+                //     // console.log.log('Database already contains data, skipping sample data insertion');
                 // }
                 
-                console.log('Database initialized successfully');
+                // console.log.log('Database initialized successfully');
             } catch (error) {
                 console.error('Error in transaction:', error);
                 throw error;

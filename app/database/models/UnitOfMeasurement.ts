@@ -58,7 +58,7 @@ export const UnitOfMeasurement = {
     `;
     try {
       await db.execAsync(query);
-      console.log('UnitOfMeasurement table created');
+      // console.log.log('UnitOfMeasurement table created');
     } catch (error) {
       console.error('Error creating unit_of_measurement table:', error);
       throw error;

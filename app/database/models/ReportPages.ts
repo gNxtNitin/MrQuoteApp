@@ -56,7 +56,7 @@ export const ReportPages = {
     `;
     try {
       await db.execAsync(query);
-      console.log('ReportPages table created');
+      // console.log.log('ReportPages table created');
     } catch (error) {
       console.error('Error creating report_pages table:', error);
       throw error;

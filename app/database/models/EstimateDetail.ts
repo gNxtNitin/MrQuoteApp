@@ -104,7 +104,7 @@ export const EstimateDetail = {
 
         try {
           await statement.executeAsync(values);
-          console.log('Estimate detail inserted');
+          // console.log.log('Estimate detail inserted');
         } finally {
           await statement.finalizeAsync();
         }
@@ -121,7 +121,7 @@ export const EstimateDetail = {
 
     try {
       await statement.executeAsync([]);
-      console.log('All estimate details deleted');
+      // console.log.log('All estimate details deleted');
     } finally {
       await statement.finalizeAsync();
     }
@@ -202,7 +202,7 @@ export const EstimateDetail = {
     try {
       const result = await statement.executeAsync();
       const details = await result.getAllAsync();
-      console.log('All Estimate Details:', details);
+      // console.log.log('All Estimate Details:', details);
     } catch (error) {
       console.error('Error fetching all estimate details:', error);
     } finally {

@@ -59,7 +59,7 @@ export const InspectionPageSection = {
     `;
     try {
       await db.execAsync(query);
-      console.log('InspectionPageSection table created');
+      // console.log.log('InspectionPageSection table created');
     } catch (error) {
       console.error('Error creating inspection_page_section table:', error);
       throw error;

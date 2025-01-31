@@ -22,13 +22,13 @@ interface QuotePageSectionColumns {
 export interface QuotePageSectionData {
   id?: number;
   quote_page_id: number;
-  section_title?: string;
-  section_total?: number;
+  section_title: string;
+  section_total: number;
   is_active?: boolean;
   created_by?: number;
   created_date?: string;
-  modified_by?: number;
-  modified_date?: string;
+  modified_by?: number | null;
+  modified_date?: string | null;
 }
 
 export const QuotePageSection = {
@@ -36,7 +36,7 @@ export const QuotePageSection = {
   columns: {
     id: { type: 'INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE' },
     quote_page_id: { type: 'INTEGER NOT NULL' },
-    section_title: { type: 'TEXT' },
+    section_title: { type: 'TEXT NOT NULL' },
     section_total: { type: 'DECIMAL(10,2)' },
     is_active: { type: 'BOOLEAN' },
     created_by: { type: 'INTEGER' },
@@ -58,7 +58,7 @@ export const QuotePageSection = {
     `;
     try {
       await db.execAsync(query);
-      console.log('QuotePageSection table created');
+      // console.log.log('QuotePageSection table created');
     } catch (error) {
       console.error('Error creating quote_page_section table:', error);
       throw error;

@@ -56,7 +56,7 @@ export const LayoutPages = {
     `;
     try {
       await db.execAsync(query);
-      console.log('LayoutPages table created');
+      // console.log.log('LayoutPages table created');
     } catch (error) {
       console.error('Error creating layout_pages table:', error);
       throw error;

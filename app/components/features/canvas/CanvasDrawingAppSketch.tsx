@@ -340,7 +340,7 @@ const CanvasDrawingAppSketch: React.FC = () => {
 
   useEffect(() => {
     if (elements.length > 0) {
-      console.log('Elements updated:', elements);
+      // console.log.log('Elements updated:', elements);
     }
   }, [elements]);
 

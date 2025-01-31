@@ -78,7 +78,7 @@ export const RoofingAccessories = {
     `;
     try {
       await db.execAsync(query);
-      console.log('RoofingAccessories table created');
+      // console.log.log('RoofingAccessories table created');
     } catch (error) {
       console.error('Error creating roofing_accessories table:', error);
       throw error;
@@ -96,7 +96,7 @@ export const RoofingAccessories = {
 
     try {
       await statement.executeAsync(values);
-      console.log('RoofingAccessories inserted');
+      // console.log.log('RoofingAccessories inserted');
     } finally {
       await statement.finalizeAsync();
     }

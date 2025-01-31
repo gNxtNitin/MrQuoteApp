@@ -138,7 +138,7 @@ export function CreateEstimateDialog({
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length > 0) {
-      console.log("Validation errors:", newErrors);
+      // console.log.log("Validation errors:", newErrors);
     }
 
     return Object.keys(newErrors).length === 0;
@@ -197,7 +197,7 @@ export function CreateEstimateDialog({
         created_by: user.id,
         modified_by: user.id,
       };
-      console.log("Estimate detail data:", estimateDetailData);
+      // console.log.log("Estimate detail data:", estimateDetailData);
 
       await EstimateDetail.insert(estimateDetailData);
 

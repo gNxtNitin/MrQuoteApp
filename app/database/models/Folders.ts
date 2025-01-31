@@ -66,7 +66,7 @@ export const Folders = {
     `;
     try {
       await db.execAsync(query);
-      console.log('Folders table created');
+      // console.log.log('Folders table created');
     } catch (error) {
       console.error('Error creating folders table:', error);
       throw error;

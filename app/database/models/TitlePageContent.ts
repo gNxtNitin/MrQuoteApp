@@ -87,7 +87,7 @@ export const TitlePageContent = {
     `;
     try {
       await db.execAsync(query);
-      console.log('TitlePageContent table created');
+      // console.log.log('TitlePageContent table created');
     } catch (error) {
       console.error('Error creating title_page_content table:', error);
       throw error;

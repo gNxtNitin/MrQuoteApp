@@ -41,7 +41,7 @@ export const ResidentialMetals = {
     `;
     try {
       await db.execAsync(query);
-      console.log('ResidentialMetals table created');
+      // console.log.log('ResidentialMetals table created');
     } catch (error) {
       console.error('Error creating residential_metals table:', error);
       throw error;

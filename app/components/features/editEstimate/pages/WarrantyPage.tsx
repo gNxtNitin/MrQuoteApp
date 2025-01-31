@@ -83,7 +83,7 @@ export function WarrantyPage() {
     const fetchWarrantyData = async () => {
       try {
         const warrantyData = await WarrantyPageContent.getByPageId(1);
-        console.log('warrantyData', warrantyData);
+        // console.log.log('warrantyData', warrantyData);
         
         if (warrantyData) {
           // Set form data
@@ -170,8 +170,8 @@ export function WarrantyPage() {
     if (!validateForm()) return;
 
     try {
-      console.log('warranty Start Date', formData.warrantyStartDate);
-      console.log('completion Date', formData.completionDate);
+      // console.log.log('warranty Start Date', formData.warrantyStartDate);
+      // console.log.log('completion Date', formData.completionDate);
       const warrantyData: Partial<WarrantyPageContentData> = {
         warranty_page_title: formData.title,
         warranty_details: warrantyDetails,
@@ -189,13 +189,13 @@ export function WarrantyPage() {
       };
 
       if (formData.id) {
-        console.log('formData.id', formData.id);
-        console.log('warrantyData in Update', warrantyData);
+        // console.log.log('formData.id', formData.id);
+        // console.log.log('warrantyData in Update', warrantyData);
         // Update existing record
         await WarrantyPageContent.update(1, warrantyData);
       } else {
-        console.log('formData.id', formData.id);
-        console.log('warrantyData in Insert', warrantyData);
+        // console.log.log('formData.id', formData.id);
+        // console.log.log('warrantyData in Insert', warrantyData);
         // Insert new record
         await WarrantyPageContent.insert({
           ...warrantyData,
@@ -217,7 +217,7 @@ export function WarrantyPage() {
 
   const handleLayoutPress = () => {
     // Handle layout navigation/action here
-    console.log("Navigate to layouts");
+    // console.log.log("Navigate to layouts");
   };
 
   const DatePickerModal = ({

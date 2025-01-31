@@ -14,6 +14,10 @@ import { Estimate } from '@/app/database/models/Estimate';
 import { EstimateDetail } from '@/app/database/models/EstimateDetail';
 import { useUserStore } from '@/app/stores/userStore';
 import { WarrantyPageContent } from '@/app/database/models/WarrantyPageContent';
+import { ProductsPricing } from '@/app/database/models/ProductsPricing';
+import { QuotePageContent } from '@/app/database/models/QuotePageContent';
+import { QuotePageSection } from '@/app/database/models/QuotePageSection';
+import { QuotePagePriceSection } from '@/app/database/models/QuotePagePriceSection';
 
 interface LoginDataResponse {
   Users: Array<{
@@ -173,15 +177,67 @@ interface LoginDataResponse {
     ModifiedBy: number;
     ModifiedDate: string;
   }>;
+  ProductsPricing: Array<{
+    ID: number;
+    CompanyID: number;
+    Name: string;
+    Description: string;
+    Unit: string;
+    MaterialPrice: number;
+    Labor: number;
+    Margin: number;
+    Price: number;
+    TaxExemptStatus: boolean;
+    IsActive: boolean;
+    CreatedBy: number;
+    CreatedDate: string;
+    ModifiedBy: number | null;
+    ModifiedDate: string | null;
+  }>;
+  QuotePageContent: Array<{
+    QuotePageId: number;
+    PageId: number;
+    QuotePageTitle: string;
+    QuoteSubtotal: number;
+    Total: number;
+    Notes: string;
+    IsActive: boolean;
+    CreatedBy: number;
+    CreatedDate: string;
+    ModifiedBy: number | null;
+    ModifiedDate: string | null;
+  }>;
+  QuotePageSection: Array<{
+    QuoteSectionId: number;
+    QuotePageId: number;
+    SectionTitle: string;
+    SectionTotal: number;
+    IsActive: boolean;
+    CreatedBy: number;
+    CreatedDate: string;
+    ModifiedBy: number | null;
+    ModifiedDate: string | null;
+  }>;
+  QuotePagePriceSection: Array<{
+    QuoteP_Price_Sec_Id: number;
+    QuoteSectionId: number;
+    PriceSectionId: number;
+    SectionTotal: number;
+    IsActive: boolean;
+    CreatedBy: number;
+    CreatedDate: string;
+    ModifiedBy: number | null;
+    ModifiedDate: string | null;
+  }>;
 }
 
 export const syncService = {
   syncLoginData: async (dataResponse: string, username: string) => {
     try {
-      // console.log('dataResponse', dataResponse);
+      // // console.log.log('dataResponse', dataResponse);
       const data: LoginDataResponse = JSON.parse(dataResponse);
-      // console.log('data', data);
-      // console.log('Syncing data...');
+      // // console.log.log('data', data);
+      // // console.log.log('Syncing data...');
       
       // Sync Companies
       for (const company of data.Company) {
@@ -205,7 +261,7 @@ export const syncService = {
             modified_by: company.ModifiedBy ?? '',
             modified_date: company.ModifiedDate ?? ''
           });
-          // console.log('Company synced:', company.CompanyName);
+          // // console.log.log('Company synced:', company.CompanyName);
         }
       }
 
@@ -223,7 +279,7 @@ export const syncService = {
             modified_by: role.ModifiedBy ?? -1,
             modified_date: role.ModifiedDate ?? ''
           });
-          // console.log('Role synced:', role.RoleName);
+          // // console.log.log('Role synced:', role.RoleName);
         }
       }
 
@@ -231,7 +287,7 @@ export const syncService = {
       for (const user of data.Users) {
         const existingUserDetail = await UserDetail.getById(user.UserId);
         if (!existingUserDetail) {
-          console.log('user', user);
+          // console.log.log('user', user);
           await UserDetail.insert({
             id: user.UserId,
             company_id: user.CompanyId,
@@ -247,7 +303,7 @@ export const syncService = {
             modified_by: user.ModifiedBy ?? -1,
             modified_date: user.ModifiedDate ?? ''
           });
-          // console.log('UserDetail synced:', user.UserId);
+          // // console.log.log('UserDetail synced:', user.UserId);
         }
         
 
@@ -261,7 +317,7 @@ export const syncService = {
             created_date: user.CreatedDate,
             modified_date: user.ModifiedDate ?? ''
           });
-          // console.log('User synced:', user.Username);
+          // // console.log.log('User synced:', user.Username);
         }
       }
 
@@ -275,17 +331,17 @@ export const syncService = {
             created_date: userRole.AssignedDate,
             modified_date: userRole.ModifiedDate ?? ''
           });
-          // console.log('UserRole synced for user:', userRole.UserId);
+          // // console.log.log('UserRole synced for user:', userRole.UserId);
         }
       }
 
       // Sync Layouts
       for (const layout of data.Layout) {
-        // console.log('layout', layout);
+        // // console.log.log('layout', layout);
         const existingLayout = await Layouts.getById(layout.LayoutID);
-        // console.log('existingLayout', existingLayout);
+        // // console.log.log('existingLayout', existingLayout);
         if (!existingLayout) {
-          // console.log('layout not found. inserting...');
+          // // console.log.log('layout not found. inserting...');
           await Layouts.insert({
             id: layout.LayoutID,
             company_id: layout.CompanyID,
@@ -300,19 +356,19 @@ export const syncService = {
             modified_by: layout.ModifiedBy ?? null,
             modified_date: layout.ModifiedDate ?? ''
           });
-          // console.log('Layout synced:', layout.LayoutName);
+          // // console.log.log('Layout synced:', layout.LayoutName);
         } else {
-          // console.log('Layout already exists:', layout.LayoutName);
+          // // console.log.log('Layout already exists:', layout.LayoutName);
         }
       }
 
       // Sync Pages
       for (const page of data.Pages) {
-        // console.log('page', page);
+        // // console.log.log('page', page);
         const existingPage = await Pages.getById(page.PageId);
         if (!existingPage) {
-          // console.log('page.CreatedBy', page.CreatedBy);
-          // console.log('page.modified_by', page.ModifiedBy);
+          // // console.log.log('page.CreatedBy', page.CreatedBy);
+          // // console.log.log('page.modified_by', page.ModifiedBy);
           await Pages.insert({
             id: page.PageId,
             page_name: page.PageName,
@@ -324,19 +380,19 @@ export const syncService = {
             modified_by: page.ModifiedBy ?? null,
             modified_date: page.ModifiedDate ?? ''
           });
-          // console.log('Page synced:', page.PageName);
+          // // console.log.log('Page synced:', page.PageName);
         } else {
-          // console.log('Page already exists:', page.PageName);
+          // // console.log.log('Page already exists:', page.PageName);
         }
       }
 
       // Sync LayoutPages
       for (const layoutPage of data.LayoutPages) {
-        // console.log('layoutPage', layoutPage);
+        // // console.log.log('layoutPage', layoutPage);
         const existingLayoutPage = await LayoutPages.getById(layoutPage.LayoutPageId);
-        // console.log('existingLayoutPage', existingLayoutPage);
+        // // console.log.log('existingLayoutPage', existingLayoutPage);
         if (!existingLayoutPage) {
-          // console.log('layoutPage not found. inserting...');
+          // // console.log.log('layoutPage not found. inserting...');
           await LayoutPages.insert({
             id: layoutPage.LayoutPageId,
             page_id: layoutPage.PageId,
@@ -347,18 +403,18 @@ export const syncService = {
             modified_by: layoutPage.ModifiedBy ?? null,
             modified_date: layoutPage.ModifiedDate ?? ''
           });
-          // console.log('LayoutPage synced:', layoutPage.LayoutPageId);
+          // // console.log.log('LayoutPage synced:', layoutPage.LayoutPageId);
         } else {
-          // console.log('LayoutPage already exists:', layoutPage.LayoutPageId);
+          // // console.log.log('LayoutPage already exists:', layoutPage.LayoutPageId);
         }
       }
 
       // Sync TitlePageContent
       for (const titlePage of data.TitlePageContent) {
-        // console.log('titlePage', titlePage);
+        // // console.log.log('titlePage', titlePage);
         const existingTitlePage = await TitlePageContent.getById(titlePage.TitlePageId);
         if (!existingTitlePage) {
-          // console.log('TitlePageContent not found, inserting...');
+          // // console.log.log('TitlePageContent not found, inserting...');
           await TitlePageContent.insert({
             id: titlePage.TitlePageId,
             page_id: titlePage.PageId,
@@ -380,18 +436,18 @@ export const syncService = {
             modified_by: titlePage.ModifiedBy ?? null,
             modified_date: titlePage.ModifiedDate ?? ''
           });
-          // console.log('TitlePage synced:', titlePage.TitleName);
+          // // console.log.log('TitlePage synced:', titlePage.TitleName);
         } else {
-          // console.log('TitlePage already exists:', titlePage.TitleName);
+          // // console.log.log('TitlePage already exists:', titlePage.TitleName);
         }
       }
 
       // Sync IntroductionPageContent
       for (const introPage of data.IntroductionPageContent) {
-        console.log('introPage', introPage);
+        // console.log.log('introPage', introPage);
         const existingIntroPage = await IntroductionPageContent.getById(introPage.IntroductionPageId);
         if (!existingIntroPage) {
-          console.log('IntroductionPageContent not found, inserting...');
+          // console.log.log('IntroductionPageContent not found, inserting...');
           await IntroductionPageContent.insert({
             id: introPage.IntroductionPageId,
             page_id: introPage.PageId,
@@ -403,9 +459,9 @@ export const syncService = {
             modified_by: introPage.ModifiedBy ?? null,
             modified_date: introPage.ModifiedDate ?? ''
           });
-          console.log('IntroductionPageInserted synced:', introPage.IntroductionPageId);
+          // console.log.log('IntroductionPageInserted synced:', introPage.IntroductionPageId);
         } else {
-          console.log('IntroductionPage already exists:', introPage.IntroductionTitle);
+          // console.log.log('IntroductionPage already exists:', introPage.IntroductionTitle);
         }
       }
 
@@ -413,7 +469,7 @@ export const syncService = {
       for (const tcPage of data.TermConditionsPageContent) {
         const existingTCPage = await TermConditionsPageContent.getById(tcPage.TC_PageId);
         if (!existingTCPage) {
-          console.log('TermConditionsPageContent not found, inserting...');
+          // console.log.log('TermConditionsPageContent not found, inserting...');
           await TermConditionsPageContent.insert({
             id: tcPage.TC_PageId,
             page_id: tcPage.PageId,
@@ -429,19 +485,19 @@ export const syncService = {
             modified_by: tcPage.ModifiedBy ?? undefined,
             modified_date: tcPage.ModifiedDate ?? ''
           });
-          console.log('TermConditionsPageContentInserted synced:', tcPage.TC_PageId);
+          // console.log.log('TermConditionsPageContentInserted synced:', tcPage.TC_PageId);
         } else {
-          console.log('TermConditionsPageContent already exists:', tcPage.TC_PageId);
+          // console.log.log('TermConditionsPageContent already exists:', tcPage.TC_PageId);
         }
       }
 
       // Sync UserCompany
       for (const userCompany of data.UserCompany) {
-        // console.log('userCompany', userCompany);
+        // // console.log.log('userCompany', userCompany);
         const existingUserCompany = await UserCompany.getById(userCompany.UserId, userCompany.CompanyId);
-        // console.log('existingUserCompany', existingUserCompany);
+        // // console.log.log('existingUserCompany', existingUserCompany);
         if (!existingUserCompany) {
-          // console.log('UserCompany not found, inserting...');
+          // // console.log.log('UserCompany not found, inserting...');
           await UserCompany.insert({
             user_id: userCompany.UserId,
             company_id: userCompany.CompanyId,
@@ -451,9 +507,9 @@ export const syncService = {
             modified_by: userCompany.ModifiedBy ?? null,
             modified_date: userCompany.ModifiedDate ?? ''
           });
-          // console.log('UserCompany synced for user:', userCompany.UserId);
+          // // console.log.log('UserCompany synced for user:', userCompany.UserId);
         } else {
-          // console.log('UserCompany already exists for user:', userCompany.UserId);
+          // // console.log.log('UserCompany already exists for user:', userCompany.UserId);
         }
       }
 
@@ -461,7 +517,7 @@ export const syncService = {
       for (const warrantyPage of data.WarrantyPageContent) {
         const existingWarrantyPage = await WarrantyPageContent.getById(warrantyPage.WarrantyPageId);
         if (!existingWarrantyPage) {
-          console.log('warrantyPage', warrantyPage);
+          // console.log.log('warrantyPage', warrantyPage);
           await WarrantyPageContent.insert({
             id: warrantyPage.WarrantyPageId,
             page_id: warrantyPage.PageId,
@@ -477,16 +533,114 @@ export const syncService = {
             modified_by: warrantyPage.ModifiedBy,
             modified_date: warrantyPage.ModifiedDate
           });
-          console.log('WarrantyPageContent synced:', warrantyPage.WarrantyPageId);
+          // console.log.log('WarrantyPageContent synced:', warrantyPage.WarrantyPageId);
         } else {
-          console.log('WarrantyPageContent already exists:', warrantyPage.WarrantyPageId);
+          // console.log.log('WarrantyPageContent already exists:', warrantyPage.WarrantyPageId);
+        }
+      }
+
+      // Sync ProductsPricing
+      for (const productPricing of data.ProductsPricing) {
+        console.log('productPricing', productPricing);
+        const existingProduct = await ProductsPricing.getById(productPricing.ID);
+        if (!existingProduct) {
+          console.log('ProductsPricing not found, inserting...');
+          await ProductsPricing.insert({
+            id: productPricing.ID,
+            company_id: productPricing.CompanyID,
+            name: productPricing.Name,
+            description: productPricing.Description,
+            unit: productPricing.Unit,
+            material_price: productPricing.MaterialPrice,
+            labor: productPricing.Labor,
+            margin: productPricing.Margin,
+            price: productPricing.Price,
+            tax_exempt_status: productPricing.TaxExemptStatus,
+            is_active: productPricing.IsActive,
+            created_by: productPricing.CreatedBy,
+            created_date: productPricing.CreatedDate,
+            modified_by: productPricing.ModifiedBy ?? null,
+            modified_date: productPricing.ModifiedDate ?? null
+          });
+          console.log('ProductPricing synced:', productPricing.Name);
+        }
+      }
+
+       // Sync QuotePageContent
+       for (const quoteContent of data.QuotePageContent) {
+        console.log('quoteContent', quoteContent);
+        const existingQuoteContent = await QuotePageContent.getById(quoteContent.QuotePageId);
+        if (!existingQuoteContent) {
+          console.log('QuotePageContent not found, inserting...');
+          await QuotePageContent.insert({
+            id: quoteContent.QuotePageId,
+            page_id: quoteContent.PageId,
+            quote_page_title: quoteContent.QuotePageTitle,
+            quote_subtotal: quoteContent.QuoteSubtotal,
+            total: quoteContent.Total,
+            notes: quoteContent.Notes,
+            is_active: quoteContent.IsActive,
+            created_by: quoteContent.CreatedBy,
+            created_date: quoteContent.CreatedDate,
+            modified_by: quoteContent.ModifiedBy,
+            modified_date: quoteContent.ModifiedDate
+          });
+          console.log('QuotePageContentInserted synced:', quoteContent.QuotePageId);
+        } else {
+          console.log('QuotePageContent already exists:', quoteContent.QuotePageId);
+        }
+      }
+
+      // Sync QuotePageSection
+      for (const quoteSection of data.QuotePageSection) {
+        console.log('quoteSection', quoteSection);
+        const existingQuoteSection = await QuotePageSection.getById(quoteSection.QuoteSectionId);
+        if (!existingQuoteSection) {
+          console.log('QuotePageSection not found, inserting...');
+          await QuotePageSection.insert({
+            id: quoteSection.QuoteSectionId,
+            quote_page_id: quoteSection.QuotePageId,
+            section_title: quoteSection.SectionTitle,
+            section_total: quoteSection.SectionTotal,
+            is_active: quoteSection.IsActive,
+            created_by: quoteSection.CreatedBy,
+            created_date: quoteSection.CreatedDate,
+            modified_by: quoteSection.ModifiedBy,
+            modified_date: quoteSection.ModifiedDate
+          });
+          console.log('QuotePageSectionInserted synced:', quoteSection.QuoteSectionId);
+        } else {
+          console.log('QuotePageSection already exists:', quoteSection.QuoteSectionId);
+        }
+      }
+
+      // Sync QuotePagePriceSection
+      for (const quotePriceSection of data.QuotePagePriceSection) {
+        console.log('quotePriceSection', quotePriceSection);
+        const existingQuotePriceSection = await QuotePagePriceSection.getById(quotePriceSection.QuoteP_Price_Sec_Id);
+        if (!existingQuotePriceSection) {
+          console.log('QuotePagePriceSection not found, inserting...');
+          await QuotePagePriceSection.insert({
+            id: quotePriceSection.QuoteP_Price_Sec_Id,
+            quote_section_id: quotePriceSection.QuoteSectionId,
+            price_section_id: quotePriceSection.PriceSectionId,
+            section_total: quotePriceSection.SectionTotal,
+            is_active: quotePriceSection.IsActive,
+            created_by: quotePriceSection.CreatedBy,
+            created_date: quotePriceSection.CreatedDate,
+            modified_by: quotePriceSection.ModifiedBy,
+            modified_date: quotePriceSection.ModifiedDate
+          });
+          console.log('QuotePagePriceSection synced:', quotePriceSection.QuoteP_Price_Sec_Id);
+        } else {
+          console.log('QuotePagePriceSection already exists:', quotePriceSection.QuoteP_Price_Sec_Id);
         }
       }
 
       // Set current user using the enhanced function
       useUserStore.getState().setCurrentUserFromLogin(data, username);
 
-      // console.log('Data sync completed successfully');
+      // // console.log.log('Data sync completed successfully');
       return true;
     } catch (error) {
       console.error('Error syncing data:', error);
@@ -571,7 +725,7 @@ export const syncEstimateData = {
                 modified_date: new Date().toISOString()
             });
 
-            console.log('Sample estimates inserted successfully');
+            // console.log.log('Sample estimates inserted successfully');
         } catch (error) {
             console.error('Error inserting sample estimates:', error);
             return false;

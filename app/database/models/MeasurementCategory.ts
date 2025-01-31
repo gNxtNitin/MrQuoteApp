@@ -58,7 +58,7 @@ export const MeasurementCategory = {
     `;
     try {
       await db.execAsync(query);
-      console.log('MeasurementCategory table created');
+      // console.log.log('MeasurementCategory table created');
     } catch (error) {
       console.error('Error creating MeasurementCategory table:', error);
       throw error;

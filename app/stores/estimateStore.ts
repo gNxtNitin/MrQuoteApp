@@ -41,7 +41,7 @@ export const useEstimateStore = create<EstimateState>((set) => ({
         // Fetch and set page ID
         const pages = await ReportPages.getByReportId(report[0].id!);
         if (pages && pages.length > 0) {
-          console.log('selectedPageId', pages[0].page_id);
+          // console.log.log('selectedPageId', pages[0].page_id);
           set({ selectedPageId: pages[0].page_id || null });
         } else {
           set({ selectedPageId: null });
@@ -76,7 +76,7 @@ export const useEstimateStore = create<EstimateState>((set) => ({
         // Fetch and set page ID
         const pages = await ReportPages.getByReportId(report[0].id!);
         if (pages && pages.length > 0) {
-          console.log('selectedPageId', pages[0].page_id);
+          // console.log.log('selectedPageId', pages[0].page_id);
           set({ selectedPageId: pages[0].page_id || null });
         } else {
           set({ selectedPageId: null });

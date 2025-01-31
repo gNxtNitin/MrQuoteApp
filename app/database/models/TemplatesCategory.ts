@@ -51,7 +51,7 @@ export const TemplatesCategory = {
     `;
     try {
       await db.execAsync(query);
-      console.log('TemplatesCategory table created');
+      // console.log.log('TemplatesCategory table created');
     } catch (error) {
       console.error('Error creating templates_category table:', error);
       throw error;

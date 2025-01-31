@@ -27,28 +27,28 @@ interface ProductsPricingColumns {
 
 export interface ProductsPricingData {
   id?: number;
-  company_id?: number;
-  name?: string;
-  description?: string;
-  unit?: string;
-  material_price?: number;
-  labor?: number;
-  margin?: number;
-  price?: number;
-  tax_exempt_status?: boolean;
+  company_id: number;
+  name: string;
+  description: string;
+  unit: string;
+  material_price: number;
+  labor: number;
+  margin: number;
+  price: number;
+  tax_exempt_status: boolean;
   is_active?: boolean;
   created_by?: number;
   created_date?: string;
-  modified_by?: number;
-  modified_date?: string;
+  modified_by?: number | null;
+  modified_date?: string | null;
 }
 
 export const ProductsPricing = {
   tableName: 'products_pricing',
   columns: {
     id: { type: 'INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE' },
-    company_id: { type: 'INTEGER' },
-    name: { type: 'TEXT' },
+    company_id: { type: 'INTEGER NOT NULL' },
+    name: { type: 'TEXT NOT NULL' },
     description: { type: 'TEXT' },
     unit: { type: 'TEXT' },
     material_price: { type: 'DECIMAL(10,2)' },
@@ -76,7 +76,7 @@ export const ProductsPricing = {
     `;
     try {
       await db.execAsync(query);
-      console.log('ProductsPricing table created');
+      // console.log.log('ProductsPricing table created');
     } catch (error) {
       console.error('Error creating products_pricing table:', error);
       throw error;
@@ -106,7 +106,7 @@ export const ProductsPricing = {
 
     try {
       const result = await statement.executeAsync([id]);
-      return await result.getFirstAsync() || null;
+      return await result.getFirstAsync() as ProductsPricingData | null;
     } finally {
       await statement.finalizeAsync();
     }

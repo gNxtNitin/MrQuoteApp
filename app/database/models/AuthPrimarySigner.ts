@@ -61,7 +61,7 @@ export const AuthPrimarySigner = {
     `;
     try {
       await db.execAsync(query);
-      console.log('AuthPrimarySigner table created');
+      // console.log.log('AuthPrimarySigner table created');
     } catch (error) {
       console.error('Error creating auth_primary_signer table:', error);
       throw error;

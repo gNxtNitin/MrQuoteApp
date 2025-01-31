@@ -53,7 +53,7 @@ export const WallMeasurementToken = {
     `;
     try {
       await db.execAsync(query);
-      console.log('WallMeasurementToken table created');
+      // console.log.log('WallMeasurementToken table created');
     } catch (error) {
       console.error('Error creating wall_measurement_token table:', error);
       throw error;

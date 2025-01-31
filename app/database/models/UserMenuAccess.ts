@@ -57,7 +57,7 @@ export const UserMenuAccess = {
     `;
     try {
       await db.execAsync(query);
-      console.log('UserMenuAccess table created');
+      // console.log.log('UserMenuAccess table created');
     } catch (error) {
       console.error('Error creating user_menu_access table:', error);
       throw error;

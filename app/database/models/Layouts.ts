@@ -67,7 +67,7 @@ export const Layouts = {
     `;
     try {
       await db.execAsync(query);
-      console.log('Layouts table created');
+      // console.log.log('Layouts table created');
     } catch (error) {
       console.error('Error creating layouts table:', error);
       throw error;
@@ -85,7 +85,7 @@ export const Layouts = {
 
     try {
       await statement.executeAsync(values);
-      console.log('Layouts inserted');
+      // console.log.log('Layouts inserted');
     } finally {
       await statement.finalizeAsync();
     }

@@ -279,7 +279,7 @@ const SingleUsePDFContent = ({
 
   useEffect(() => {
     setUploadedPdfs(pdfs);
-    console.log("pdf", pdfs);
+    // console.log.log("pdf", pdfs);
   }, [pdfs]);
 
   return (
@@ -493,7 +493,7 @@ export function CustomPage({ title }: CustomPageProps) {
     const customPageData = {
       uploadedPdfs,
     };
-    console.log("save changes", customPageData);
+    // console.log.log("save changes", customPageData);
     useEstimatePageStore.getState().setFormData(`${title}`, customPageData);
   };
 

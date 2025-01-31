@@ -58,7 +58,7 @@ export const InspectionSectionItems = {
     `;
     try {
       await db.execAsync(query);
-      console.log('InspectionSectionItems table created');
+      // console.log.log('InspectionSectionItems table created');
     } catch (error) {
       console.error('Error creating inspection_section_items table:', error);
       throw error;

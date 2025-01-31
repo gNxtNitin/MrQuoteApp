@@ -56,7 +56,7 @@ export const TemplatePages = {
     `;
     try {
       await db.execAsync(query);
-      console.log('TemplatePages table created');
+      // console.log.log('TemplatePages table created');
     } catch (error) {
       console.error('Error creating template_pages table:', error);
       throw error;

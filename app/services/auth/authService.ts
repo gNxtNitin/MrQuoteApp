@@ -23,12 +23,12 @@ interface LoginResponse {
 async function performOfflineLogin(username: string, password: string, status: string, offlineUser: UserDetailData | null): Promise<LoginResponse> {
   // const offlineUser = await UserDetail.findByCredentials(username, "4SD4gzWOX9OfEdba9/7fRg==");
       
-  console.log('offlineUser', offlineUser);
+  // console.log.log('offlineUser', offlineUser);
   // If user exists offline, return the user
   if (offlineUser && offlineUser.id) {
-    console.log('User found in offline database');
+    // console.log.log('User found in offline database');
     const hasPin = offlineUser.pin != null && offlineUser.pin !== undefined;
-    console.log(`hasPin (${status}):`, hasPin);
+    // console.log.log(`hasPin (${status}):`, hasPin);
 
     await AsyncStorage.setItem(CURRENT_USER_KEY, offlineUser.id.toString());
     await UserDetail.update(offlineUser.id, {
@@ -55,40 +55,12 @@ export const authService = {
   login: async (username: string, password: string): Promise<LoginResponse> => {
     try {
 
-      // First try offline login
-      const offlineUser = await UserDetail.findByCredentials(username, encryptPassword(password, "0987654321!@#$%^"));
-      
-      console.log('offlineUser', offlineUser);
-      // If user exists offline, return the user
-      if (offlineUser && offlineUser.id) {
-        const response = await performOfflineLogin(username, password, 'offline', offlineUser);
-      
-        await syncEstimateData.insertSampleEstimates();
-        return response;
-        // console.log('User found in offline database');
-        // const hasPin = offlineUser.pin != null && offlineUser.pin !== undefined;
-        // console.log('hasPin (offline):', hasPin);
-
-        // await AsyncStorage.setItem(CURRENT_USER_KEY, offlineUser.id.toString());
-        // await UserDetail.update(offlineUser.id, {
-        //   is_logged_in: true,
-        //   last_login_at: new Date().toISOString()
-        // });
-
-        // return {
-        //   success: true,
-        //   message: 'Login successful (Offline Mode)',
-        //   user: offlineUser,
-        //   hasPin
-        // };
-      }
-
       // If user not found offline, try online login
       const isOnline = await apiClient.isOnline();
-      console.log('isOnline:', isOnline);
+      // console.log.log('isOnline:', isOnline);
 
       if (isOnline) {
-        console.log('Attempting online login...');
+        // console.log.log('Attempting online login...');
         const response = await apiClient.post<UserDetailData>(API_ENDPOINTS.LOGIN, {
           username: username,
           password: password,
@@ -98,7 +70,7 @@ export const authService = {
           try {
             // Store the auth token
             if (response.token) {
-              console.log('response.token', response.token);
+              // console.log.log('response.token', response.token);
               await AsyncStorage.setItem('auth_token', response.token);
             }
 
@@ -106,7 +78,7 @@ export const authService = {
             await syncService.syncLoginData(response.dataResponse, username);
             const offlineUser = await UserDetail.findByCredentials(username, encryptPassword(password, "0987654321!@#$%^"));
       
-            console.log('offlineUser', offlineUser);
+            // console.log.log('offlineUser', offlineUser);
             // If user exists offline, return the user
             if (offlineUser && offlineUser.id) {
               const response = await performOfflineLogin(username, password, 'offline', offlineUser);
@@ -126,7 +98,7 @@ export const authService = {
             
             // // Check if user has PIN set up
             // const hasPin = user.pin != null && user.pin !== undefined;
-            // console.log('hasPin (online):', hasPin);
+            // // console.log.log('hasPin (online):', hasPin);
 
             // // Update local user state
             // await AsyncStorage.setItem(CURRENT_USER_KEY, user.id.toString());
@@ -149,6 +121,34 @@ export const authService = {
             };
           }
         }
+      } else {
+        // First try offline login
+      const offlineUser = await UserDetail.findByCredentials(username, encryptPassword(password, "0987654321!@#$%^"));
+      
+      // console.log.log('offlineUser', offlineUser);
+      // If user exists offline, return the user
+      if (offlineUser && offlineUser.id) {
+        const response = await performOfflineLogin(username, password, 'offline', offlineUser);
+      
+        await syncEstimateData.insertSampleEstimates();
+        return response;
+        // // console.log.log('User found in offline database');
+        // const hasPin = offlineUser.pin != null && offlineUser.pin !== undefined;
+        // // console.log.log('hasPin (offline):', hasPin);
+
+        // await AsyncStorage.setItem(CURRENT_USER_KEY, offlineUser.id.toString());
+        // await UserDetail.update(offlineUser.id, {
+        //   is_logged_in: true,
+        //   last_login_at: new Date().toISOString()
+        // });
+
+        // return {
+        //   success: true,
+        //   message: 'Login successful (Offline Mode)',
+        //   user: offlineUser,
+        //   hasPin
+        // };
+      }
       }
 
       // If we reach here, neither offline nor online login worked
@@ -239,7 +239,7 @@ export const authService = {
 
       // Check if user has PIN set up
       const hasPin = await authService.checkPin(userId);
-      console.log('hasPin', hasPin);
+      // console.log.log('hasPin', hasPin);
       
       return true;
     } catch (error) {

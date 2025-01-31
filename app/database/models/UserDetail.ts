@@ -82,21 +82,21 @@ export const UserDetail = {
       );
     `;
     await db.execAsync(query);
-    console.log('UserDetail table created');
+    // console.log.log('UserDetail table created');
   },
 
   insert: async (userDetailData: UserDetailData) => {
     const keys = Object.keys(userDetailData);
     const values = Object.values(userDetailData);
     const placeholders = values.map(() => '?').join(',');
-    console.log('UserDetail inserting...');
+    // console.log.log('UserDetail inserting...');
 
     const query = `
       INSERT INTO ${UserDetail.tableName} (${keys.join(',')})
       VALUES (${placeholders});
     `;
     await db.runAsync(query, values);
-    console.log('UserDetail inserted');
+    // console.log.log('UserDetail inserted');
   },
 
   getById: async (id: number): Promise<UserDetailData | null> => {

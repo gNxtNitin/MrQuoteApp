@@ -52,21 +52,21 @@ export const UserCompany = {
       );
     `;
     await db.execAsync(query);
-    console.log('UserCompany table created');
+    // console.log.log('UserCompany table created');
   },
 
   insert: async (data: UserCompanyData) => {
     const keys = Object.keys(data);
     const values = Object.values(data);
     const placeholders = values.map(() => '?').join(',');
-    console.log('UserCompany inserting...');
+    // console.log.log('UserCompany inserting...');
 
     const query = `
       INSERT INTO ${UserCompany.tableName} (${keys.join(',')})
       VALUES (${placeholders});
     `;
     await db.runAsync(query, values);
-    console.log('UserCompany inserted');
+    // console.log.log('UserCompany inserted');
   },
 
   getById: async (userId: number, companyId: number): Promise<UserCompanyData | null> => {

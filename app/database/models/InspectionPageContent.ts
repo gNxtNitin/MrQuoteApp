@@ -55,7 +55,7 @@ export const InspectionPageContent = {
     `;
     try {
       await db.execAsync(query);
-      console.log('InspectionPageContent table created');
+      // console.log.log('InspectionPageContent table created');
     } catch (error) {
       console.error('Error creating inspection_page_content table:', error);
       throw error;
