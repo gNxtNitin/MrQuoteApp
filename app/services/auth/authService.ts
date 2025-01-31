@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiClient } from '../api/client';
 import { API_ENDPOINTS } from '@/app/constants/api';
 import { syncEstimateData, syncService } from '../sync/syncService';
+import { encryptPassword } from '@/app/components/common/Utils';
 
 const CURRENT_USER_KEY = '@user_id';
 const PIN_ATTEMPTS_KEY = '@pin_attempts';
@@ -53,8 +54,9 @@ async function performOfflineLogin(username: string, password: string, status: s
 export const authService = {
   login: async (username: string, password: string): Promise<LoginResponse> => {
     try {
+
       // First try offline login
-      const offlineUser = await UserDetail.findByCredentials(username, "1djybcp42CbSzx7BpC1yiA==");
+      const offlineUser = await UserDetail.findByCredentials(username, encryptPassword(password, "0987654321!@#$%^"));
       
       console.log('offlineUser', offlineUser);
       // If user exists offline, return the user
@@ -96,12 +98,13 @@ export const authService = {
           try {
             // Store the auth token
             if (response.token) {
+              console.log('response.token', response.token);
               await AsyncStorage.setItem('auth_token', response.token);
             }
 
             // Sync the data from API response
             await syncService.syncLoginData(response.dataResponse, username);
-            const offlineUser = await UserDetail.findByCredentials(username, "4SD4gzWOX9OfEdba9/7fRg==");
+            const offlineUser = await UserDetail.findByCredentials(username, encryptPassword(password, "0987654321!@#$%^"));
       
             console.log('offlineUser', offlineUser);
             // If user exists offline, return the user

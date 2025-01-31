@@ -1,3 +1,5 @@
+import CryptoJS from "react-native-crypto-js";
+
 export function initialsName(name: string) {
     return name
       .split(" ")
@@ -16,3 +18,20 @@ export function generateRandom10DigitNumber(): string {
     return randomNumber.toString();
 }
 
+
+
+
+function encryptPassword(plainText: string, key: string): string {
+    const keyBytes = CryptoJS.enc.Utf8.parse(key);
+    const iv = CryptoJS.enc.Hex.parse("00000000000000000000000000000000"); // IV of zeros
+
+    const encrypted = CryptoJS.AES.encrypt(plainText, keyBytes, {
+        iv: iv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7
+    });
+
+    return encrypted.toString();
+}
+
+export { encryptPassword };
