@@ -26,6 +26,8 @@ import { CustomInputRow } from "@/app/components/common/CustomRowInput";
 import { WarrantyPageContent } from '@/app/database/models/WarrantyPageContent';
 import { useEstimateStore } from '@/app/stores/estimateStore';
 import { WarrantyPageContentData } from '@/app/database/models/WarrantyPageContent';
+import { useEstimatePageStore } from "@/app/stores/estimatePageStore";
+import { showToast } from "@/app/utils/ToastService";
 
 export function WarrantyPage() {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -202,7 +204,8 @@ export function WarrantyPage() {
           created_date: new Date().toISOString()
         } as WarrantyPageContentData);
       }
-
+      useEstimatePageStore.getState().setFormData("Warranty", formData);
+      showToast("success", "Data updated successfully.");
       setIsFormSaved(true);
       setIsEditingTitle(false);
       Alert.alert("Success", "Warranty information saved successfully");
@@ -652,6 +655,6 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   signeeBox: {
-    marginTop:20
+    marginTop: 20,
   },
 });
